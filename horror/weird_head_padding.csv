@@ -1,0 +1,94 @@
+
+
+An der vertragsärztlichen Versorgung teilnehmende Ärztinnen und Ärzte mit Berechtigung zum Führen einer Schwerpunktbezeichnung (Anzahl). Gliederungsmerkmale: Jahre, Region, Geschlecht, Teilnahmestatus, Schwerpunktbezeichnung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+****************************************************************************************************
+                                                                                                    
+Die Tabelle bezieht sich auf:
+Region:;Deutschland
+Geschlecht:;Beide Geschlechter
+Teilnahmestatus:;Teilnehmende Ärztinnen und Ärzte insgesamt
+""
+;"";;;;;;;;;
+;"1985";"1993";"2000";"2005";"2006";"2007";"2008";"2009";"2010";
+"   Chirurgie (ohne Orthopädie) ...";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";
+"      Gefäßchirurgie";".";"379";"575";"686";"704";"723";"729";"742";"733";
+"      Herz- und Gefäßchirurgie";".";"1";"1";"";"";"";"";"";"";
+"      Kinderchirurgie";".";"135";"123";"100";"88";"81";"81";"69";"65";
+"      Plastische Chirurgie";".";"173";"236";"219";"214";"202";"192";"187";"179";
+"      Thoraxchirurgie";".";"4";"68";"95";"110";"107";"110";"109";"100";
+"      Thorax- und Kardiovaskularchirurgie";".";"49";"54";"52";"56";"51";"45";"40";"35";
+"      Unfallchirurgie";".";"1.613";"2.003";"2.221";"2.279";"2.369";"2.466";"2.535";"2.590";
+"      Visceralchirurgie";".";"";"388";"554";"594";"620";"640";"642";"641";
+"   Frauenheilkunde und Geburtshilfe ...";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";
+"      Gynäkologische Endokrinologie und Reproduktionsmedizin";".";"";"";"";"17";"40";"51";"81";"105";
+"      Gynäkologische Onkologie";".";"";"";"";"55";"106";"148";"205";"243";
+"      Spezielle Geburtshilfe und Perinatalmedizin";".";"";"";"";"12";"27";"36";"68";"90";
+"   Hals-Nasen-Ohrenheilkunde ...";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";
+"      Audiologie";".";"16";"21";"11";"10";"11";"8";"7";"7";
+"      Phoniatrie";".";"26";"31";"22";"21";"21";"15";"14";"14";
+"      Phoniatrie und Pädaudiologie";".";"76";"100";"80";"78";"83";"86";"85";"85";
+"   Innere Medizin ...";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";
+"      Angiologie";".";"";"289";"412";"432";"456";"492";"521";"542";
+"      Diabetologie";".";"103";"76";"69";"65";"59";"56";"57";"55";
+"      Endokrinologie (und Diabetologie)";".";"145";"217";"268";"294";"315";"349";"362";"380";
+"      Gastroenterologie";".";"864";"1.142";"1.459";"1.526";"1.632";"1.719";"1.801";"1.866";
+"      Geriatrie";".";"";"";"2";"2";"2";"2";"3";"9";
+"      Hämatologie";".";"264";"246";"205";"199";"187";"181";"173";"169";
+"      Hämatologie und Internistische Onkologie";".";"";"380";"728";"798";"895";"962";"1.024";"1.082";
+"      Infektiologie";".";"";"";"";"1";"1";"1";"2";"2";
+"      Infektions- und Tropenmedizin";".";"13";"17";"13";"11";"11";"12";"11";"10";
+"      Kardiologie";".";"1.230";"1.834";"2.287";"2.392";"2.494";"2.592";"2.722";"2.830";
+"      Lungen- und Bronchialheilkunde";".";"";"";"";"7";"11";"17";"18";"21";
+"      Nephrologie";".";"574";"1.023";"1.306";"1.359";"1.413";"1.491";"1.569";"1.612";
+"      Pneumologie";".";"550";"784";"976";"1.034";"1.087";"1.133";"1.180";"1.200";
+"      Rheumatologie";".";"281";"450";"556";"587";"622";"635";"645";"666";
+"   Kinderheilkunde ...";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";
+"      Infektiologie";".";"";"";"";"2";"2";"2";"2";"2";
+"      Kinderdiabetologie";".";"";"";"3";"2";"2";"";"";"";
+"      Kinder-Endokrinologie und -Diabetologie";".";"";"";"";"";"";"14";"19";"21";
+"      Kindergastroenterologie";".";"2";"4";"5";"6";"10";"11";"12";"14";
+"      Kinderhämatologie";".";"5";"10";"11";"8";"7";"7";"7";"7";
+"      Kinder-Hämatologie und -Onkologie";".";"";"";"";"19";"38";"53";"59";"70";
+"      Kinderkardiologie";".";"128";"198";"266";"276";"274";"290";"308";"320";
+"      Kinder-Lungen- und Bronchialheilkunde";".";"5";"16";"16";"16";"17";"16";"19";"16";
+"      Kindernephrologie";".";"13";"17";"12";"15";"17";"20";"19";"20";
+"      Kinderneuropsychiatrie";".";"31";"32";"20";"13";"10";"10";"8";"7";
+"      Kinder-Pneumologie";".";"";"";"";"";"";"32";"40";"46";
+"      Kinderrheumatologie";".";"";"5";"3";"4";"3";"4";"3";"3";
+"      Neonatologie";".";"15";"213";"431";"459";"506";"547";"586";"606";
+"      Neuropädiatrie";".";"";"";"";"102";"183";"286";"332";"344";
+"   Laboratoriumsmedizin ...";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";
+"      Mikrobiologie";".";"";"";"";"1";"1";"1";"1";"1";
+"   Nervenheilkunde, Neurologie, Psychiatrie und Psychotherapie ...";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";
+"      Forensische Psychiatrie";".";"";"";"";"5";"13";"19";"18";"21";
+"      Kinderneuropsychiatrie";".";"32";"27";"24";"23";"22";"19";"18";"17";
+"   Orthopädie ...";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";
+"      Rheumatologie";".";"459";"558";"590";"592";"578";"584";"578";"594";
+"   Pathologie ...";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";
+"      Neuropathologie";".";"15";"10";"8";"8";"7";"5";"4";"4";
+"   Radiologie ...";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";"      ";
+"      Kinderradiologie";".";"20";"38";"65";"63";"66";"69";"74";"72";
+"      Neuroradiologie";".";"96";"142";"183";"195";"207";"218";"227";"237";
+"      Strahlentherapie";".";"106";"97";"87";"76";"70";"65";"70";"65";
+
+****************************************************************************************************
+Fußnoten
+****************************************************************************************************
+
+"1.";"Bis einschließlich 1992 liegen Daten nur für das frühere Bundesgebiet vor."
+"2.";"Die ausgewiesenen Werte beziehen sich auf den 31.12. des jeweiligen Berichtsjahres."
+
+****************************************************************************************************
+Die Tabelle wurde am 15.05.2011 12:28 Uhr unter www.gbe-bund.de erstellt.
+****************************************************************************************************
+
+Quelle(n):
+"Bundesarztregister, Kassenärztliche Bundesvereinigung"
+
+****************************************************************************************************
+Positionen mit Erläuterungen und Abkürzungen
+****************************************************************************************************
+
+Teilnahmestatus:
+  Partnerärztinnen und -ärzte:;Ab 1999 werden unter den an der vertragsärztlichen Versorgung teilnehmende Ärztinnen und Ärzte die sog. Partnerärztinnen und -ärzte nach § 101 Absatz 1 Nr. 4 Sozialgesetzbuch V nachgewiesen.
+  Angestellte Ärztinnen und Ärzte:;Ab 1994 werden unter den an der vertragsärztlichen Versorgung teilnehmenden Ärztinnen und Ärzten die Angestellten Ärztinnen und Ärzte nachgewiesen.
