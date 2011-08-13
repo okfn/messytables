@@ -1,7 +1,7 @@
 import decimal
 from datetime import datetime
 
-from ordereddict import OrderedDict
+from util import skip_n 
 
 STRING = unicode
 INTEGER = int
@@ -72,7 +72,7 @@ class RowSet(object):
         return counts
 
     @property
-    def sample_median_column_count(self):
+    def sample_modal_column_count(self):
         counts = self.sample_column_counts
         if not len(counts):
             return 0
@@ -200,14 +200,8 @@ def find_header_by_count(row_set, count):
             return i,  [c.value for c in row]
     return 0, []
 
-def skip_n(iterable, offset):
-    """ Skip ``offset`` from ``iterable``. """
-    zip(xrange(offset), iterable)
-    for item in iterable:
-        yield item
-
 from itertools import izip_longest
-def row_to_dict(headers, rows):
+def apply_headers(headers, rows):
     """ Transform the given row_set rows into ordered 
     dictionaries that contain a mapping of column name 
     to (cell_value, cell_type). If no header is defined,
@@ -248,7 +242,7 @@ def dictize_rowset(row_set, seek_headers=True, headers=None,
     if seek_headers:
         if header_offset is None:
             if column_count is None:
-                column_count = row_set.sample_median_column_count
+                column_count = row_set.sample_modal_column_count
             header_offset, headers = find_header_by_count(row_set, 
                     column_count-header_difference)
     if headers is None and header_offset is not None:
@@ -259,7 +253,7 @@ def dictize_rowset(row_set, seek_headers=True, headers=None,
     if header_offset is None:
         header_offset = 0
     content_rows = skip_n(iter(row_set), header_offset+1)
-    for row in row_to_dict(headers, content_rows):
+    for row in apply_headers(headers, content_rows):
         yield row
 
 
