@@ -1,3 +1,4 @@
+
 def create_date_formats(day_first=True):
     """generate combinations of time and date formats with different delimeters"""
 

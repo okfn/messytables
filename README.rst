@@ -9,7 +9,12 @@ pitfalls. ``messytables`` is a library that accepts input in various
 formats and applies heuristics to guess a correct way of accessing 
 the contained information.
 
+  RowSet.iter() -> ((value, type), ...)
+  #RowSet.rewind()
+  RowSet.typed?
 
+  TableSet.from_fileobj()
+  TableSet.tables -> ((name, row_set), ...)
 
 
 

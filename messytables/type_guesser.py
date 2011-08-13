@@ -50,8 +50,6 @@ class TypeGuesser(object):
     def is_int(self, val):
         try:
             val = int(val)
-            if val > 1000000000000:
-                return False
             return True
         except ValueError:
             return False
@@ -59,8 +57,6 @@ class TypeGuesser(object):
     def is_decimal(self, val):
         try:
             val =  decimal.Decimal(val)
-            if val > 1000000000000:
-                return False
             return True
         except decimal.InvalidOperation:
             decimal.InvalidOperation
@@ -73,9 +69,7 @@ class TypeGuesser(object):
 
     def is_date_format(self, val, date_format):
         try:
-            date = datetime.strptime(val, date_format)
-            if date.year > 3000:
-                return False
+            datetime.strptime(val, date_format)
             return True
         except ValueError:
             return False
