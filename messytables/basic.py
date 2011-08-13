@@ -1,13 +1,9 @@
-import decimal
 from datetime import datetime
 
-from util import skip_n 
-
-STRING = unicode
-INTEGER = int
-FLOAT = float
-DECIMAL = decimal.Decimal
-DATE = datetime
+from messytables.util import skip_n, \
+        STRING, INTEGER, FLOAT, DECIMAL, \
+        DATE
+from messytables.guesser import type_guess
 
 class Cell(object):
 
@@ -188,7 +184,7 @@ class XLSRowSet(RowSet):
                             xlrd.xldate_as_tuple(value, self.sheet.book.datemode)
                     value = datetime(year, month, day, hour, 
                             minute, second)
-                row.append(Cell(value, type))
+                row.append(Cell(value, type=type))
             yield row
 
 def find_header_by_count(row_set, count):
