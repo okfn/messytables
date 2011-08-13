@@ -2,69 +2,101 @@ import decimal
 from datetime import datetime
 from pprint import pprint
 
-from messytables.util import DATE, \
-        STRING, INTEGER, FLOAT, DECIMAL
 from messytables.dateparser import DATE_FORMATS
 
-WEIGHTS = {
-    STRING: 1.0, 
-    INTEGER: 1.5, 
-    FLOAT: 2, 
-    DECIMAL: 2.5,
-    DATE: 3.0
-    }
+class CellType(object):
+    guessing_weight = 1
 
-def is_string(val):
-    return True
-
-def is_int(val):
-    try:
-        int(val)
-        return True
-    except:
-        return False
-
-def is_float(val):
-    try:
-        float(val)
-        return True
-    except:
-        return False
-
-def is_decimal(val):
-    try:
-        decimal.Decimal(val)
-        return True
-    except:
-        return False
-
-def is_date(val):
-    for k, v in DATE_FORMATS.items():
+    @classmethod
+    def test(cls, value):
         try:
-            datetime.strptime(val, v)
-            return True
-        except: pass
+            ins = cls()
+            ins.cast(value)
+            return ins
+        except: 
+            return None
 
+    def cast(self, value):
+        return value
 
-CHECKS = {
-    STRING: is_string, 
-    INTEGER: is_int, 
-    FLOAT: is_float,
-    DECIMAL: is_decimal,
-    DATE: is_date
-    }
+    def __eq__(self, other):
+        return self.__class__ == other.__class__
+
+    def __hash__(self):
+        return hash(self.__class__)
+
+    def __repr__(self):
+        return self.__class__.__name__.rsplit('Type', 1)[0]
+
+class StringType(CellType):
+
+    def cast(self, value):
+        if not isinstance(value, basestring):
+            raise ValueError()
+        return value
+
+class IntegerType(CellType):
+    guessing_weight = 1.5
+
+    def cast(self, value):
+        return int(value)
+
+class FloatType(CellType):
+    guessing_weight = 2
+
+    def cast(self, value):
+        return float(value)
+
+class DecimalType(CellType):
+    guessing_weight = 2.5
+
+    def cast(self, value):
+        return decimal.Decimal(value)
+
+class DateType(CellType):
+    guessing_weight = 3
+
+    def __init__(self, format):
+        self.format = format
+
+    @classmethod
+    def test(cls, value):
+        for k, v in DATE_FORMATS.items():
+            ins = cls(v)
+            try:
+                ins.cast(value)
+                return ins
+            except: pass
+
+    def cast(self, value):
+        if self.format is None:
+            return value
+        return datetime.strptime(value, self.format)
+
+    def __eq__(self, other):
+        return isinstance(other, DateType) and \
+                self.format == other.format
+    
+    def __repr__(self):
+        return "Date(%s)" % self.format
+
+    def __hash__(self):
+        return hash(self.__class__) + hash(self.format)
+
+TYPES = [StringType, IntegerType, FloatType, DecimalType, DateType]
 
 from collections import defaultdict
 def type_guess(rows):
     guesses = defaultdict(lambda: defaultdict(int))
     for row in rows:
         for i, cell in enumerate(row):
-            for type, test in CHECKS.items():
-                if test(cell.value):
-                    guesses[i][type] += 1
+            for type in TYPES:
+                guess = type.test(cell.value)
+                if guess is not None:
+                    guesses[i][guess] += 1
     for i, types in guesses.items():
         for type, count in types.items():
-            guesses[i][type] *= WEIGHTS[type]
+            guesses[i][type] *= type.guessing_weight
     _columns = []
     for i, types in guesses.items():
         _columns.append(max(types.items(), key=lambda (t, n): n)[0])
