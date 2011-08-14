@@ -17,7 +17,7 @@ class RowSetTestCase(unittest.TestCase):
         fh = horror_fobj('simple.csv')
         table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
-        assert 7 == len(list(row_set.rows()))
+        assert 7 == len(list(row_set))
         row = list(row_set.sample)[0]
         assert row[0].value == 'date'
         assert row[1].value == 'temperature'
@@ -45,8 +45,8 @@ class RowSetTestCase(unittest.TestCase):
         offset, headers = headers_guess(row_set.sample)
         assert 11==len(headers), headers
         assert '1985'==headers[1], headers
-        row_set.column_headers = headers
-        row_set.row_offset = offset+1
+        row_set.register_processor(headers_processor(headers))
+        row_set.register_processor(offset_processor(offset + 1))
         for row in row_set:
             assert 11==len(row), row
 
@@ -55,8 +55,8 @@ class RowSetTestCase(unittest.TestCase):
         table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
         offset, headers = headers_guess(row_set.sample)
-        row_set.column_headers = headers
-        row_set.row_offset = offset+1
+        row_set.register_processor(headers_processor(headers))
+        row_set.register_processor(offset_processor(offset + 1))
         data = list(row_set)
         assert 'Chirurgie' in data[0][0].value, \
             data[0][0].value
@@ -64,7 +64,7 @@ class RowSetTestCase(unittest.TestCase):
         fh = horror_fobj('weird_head_padding.csv')
         table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
-        row_set.column_headers = ['foo', 'bar']
+        row_set.register_processor(headers_processor(['foo', 'bar']))
         data = list(row_set)
         assert 'foo' in data[12][0].column, data[12][0]
         assert 'Chirurgie' in data[12][0].value, \
@@ -78,7 +78,7 @@ class RowSetTestCase(unittest.TestCase):
         expected_types = [DateType("%Y-%m-%d"),DecimalType(),StringType()]
         assert types==expected_types, types
 
-        row_set.column_types = types
+        row_set.register_processor(types_processor(types))
         data = list(row_set)
         header_types = map(lambda c: c.type, data[0])
         assert header_types==[StringType()]*3, header_types
