@@ -1,18 +1,11 @@
-import sys
-from base import *
-import csv_transform
-# import xls_transform
-    
-register_transformer({
-    "name": "csv",
-    "class": csv_transform.CSVTransformer,
-    "extensions": ["csv"],
-    "mime_types": ["text/csv", "text/comma-separated-values"]
-})
 
-# register_transformer({
-#     "name": "xls",
-#     "class": xls_transform.XLSTransformer,
-#     "extensions": ["xls"],
-#     "mime_types": ["application/excel", "application/vnd.ms-excel"]
-# })
+from messytables.util import offset_processor
+from messytables.headers import headers_guess, headers_processor
+from messytables.types import type_guess, types_processor
+from messytables.types import StringType, IntegerType, FloatType, \
+        DecimalType, DateType
+
+from messytables.core import Cell, TableSet, RowSet
+from messytables.commas import CSVTableSet, CSVRowSet
+from messytables.excel import XLSTableSet, XLSRowSet
+

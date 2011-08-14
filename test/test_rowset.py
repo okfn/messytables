@@ -8,8 +8,7 @@ def horror_fobj(name):
     fn = os.path.join(os.path.dirname(__file__), '..', 'horror', name)
     return open(fn, 'rb')
 
-#from messytables.basic import CSVTableSet, XLSTableSet, 
-from messytables.basic import *
+from messytables import *
 
 class RowSetTestCase(unittest.TestCase):
 

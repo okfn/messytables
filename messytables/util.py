@@ -1,11 +1,3 @@
-from datetime import datetime
-import decimal 
-
-STRING = unicode
-INTEGER = int
-FLOAT = float
-DECIMAL = decimal.Decimal
-DATE = datetime
 
 def offset_processor(offset):
     """ Skip ``offset`` from the given iterator. This can 
