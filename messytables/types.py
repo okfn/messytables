@@ -102,4 +102,19 @@ def type_guess(rows):
         _columns.append(max(types.items(), key=lambda (t, n): n)[0])
     return _columns
 
-
+from itertools import izip_longest
+def types_processor(types):
+    """ Apply the column types set on the instance to the
+    current row, attempting to cast each cell to the specified
+    type. """
+    def apply_types(row_set, row):
+        if types is None:
+            return row
+        for cell, type in izip_longest(row, types):
+            try:
+                cell.value = type.cast(cell.value)
+                cell.type = type
+            except:
+                pass
+        return row
+    return apply_types
