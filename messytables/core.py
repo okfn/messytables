@@ -1,6 +1,4 @@
-from itertools import izip_longest
-
-from messytables.util import offset_processor, OrderedDict
+from messytables.util import OrderedDict
 
 class Cell(object):
     """ A cell is the basic value type. It always has a ``value`` (that
@@ -92,15 +90,6 @@ class RowSet(object):
                     break
             if row is not None:
                 yield row
-
-        #if self.row_offset is not None:
-        #    rows = skip_n(rows, self.row_offset)
-        #for row in rows:
-        #    if self.column_types is not None:
-        #        row = self.apply_types(row)
-        #    if self.column_headers is not None:
-        #        row = self.apply_headers(row)
-        #    yield row
 
     def dicts(self):
         """ Return a representation of the data as an iterator of

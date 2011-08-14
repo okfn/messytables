@@ -9,25 +9,33 @@ from messytables.types import StringType, IntegerType, \
         DateType
 
 XLS_TYPES = {
+    # TODO: extend with float etc.
     1: StringType(), 
     2: IntegerType(),
     3: DateType(None)
     }
 
 class XLSTableSet(TableSet):
+    """ An excel workbook wrapper object. As the underlying
+    library is based on reading from a file name (as opposed to
+    a file object), a local, temporary copy is created and 
+    passed into the library. This has significant performance 
+    implication for large excel sheets. """
 
     def __init__(self, filename):
         self.workbook = xlrd.open_workbook(filename)
 
     @classmethod
     def from_fileobj(cls, fileobj):
-        # xlrd reads from a file name, no fileobj support
+        """ Create a local copy of the object and attempt 
+        to open it with xlrd. """
         fd, name = mkstemp(suffix='xls')
         copyfileobj(fileobj, open(name, 'wb'))
         return cls(name)
 
     @property
     def tables(self):
+        """ Return the sheets in the workbook. """
         return [XLSRowSet(name, self.workbook.sheet_by_name(name)) \
                 for name in self.workbook.sheet_names()]
 
@@ -40,9 +48,7 @@ class XLSRowSet(RowSet):
         self.name = name
         self.sheet = sheet
         self.window = window
-        super(XLSRowSet, self).__init__()
-
-    typed = True
+        super(XLSRowSet, self).__init__(typed=True)
 
     @property
     def sample(self):
