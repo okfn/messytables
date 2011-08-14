@@ -1,7 +1,6 @@
 from itertools import izip_longest
 
-from messytables.util import offset_processor
-from messytables.ordereddict import OrderedDict
+from messytables.util import offset_processor, OrderedDict
 
 class Cell(object):
     """ A cell is the basic value type. It always has a ``value`` (that

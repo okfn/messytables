@@ -33,6 +33,8 @@ class XLSTableSet(TableSet):
 
 
 class XLSRowSet(RowSet):
+    """ Excel support for a single sheet in the excel workbook. Unlike
+    the CSV row set this is not a streaming operation. """
 
     def __init__(self, name, sheet, window=1000):
         self.name = name
