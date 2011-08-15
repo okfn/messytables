@@ -1,11 +1,27 @@
 from setuptools import setup, find_packages
 
+long_desc = """
+Tabular data as published on the web is often not well formatted 
+and structured. Messytables tries to use heuristical approaches to
+detect and fix errors in the data. Typical examples include:
+
+* Guessing the type of columns in CSV data.
+* Finding the header of a table when there are explanations and 
+  text fragments in the first few rows of the table.
+
+This library provides data structures and some heuristics to 
+fix these problems and read a wide number of different tabular 
+abominations.
+
+See the full documentation at: http://messytables.readthedocs.org
+"""
+
+
 setup(
     name='messytables',
-    version='0.1',
+    version='0.1.1',
     description="Parse messy tabular data in various formats",
-    long_description="""\
-    """,
+    long_description=long_desc,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
