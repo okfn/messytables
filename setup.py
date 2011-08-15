@@ -6,7 +6,13 @@ setup(
     description="Parse messy tabular data in various formats",
     long_description="""\
     """,
-    classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        ],
     keywords='',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
