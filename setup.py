@@ -17,7 +17,7 @@ setup(
     include_package_data=False,
     zip_safe=False,
     install_requires=[
-        #
+        'xlrd==0.7.1'
     ],
     tests_require=[],
     entry_points=\
