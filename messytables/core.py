@@ -82,7 +82,7 @@ class RowSet(object):
         self._processors.append(processor)
 
     def __iter__(self):
-        """ Apply several filters to the row data. """
+        """ Apply processors to the row data. """
         for row in self.raw():
             for processor in self._processors:
                 row = processor(self, row)

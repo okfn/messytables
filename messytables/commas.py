@@ -39,8 +39,6 @@ class CSVRowSet(RowSet):
             pass
         super(CSVRowSet, self).__init__()
 
-    typed = False
-
     @property
     def _sample_lines(self):
         for line in self._sample:

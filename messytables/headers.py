@@ -18,6 +18,9 @@ def headers_guess(rows, tolerance=1):
     """ Guess the offset and names of the headers of the row set.
     This will attempt to locate the first row within ``tolerance``
     of the mode of the number of rows in the row set sample.
+
+    The return value is a tuple of the offset of the header row
+    and the names of the columns.
     """
     rows = list(rows)
     modal = column_count_modal(rows)
