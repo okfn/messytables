@@ -11,7 +11,7 @@ setup(
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
     url='http://okfn.org',
-    license='GPLv3',
+    license='MIT',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     namespace_packages=[],
     include_package_data=False,
