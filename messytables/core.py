@@ -96,8 +96,6 @@ class RowSet(object):
         ordered dictionaries. This is less specific than the cell
         format returned by the generic iterator but only gives a 
         subset of the information. """
-        if not self.column_headers:
-            raise TypeError("No column headers are defined!")
         for row in self:
             yield OrderedDict([(c.column, c.value) for c in row])
 
