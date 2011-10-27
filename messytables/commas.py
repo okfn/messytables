@@ -46,8 +46,11 @@ class CSVRowSet(RowSet):
 
     @property
     def _dialect(self):
-        sample = '\n'.join(self._sample_lines)
-        return csv.Sniffer().sniff(sample)
+        sample = ''.join(self._sample_lines)
+        dialect = csv.Sniffer().sniff(sample)
+        if dialect.delimiter not in ['\t','|',',',';',':']:
+            dialect = csv.excel
+        return dialect
 
     @property
     def sample(self):
