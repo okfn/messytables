@@ -91,12 +91,25 @@ class RowSet(object):
             if row is not None:
                 yield row
 
-    def dicts(self):
+    def sample_iter(self):
+        for row in self.raw(sample=True):
+            for processor in self._processors:
+                row = processor(self, row)
+                if row is None:
+                    break
+            if row is not None:
+                yield row
+
+    def dicts(self, sample=False):
         """ Return a representation of the data as an iterator of
         ordered dictionaries. This is less specific than the cell
         format returned by the generic iterator but only gives a 
         subset of the information. """
-        for row in self:
+        if sample:
+            generator = self.sample_iter()
+        else:
+            generator = self
+        for row in generator:
             yield OrderedDict([(c.column, c.value) for c in row])
 
     def __repr__(self):

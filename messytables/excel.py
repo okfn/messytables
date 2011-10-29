@@ -54,11 +54,12 @@ class XLSRowSet(RowSet):
     def sample(self):
         return islice(self, self.window)
 
-    def raw(self):
+    def raw(self, sample=False):
         """ Iterate over all rows in this sheet. Types are automatically
         converted according to the excel data types specified, including 
         conversion of excel dates, which are notoriously buggy. """
-        for i in xrange(self.sheet.nrows):
+        num_rows = self.sheet.nrows
+        for i in xrange(min(self.window, num_rows) if sample else num_rows):
             row = []
             for cell in self.sheet.row(i):
                 value = cell.value

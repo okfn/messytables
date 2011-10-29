@@ -57,9 +57,13 @@ class CSVRowSet(RowSet):
         for row in csv.reader(self._sample_lines, dialect=self._dialect):
             yield [Cell(c) for c in row]
 
-    def raw(self):
+    def raw(self, sample=False):
         def rows():
-            for line in chain(self._sample_lines, self.lines):
+            if sample:
+                generator = self._sample_lines
+            else:
+                generator = chain(self._sample_lines, self.lines)
+            for line in generator:
                 yield line
         for row in csv.reader(rows(), dialect=self._dialect):
             yield [Cell(c) for c in row]
