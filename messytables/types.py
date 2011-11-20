@@ -73,13 +73,14 @@ class DateType(CellType):
     date format that is used to parse the date, additionally to the
     basic type information. """
     guessing_weight = 3
+    formats = DATE_FORMATS
 
     def __init__(self, format):
         self.format = format
 
     @classmethod
     def test(cls, value):
-        for k, v in DATE_FORMATS.items():
+        for v in cls.formats:
             ins = cls(v)
             try:
                 ins.cast(value)
@@ -103,7 +104,7 @@ class DateType(CellType):
 
 TYPES = [StringType, IntegerType, FloatType, DecimalType, DateType]
 
-def type_guess(rows):
+def type_guess(rows, types=TYPES):
     """ The type guesser aggregates the number of successful 
     conversions of each column to each type, weights them by a 
     fixed type priority and select the most probable type for 
@@ -112,12 +113,12 @@ def type_guess(rows):
     guesses = defaultdict(lambda: defaultdict(int))
     for row in rows:
         for i, cell in enumerate(row):
-            for type in TYPES:
+            for type in types:
                 guess = type.test(cell.value)
                 if guess is not None:
                     guesses[i][guess] += 1
-    for i, types in guesses.items():
-        for type, count in types.items():
+    for i, guess in guesses.items():
+        for type, count in guess.items():
             guesses[i][type] *= type.guessing_weight
     _columns = []
     for i, types in guesses.items():

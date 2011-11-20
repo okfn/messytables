@@ -43,7 +43,7 @@ def create_date_formats(day_first=True):
 
             all_formats[date_format + " " + time_format] =\
                     python_date_format + " " + python_time_format
-    return all_formats
+    return all_formats.values()
 
 DATE_FORMATS = create_date_formats()
 
