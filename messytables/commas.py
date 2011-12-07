@@ -46,16 +46,24 @@ class CSVRowSet(RowSet):
 
     @property
     def _dialect(self):
-        sample = ''.join(self._sample_lines)
-        dialect = csv.Sniffer().sniff(sample)
-        if dialect.delimiter not in ['\t','|',',',';',':']:
-            dialect = csv.excel
-        return dialect
+        delim = '\r\n'
+        sample = delim.join(self._sample)
+        try:
+            dialect = csv.Sniffer().sniff(sample, 
+                delimiters=['\t',',',';'])
+            dialect.lineterminator = delim
+            return dialect
+        except csv.Error:
+            return csv.excel
 
     @property
     def sample(self):
-        for row in csv.reader(self._sample_lines, dialect=self._dialect):
-            yield [Cell(c) for c in row]
+        try:
+            for row in csv.reader(self._sample_lines, dialect=self._dialect):
+                yield [Cell(c) for c in row]
+        except csv.Error, err:
+            if not 'newline inside string' in unicode(err):
+                raise
 
     def raw(self, sample=False):
         def rows():
