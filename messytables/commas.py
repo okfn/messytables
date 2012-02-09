@@ -46,7 +46,7 @@ class CSVRowSet(RowSet):
 
     @property
     def _dialect(self):
-        delim = '\r\n'
+        delim = '\n'
         sample = delim.join(self._sample).encode('utf-8')
         try:
             dialect = csv.Sniffer().sniff(sample, 
