@@ -61,10 +61,12 @@ class XLSRowSet(RowSet):
         num_rows = self.sheet.nrows
         for i in xrange(min(self.window, num_rows) if sample else num_rows):
             row = []
-            for cell in self.sheet.row(i):
+            for j, cell in enumerate(self.sheet.row(i)):
                 value = cell.value
                 type = XLS_TYPES.get(cell.ctype, StringType())
                 if type == DateType(None):
+                    if value == 0:
+                        raise ValueError('Invalid date at "%s":%d,%d' % (self.sheet.name, j+1, i+1))
                     year, month, day, hour, minute, second = \
                             xlrd.xldate_as_tuple(value, self.sheet.book.datemode)
                     value = datetime(year, month, day, hour, 
