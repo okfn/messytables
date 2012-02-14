@@ -9,7 +9,8 @@ def column_count_modal(rows):
     counts = defaultdict(int)
     for row in rows:
         length = len([c for c in row if not c.empty])
-        counts[length] += 1
+        if length > 1:
+            counts[length] += 1
     if not len(counts):
         return 0
     return max(counts.items(), key=lambda (k,v): v)[0]

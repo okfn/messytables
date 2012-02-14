@@ -8,4 +8,5 @@ from messytables.types import StringType, IntegerType, FloatType, \
 from messytables.core import Cell, TableSet, RowSet
 from messytables.commas import CSVTableSet, CSVRowSet
 from messytables.excel import XLSTableSet, XLSRowSet
+from messytables.excelx import XLSXTableSet, XLSXRowSet
 

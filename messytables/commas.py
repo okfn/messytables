@@ -46,8 +46,8 @@ class CSVRowSet(RowSet):
 
     @property
     def _dialect(self):
-        delim = '\r\n'
-        sample = delim.join(self._sample)
+        delim = '\n'
+        sample = delim.join(self._sample).encode('utf-8')
         try:
             dialect = csv.Sniffer().sniff(sample, 
                 delimiters=['\t',',',';'])
@@ -58,11 +58,18 @@ class CSVRowSet(RowSet):
 
     @property
     def sample(self):
+        def rows():
+            for line in self._sample_lines:
+                yield line.encode('utf-8')
         try:
-            for row in csv.reader(self._sample_lines, dialect=self._dialect):
+            for row in csv.reader(rows(), dialect=self._dialect):
                 yield [Cell(c) for c in row]
         except csv.Error, err:
-            if not 'newline inside string' in unicode(err):
+            if 'newline inside string' in unicode(err):
+                pass
+            elif 'line contains NULL byte' in unicode(err):
+                pass
+            else:
                 raise
 
     def raw(self, sample=False):
@@ -72,7 +79,12 @@ class CSVRowSet(RowSet):
             else:
                 generator = chain(self._sample_lines, self.lines)
             for line in generator:
-                yield line
-        for row in csv.reader(rows(), dialect=self._dialect):
-            yield [Cell(c) for c in row]
-
+                yield line.encode('utf-8')
+        try:
+            for row in csv.reader(rows(), dialect=self._dialect):
+                yield [Cell(c) for c in row]
+        except csv.Error, err:
+            if 'line contains NULL byte' in unicode(err):
+                pass
+            else:
+                raise
