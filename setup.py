@@ -40,6 +40,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'xlrd==0.7.1'
+        'openpyxl==1.5.7'
     ],
     tests_require=[],
     entry_points=\
