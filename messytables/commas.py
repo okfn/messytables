@@ -1,8 +1,25 @@
 from ilines import ilines
 from itertools import chain
 import csv
+import codecs
 
 from messytables.core import RowSet, TableSet, Cell
+
+class UTF8Recoder:
+    """
+    Iterator that reads an encoded stream and reencodes the input to UTF-8
+    """
+    def __init__(self, f, encoding):
+        self.reader = codecs.getreader(encoding)(f, 'ignore')
+    def __iter__(self):
+        return self
+
+    def next(self):
+        line = self.reader.readline()
+        if not line or line == '\0':
+            raise StopIteration
+        result = line.encode("utf-8")
+        return result
 
 class CSVTableSet(TableSet):
     """ A CSV table set. Since CSV is always just a single table,
@@ -27,10 +44,10 @@ class CSVRowSet(RowSet):
     a sample is read and cached so you can run analysis on the
     fragment. """
 
-    def __init__(self, name, fileobj, window=1000):
+    def __init__(self, name, fileobj, encoding ='utf-8', window=1000):
         self.name = name
-        self.fileobj = fileobj
-        self.lines = ilines(fileobj)
+        self.fileobj = UTF8Recoder(fileobj, encoding)
+        self.lines = ilines(self.fileobj)
         self._sample = []
         try:
             for i in xrange(window):
@@ -47,7 +64,7 @@ class CSVRowSet(RowSet):
     @property
     def _dialect(self):
         delim = '\n'
-        sample = delim.join(self._sample).encode('utf-8')
+        sample = delim.join(self._sample)
         try:
             dialect = csv.Sniffer().sniff(sample, 
                 delimiters=['\t',',',';'])
@@ -60,7 +77,7 @@ class CSVRowSet(RowSet):
     def sample(self):
         def rows():
             for line in self._sample_lines:
-                yield line.encode('utf-8')
+                yield line
         try:
             for row in csv.reader(rows(), dialect=self._dialect):
                 yield [Cell(c) for c in row]
@@ -79,7 +96,7 @@ class CSVRowSet(RowSet):
             else:
                 generator = chain(self._sample_lines, self.lines)
             for line in generator:
-                yield line.encode('utf-8')
+                yield line
         try:
             for row in csv.reader(rows(), dialect=self._dialect):
                 yield [Cell(c) for c in row]
