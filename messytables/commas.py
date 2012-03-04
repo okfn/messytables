@@ -21,6 +21,12 @@ class UTF8Recoder:
         result = line.encode("utf-8")
         return result
 
+def to_unicode_or_bust(obj, encoding='utf-8'):
+     if isinstance(obj, basestring):
+         if not isinstance(obj, unicode):
+             obj = unicode(obj, encoding)
+     return obj
+
 class CSVTableSet(TableSet):
     """ A CSV table set. Since CSV is always just a single table,
     this is just a pass-through for the row set. """
@@ -99,7 +105,7 @@ class CSVRowSet(RowSet):
                 yield line
         try:
             for row in csv.reader(rows(), dialect=self._dialect):
-                yield [Cell(c) for c in row]
+                yield [Cell(to_unicode_or_bust(c)) for c in row]
         except csv.Error, err:
             if 'line contains NULL byte' in unicode(err):
                 pass

@@ -33,7 +33,6 @@ class Cell(object):
             return False
         return True
 
-
 class TableSet(object):
     """ A table set is used for data formats in which multiple tabular
     objects are bundeled. This might include relational databases and 
