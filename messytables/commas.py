@@ -5,12 +5,14 @@ import codecs
 
 from messytables.core import RowSet, TableSet, Cell
 
+
 class UTF8Recoder:
     """
     Iterator that reads an encoded stream and reencodes the input to UTF-8
     """
     def __init__(self, f, encoding):
         self.reader = codecs.getreader(encoding)(f, 'ignore')
+
     def __iter__(self):
         return self
 
@@ -21,11 +23,13 @@ class UTF8Recoder:
         result = line.encode("utf-8")
         return result
 
+
 def to_unicode_or_bust(obj, encoding='utf-8'):
-     if isinstance(obj, basestring):
-         if not isinstance(obj, unicode):
-             obj = unicode(obj, encoding)
-     return obj
+    if isinstance(obj, basestring):
+        if not isinstance(obj, unicode):
+            obj = unicode(obj, encoding)
+    return obj
+
 
 class CSVTableSet(TableSet):
     """ A CSV table set. Since CSV is always just a single table,
@@ -44,13 +48,14 @@ class CSVTableSet(TableSet):
         """ Return the actual CSV table. """
         return [CSVRowSet(self.name, self.fileobj)]
 
+
 class CSVRowSet(RowSet):
     """ A CSV row set is an iterator on a CSV file-like object
     (which can potentially be infinetly large). When loading, 
     a sample is read and cached so you can run analysis on the
     fragment. """
 
-    def __init__(self, name, fileobj, encoding ='utf-8', window=1000):
+    def __init__(self, name, fileobj, encoding='utf-8', window=1000):
         self.name = name
         self.fileobj = UTF8Recoder(fileobj, encoding)
         self.lines = ilines(self.fileobj)
@@ -86,7 +91,7 @@ class CSVRowSet(RowSet):
                 yield line
         try:
             for row in csv.reader(rows(), dialect=self._dialect):
-                yield [Cell(c) for c in row]
+                yield [Cell(to_unicode_or_bust(c)) for c in row]
         except csv.Error, err:
             if 'newline inside string' in unicode(err):
                 pass
