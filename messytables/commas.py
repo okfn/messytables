@@ -112,7 +112,9 @@ class CSVRowSet(RowSet):
             for row in csv.reader(rows(), dialect=self._dialect):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
         except csv.Error, err:
-            if 'line contains NULL byte' in unicode(err):
+            if 'newline inside string' in unicode(err) and sample:
+                pass
+            elif 'line contains NULL byte' in unicode(err):
                 pass
             else:
                 raise
