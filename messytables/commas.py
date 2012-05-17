@@ -77,9 +77,10 @@ class CSVRowSet(RowSet):
         delim = '\n'
         sample = delim.join(self._sample)
         try:
-            dialect = csv.Sniffer().sniff(sample, 
-                delimiters=['\t',',',';'])
+            dialect = csv.Sniffer().sniff(sample,
+                delimiters=['\t', ',', ';'])
             dialect.lineterminator = delim
+            dialect.doublequote = True
             return dialect
         except csv.Error:
             return csv.excel
