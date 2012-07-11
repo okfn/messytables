@@ -25,6 +25,19 @@ class RowSetTestCase(unittest.TestCase):
             assert 3 == len(row), row
             assert row[0].type==StringType()
 
+    def test_read_simple_tsv(self):
+        fh = horror_fobj('example.tsv')
+        table_set = CSVTableSet.from_fileobj(fh, delimiter='\t')
+        row_set = table_set.tables[0]
+        assert 141 == len(list(row_set)), len(list(row_set))
+        row = list(row_set.sample)[0]
+        assert row[0].value == 'hour', row[0].value
+        assert row[1].value == 'expr1_0_imp', row[1].value
+        for row in list(row_set):
+            assert 17 == len(row), len(row)
+            assert row[0].type==StringType()
+
+
     def test_read_simple_xls(self):
         fh = horror_fobj('simple.xls')
         table_set = XLSTableSet.from_fileobj(fh)
@@ -33,7 +46,7 @@ class RowSetTestCase(unittest.TestCase):
         row = list(row_set.sample)[0]
         assert row[0].value == 'date'
         assert row[1].value == 'temperature'
-        
+
         for row in list(row_set):
             assert 3 == len(row), row
 
@@ -42,12 +55,12 @@ class RowSetTestCase(unittest.TestCase):
         table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
         offset, headers = headers_guess(row_set.sample)
-        assert 11==len(headers), headers
-        assert '1985'==headers[1], headers
+        assert 5==len(headers), headers
+        assert u'Region'==headers[1].strip(), headers[1]
         row_set.register_processor(headers_processor(headers))
         row_set.register_processor(offset_processor(offset + 1))
         for row in row_set:
-            assert 11==len(row), row
+            assert 5==len(row), row
 
     def test_guess_headers(self):
         fh = horror_fobj('weird_head_padding.csv')
@@ -57,9 +70,10 @@ class RowSetTestCase(unittest.TestCase):
         row_set.register_processor(headers_processor(headers))
         row_set.register_processor(offset_processor(offset + 1))
         data = list(row_set)
-        assert 'Chirurgie' in data[0][0].value, \
-            data[0][0].value
-        
+        print data[9]
+        assert 'Chirurgie' in data[9][0].value, \
+            data[9][0].value
+
         fh = horror_fobj('weird_head_padding.csv')
         table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
@@ -83,7 +97,7 @@ class RowSetTestCase(unittest.TestCase):
         assert header_types==[StringType()]*3, header_types
         row_types = map(lambda c: c.type, data[2])
         assert expected_types==row_types, row_types
-    
+
     def test_read_type_know_simple(self):
         fh = horror_fobj('simple.xls')
         table_set = XLSTableSet.from_fileobj(fh)

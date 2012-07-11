@@ -35,31 +35,34 @@ class CSVTableSet(TableSet):
     """ A CSV table set. Since CSV is always just a single table,
     this is just a pass-through for the row set. """
 
-    def __init__(self, fileobj, name=None):
+    def __init__(self, fileobj, delimiter=None, name=None):
         self.fileobj = fileobj
         self.name = name or 'table'
+        self.delimiter = delimiter or ','
 
     @classmethod
-    def from_fileobj(cls, fileobj, name=None):
-        return cls(fileobj, name=name)
+    def from_fileobj(cls, fileobj, delimiter=',', name=None):
+        return cls(fileobj, delimiter=delimiter, name=name)
 
     @property
     def tables(self):
         """ Return the actual CSV table. """
-        return [CSVRowSet(self.name, self.fileobj)]
+        return [CSVRowSet(self.name, self.fileobj, self.delimiter)]
 
 
 class CSVRowSet(RowSet):
     """ A CSV row set is an iterator on a CSV file-like object
-    (which can potentially be infinetly large). When loading, 
+    (which can potentially be infinetly large). When loading,
     a sample is read and cached so you can run analysis on the
     fragment. """
 
-    def __init__(self, name, fileobj, encoding='utf-8', window=1000):
+    def __init__(self, name, fileobj, delimiter=None,
+                 encoding='utf-8', window=1000):
         self.name = name
         self.fileobj = UTF8Recoder(fileobj, encoding)
         self.lines = ilines(self.fileobj)
         self._sample = []
+        self.delimiter = delimiter or ','
         try:
             for i in xrange(window):
                 self._sample.append(self.lines.next())
@@ -77,7 +80,7 @@ class CSVRowSet(RowSet):
         delim = '\n'
         sample = delim.join(self._sample)
         try:
-            dialect = csv.Sniffer().sniff(sample, 
+            dialect = csv.Sniffer().sniff(sample,
                 delimiters=['\t',',',';'])
             dialect.lineterminator = delim
             return dialect
@@ -90,7 +93,7 @@ class CSVRowSet(RowSet):
             for line in self._sample_lines:
                 yield line
         try:
-            for row in csv.reader(rows(), dialect=self._dialect):
+            for row in csv.reader(rows(), delimiter=self.delimiter, dialect=self._dialect):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
         except csv.Error, err:
             if 'newline inside string' in unicode(err):
@@ -109,7 +112,7 @@ class CSVRowSet(RowSet):
             for line in generator:
                 yield line
         try:
-            for row in csv.reader(rows(), dialect=self._dialect):
+            for row in csv.reader(rows(), delimiter=self.delimiter, dialect=self._dialect):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
         except csv.Error, err:
             if 'newline inside string' in unicode(err) and sample:
