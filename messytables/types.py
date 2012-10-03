@@ -1,14 +1,15 @@
 import decimal
 from datetime import datetime
 from collections import defaultdict
-import types
-from pprint import pprint
+from itertools import izip_longest
+#from pprint import pprint
 
 from messytables.dateparser import DATE_FORMATS
 
+
 class CellType(object):
-    """ A cell type maintains information about the format 
-    of the cell, providing methods to check if a type is 
+    """ A cell type maintains information about the format
+    of the cell, providing methods to check if a type is
     applicable to a given value and to convert a value to the
     type. """
 
@@ -17,14 +18,14 @@ class CellType(object):
 
     @classmethod
     def test(cls, value):
-        """ Test if the value is of the given type. The 
-        default implementation calls ``cast`` and checks if 
+        """ Test if the value is of the given type. The
+        default implementation calls ``cast`` and checks if
         that throws an exception. """
         try:
             ins = cls()
             ins.cast(value)
             return ins
-        except: 
+        except:
             return None
 
     def cast(self, value):
@@ -41,6 +42,7 @@ class CellType(object):
     def __repr__(self):
         return self.__class__.__name__.rsplit('Type', 1)[0]
 
+
 class StringType(CellType):
     """ A string or other unconverted type. """
 
@@ -48,6 +50,7 @@ class StringType(CellType):
         if not isinstance(value, basestring):
             raise ValueError()
         return value
+
 
 class IntegerType(CellType):
     """ An integer field. """
@@ -57,6 +60,7 @@ class IntegerType(CellType):
     def cast(self, value):
         return int(value)
 
+
 class FloatType(CellType):
     """ Floating point number. """
     guessing_weight = 2
@@ -65,6 +69,7 @@ class FloatType(CellType):
     def cast(self, value):
         return float(value)
 
+
 class DecimalType(CellType):
     """ Decimal number, ``decimal.Decimal``. """
     guessing_weight = 2.5
@@ -72,6 +77,7 @@ class DecimalType(CellType):
 
     def cast(self, value):
         return decimal.Decimal(value)
+
 
 class DateType(CellType):
     """ The date type is special in that it also includes a specific
@@ -91,7 +97,8 @@ class DateType(CellType):
             try:
                 ins.cast(value)
                 return ins
-            except: pass
+            except:
+                pass
 
     def cast(self, value):
         if self.format is None:
@@ -101,7 +108,7 @@ class DateType(CellType):
     def __eq__(self, other):
         return isinstance(other, DateType) and \
                 self.format == other.format
-    
+
     def __repr__(self):
         return "Date(%s)" % self.format
 
@@ -110,11 +117,12 @@ class DateType(CellType):
 
 TYPES = [StringType, IntegerType, FloatType, DecimalType, DateType]
 
+
 def type_guess(rows, types=TYPES, strict=False):
-    """ The type guesser aggregates the number of successful 
-    conversions of each column to each type, weights them by a 
-    fixed type priority and select the most probable type for 
-    each column based on that figure. It returns a list of 
+    """ The type guesser aggregates the number of successful
+    conversions of each column to each type, weights them by a
+    fixed type priority and select the most probable type for
+    each column based on that figure. It returns a list of
     ``CellType``. Strict means that a type will not be guessed
     if parsing fails once. Empty cells are ignored. """
     guesses = defaultdict(lambda: defaultdict(int))
@@ -140,7 +148,7 @@ def type_guess(rows, types=TYPES, strict=False):
         _columns.append(max(types.items(), key=lambda (t, n): n)[0])
     return _columns
 
-from itertools import izip_longest
+
 def types_processor(types):
     """ Apply the column types set on the instance to the
     current row, attempting to cast each cell to the specified
