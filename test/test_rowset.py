@@ -87,13 +87,13 @@ class RowSetTestCase(unittest.TestCase):
     def test_type_guess(self):
         csv_file = StringIO.StringIO('''
             1,   2012/2/12, 2
-            2,   2012/2/12, 1.1
+            2.4, 2012/2/12, 1.1
             foo, bar,       1
             4.3, ,          42
              ,   2012/2/12, 21''')
         rows = CSVTableSet(csv_file).tables[0]
         guessed_types = type_guess(rows)
-        assert guessed_types == [DecimalType(), DateType('%Y/%m/%d'), DecimalType()], guessed_types
+        assert guessed_types == [DecimalType(), DateType('%Y/%m/%d'), IntegerType()], guessed_types
 
     def test_type_guess_strict(self):
         csv_file = StringIO.StringIO('''
@@ -110,7 +110,7 @@ class RowSetTestCase(unittest.TestCase):
         table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
         types = type_guess(row_set.sample)
-        expected_types = [DateType("%Y-%m-%d"), DecimalType(), StringType()]
+        expected_types = [DateType("%Y-%m-%d"), IntegerType(), StringType()]
         assert types == expected_types, types
 
         row_set.register_processor(types_processor(types))
@@ -126,7 +126,7 @@ class RowSetTestCase(unittest.TestCase):
         row_set = table_set.tables[0]
         row = list(row_set.sample)[1]
         types = [c.type for c in row]
-        assert types==[DateType(None),IntegerType(),StringType()], types
+        assert types == [DateType(None), IntegerType(), StringType()], types
 
 if __name__ == '__main__':
     unittest.main()

@@ -14,7 +14,6 @@ class CellType(object):
     type. """
 
     guessing_weight = 1
-    strict_guessing_weight = 0
 
     @classmethod
     def test(cls, value):
@@ -54,8 +53,7 @@ class StringType(CellType):
 
 class IntegerType(CellType):
     """ An integer field. """
-    guessing_weight = 1.5
-    strict_guessing_weight = 5
+    guessing_weight = 4
 
     def cast(self, value):
         return int(value)
@@ -63,8 +61,7 @@ class IntegerType(CellType):
 
 class FloatType(CellType):
     """ Floating point number. """
-    guessing_weight = 2
-    strict_guessing_weight = 1
+    guessing_weight = 1
 
     def cast(self, value):
         return float(value)
@@ -72,8 +69,7 @@ class FloatType(CellType):
 
 class DecimalType(CellType):
     """ Decimal number, ``decimal.Decimal``. """
-    guessing_weight = 2.5
-    strict_guessing_weight = 1.5
+    guessing_weight = 1.5
 
     def cast(self, value):
         return decimal.Decimal(value)
@@ -83,8 +79,7 @@ class DateType(CellType):
     """ The date type is special in that it also includes a specific
     date format that is used to parse the date, additionally to the
     basic type information. """
-    guessing_weight = 3
-    strict_guessing_weight = 10
+    guessing_weight = 5
     formats = DATE_FORMATS
 
     def __init__(self, format):
@@ -141,8 +136,7 @@ def type_guess(rows, types=TYPES, strict=False):
                 else:
                     if guesses[i][guess] is None:
                         continue
-                    weight = type.strict_guessing_weight if strict else type.guessing_weight
-                    guesses[i][guess] += weight
+                    guesses[i][guess] += type.guessing_weight
     _columns = []
     for i, types in guesses.items():
         _columns.append(max(types.items(), key=lambda (t, n): n)[0])
