@@ -116,10 +116,7 @@ def type_guess(rows, types=TYPES):
             for type in types:
                 guess = type.test(cell.value)
                 if guess is not None:
-                    guesses[i][guess] += 1
-    for i, guess in guesses.items():
-        for type, count in guess.items():
-            guesses[i][type] *= type.guessing_weight
+                    guesses[i][guess] += type.guessing_weight
     _columns = []
     for i, types in guesses.items():
         _columns.append(max(types.items(), key=lambda (t, n): n)[0])
