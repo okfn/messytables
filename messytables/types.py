@@ -1,7 +1,8 @@
 import decimal
 from datetime import datetime
 from collections import defaultdict
-#from pprint import pprint
+import types
+from pprint import pprint
 
 from messytables.dateparser import DATE_FORMATS
 
@@ -12,6 +13,7 @@ class CellType(object):
     type. """
 
     guessing_weight = 1
+    strict_guessing_weight = 0
 
     @classmethod
     def test(cls, value):
@@ -50,6 +52,7 @@ class StringType(CellType):
 class IntegerType(CellType):
     """ An integer field. """
     guessing_weight = 1.5
+    strict_guessing_weight = 5
 
     def cast(self, value):
         return int(value)
@@ -57,6 +60,7 @@ class IntegerType(CellType):
 class FloatType(CellType):
     """ Floating point number. """
     guessing_weight = 2
+    strict_guessing_weight = 1
 
     def cast(self, value):
         return float(value)
@@ -64,6 +68,7 @@ class FloatType(CellType):
 class DecimalType(CellType):
     """ Decimal number, ``decimal.Decimal``. """
     guessing_weight = 2.5
+    strict_guessing_weight = 1.5
 
     def cast(self, value):
         return decimal.Decimal(value)
@@ -73,6 +78,7 @@ class DateType(CellType):
     date format that is used to parse the date, additionally to the
     basic type information. """
     guessing_weight = 3
+    strict_guessing_weight = 10
     formats = DATE_FORMATS
 
     def __init__(self, format):
@@ -104,19 +110,31 @@ class DateType(CellType):
 
 TYPES = [StringType, IntegerType, FloatType, DecimalType, DateType]
 
-def type_guess(rows, types=TYPES):
+def type_guess(rows, types=TYPES, strict=False):
     """ The type guesser aggregates the number of successful 
     conversions of each column to each type, weights them by a 
     fixed type priority and select the most probable type for 
     each column based on that figure. It returns a list of 
-    ``CellType``. """
+    ``CellType``. Strict means that a type will not be guessed
+    if parsing fails once. Empty cells are ignored. """
     guesses = defaultdict(lambda: defaultdict(int))
     for row in rows:
         for i, cell in enumerate(row):
             for type in types:
+                if not cell.value:
+                    continue
                 guess = type.test(cell.value)
-                if guess is not None:
-                    guesses[i][guess] += type.guessing_weight
+                #print type, cell.value, guess
+                if guess is None:
+                    if strict:
+                        for key in guesses[i].keys():
+                            if isinstance(key, type):
+                                guesses[i][key] = None
+                else:
+                    if guesses[i][guess] is None:
+                        continue
+                    weight = type.strict_guessing_weight if strict else type.guessing_weight
+                    guesses[i][guess] += weight
     _columns = []
     for i, types in guesses.items():
         _columns.append(max(types.items(), key=lambda (t, n): n)[0])

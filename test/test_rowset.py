@@ -3,6 +3,8 @@ import unittest
 import decimal
 from datetime import datetime
 from pprint import pprint
+import StringIO
+
 
 def horror_fobj(name):
     fn = os.path.join(os.path.dirname(__file__), '..', 'horror', name)
@@ -70,7 +72,6 @@ class RowSetTestCase(unittest.TestCase):
         row_set.register_processor(headers_processor(headers))
         row_set.register_processor(offset_processor(offset + 1))
         data = list(row_set)
-        print data[9]
         assert 'Chirurgie' in data[9][0].value, \
             data[9][0].value
 
@@ -83,20 +84,41 @@ class RowSetTestCase(unittest.TestCase):
         assert 'Chirurgie' in data[12][0].value, \
             data[12][0].value
 
+    def test_type_guess(self):
+        csv_file = StringIO.StringIO('''
+            1,   2012/2/12, 2
+            2,   2012/2/12, 1.1
+            foo, bar,       1
+            4.3, ,          42
+             ,   2012/2/12, 21''')
+        rows = CSVTableSet(csv_file).tables[0]
+        guessed_types = type_guess(rows)
+        assert guessed_types == [DecimalType(), DateType('%Y/%m/%d'), DecimalType()], guessed_types
+
+    def test_type_guess_strict(self):
+        csv_file = StringIO.StringIO('''
+            1,   2012/2/12, 2,   2
+            2,   2012/2/12, 1.1,
+            foo, bar,       1,   0
+            4,   2012/2/12, 42,  -2''')
+        rows = CSVTableSet(csv_file).tables[0]
+        guessed_types = type_guess(rows, strict=True)
+        assert guessed_types == [StringType(), StringType(), DecimalType(), IntegerType()], guessed_types
+
     def test_read_type_guess_simple(self):
         fh = horror_fobj('simple.csv')
         table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
         types = type_guess(row_set.sample)
-        expected_types = [DateType("%Y-%m-%d"),DecimalType(),StringType()]
-        assert types==expected_types, types
+        expected_types = [DateType("%Y-%m-%d"), DecimalType(), StringType()]
+        assert types == expected_types, types
 
         row_set.register_processor(types_processor(types))
         data = list(row_set)
         header_types = map(lambda c: c.type, data[0])
-        assert header_types==[StringType()]*3, header_types
+        assert header_types == [StringType()] * 3, header_types
         row_types = map(lambda c: c.type, data[2])
-        assert expected_types==row_types, row_types
+        assert expected_types == row_types, row_types
 
     def test_read_type_know_simple(self):
         fh = horror_fobj('simple.xls')
