@@ -40,7 +40,8 @@ setup(
     zip_safe=False,
     install_requires=[
         'xlrd>=0.7.1',
-        'openpyxl==1.5.7'
+        'openpyxl==1.5.7',
+        'chardet==2.1.1',
     ],
     tests_require=[],
     entry_points=\

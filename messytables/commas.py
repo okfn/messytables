@@ -2,6 +2,7 @@ from ilines import ilines
 from itertools import chain
 import csv
 import codecs
+import chardet
 
 from messytables.core import RowSet, TableSet, Cell
 
@@ -35,10 +36,15 @@ class CSVTableSet(TableSet):
     """ A CSV table set. Since CSV is always just a single table,
     this is just a pass-through for the row set. """
 
-    def __init__(self, fileobj, delimiter=None, name=None):
+    def __init__(self, fileobj, delimiter=None, name=None, encoding=None):
         self.fileobj = fileobj
         self.name = name or 'table'
         self.delimiter = delimiter or ','
+        if not encoding:
+            buf = fileobj.read(100)
+            results = chardet.detect(buf)
+            self.encoding = results['encoding']
+            fileobj.seek(0)
 
     @classmethod
     def from_fileobj(cls, fileobj, delimiter=',', name=None):
@@ -47,7 +53,9 @@ class CSVTableSet(TableSet):
     @property
     def tables(self):
         """ Return the actual CSV table. """
-        return [CSVRowSet(self.name, self.fileobj, self.delimiter)]
+        return [CSVRowSet(self.name, self.fileobj,
+                          delimiter=self.delimiter,
+                          encoding=self.encoding)]
 
 
 class CSVRowSet(RowSet):

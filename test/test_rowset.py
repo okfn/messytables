@@ -128,5 +128,13 @@ class RowSetTestCase(unittest.TestCase):
         types = [c.type for c in row]
         assert types == [DateType(None), IntegerType(), StringType()], types
 
+    def test_read_encoded_csv(self):
+        fh = horror_fobj('utf-16le_encoded.csv')
+        table_set = CSVTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        assert 328 == len(list(row_set)), len(list(row_set))
+        row = list(row_set.sample)[0]
+        assert row[1].value == 'Organisation_name', row[1].value
+
 if __name__ == '__main__':
     unittest.main()
