@@ -118,8 +118,10 @@ def type_guess(rows, types=TYPES, strict=False):
     conversions of each column to each type, weights them by a
     fixed type priority and select the most probable type for
     each column based on that figure. It returns a list of
-    ``CellType``. Strict means that a type will not be guessed
-    if parsing fails once. Empty cells are ignored. """
+    ``CellType``. Empty cells are ignored.
+
+    Strict means that a type will not be guessed
+    if parsing fails for a single cell in the column."""
     guesses = defaultdict(lambda: defaultdict(int))
     for row in rows:
         for i, cell in enumerate(row):
