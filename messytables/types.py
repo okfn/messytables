@@ -129,7 +129,6 @@ def type_guess(rows, types=TYPES, strict=False):
                 if not cell.value:
                     continue
                 guess = type.test(cell.value)
-                #print type, cell.value, guess
                 if guess is None:
                     if strict:
                         for key in guesses[i].keys():
