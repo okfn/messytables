@@ -152,5 +152,11 @@ class RowSetTestCase(unittest.TestCase):
         row = list(row_set.sample)[0]
         assert row[1].value == 'Organisation_name', row[1].value
 
+    def test_long_csv(self):
+        fh = horror_fobj('long.csv')
+        table_set = CSVTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        assert 4000 == len(list(row_set)), len(list(row_set))
+
 if __name__ == '__main__':
     unittest.main()
