@@ -1,5 +1,6 @@
 import decimal
 from datetime import datetime
+import dateutil.parser as parser
 from collections import defaultdict
 from itertools import izip_longest
 #from pprint import pprint
@@ -109,6 +110,16 @@ class DateType(CellType):
 
     def __hash__(self):
         return hash(self.__class__) + hash(self.format)
+
+
+class DateUtilType(CellType):
+    """ The date util type uses the dateutil library to
+    parse the dates."""
+    guessing_weight = 5
+
+    def cast(self, value):
+        return parser.parse(value)
+
 
 TYPES = [StringType, IntegerType, FloatType, DecimalType, DateType]
 
