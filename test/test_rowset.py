@@ -25,7 +25,22 @@ class RowSetTestCase(unittest.TestCase):
 
         for row in list(row_set):
             assert 3 == len(row), row
-            assert row[0].type==StringType()
+            assert row[0].type == StringType()
+
+    def test_read_complex_csv(self):
+        fh = horror_fobj('complex.csv')
+        table_set = CSVTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        assert 4 == len(list(row_set))
+        row = list(row_set.sample)[0]
+        assert row[0].value == 'date'
+        assert row[1].value == 'another date'
+        assert row[2].value == 'temperature'
+        assert row[3].value == 'place'
+
+        for row in list(row_set):
+            assert 4 == len(row), row
+            assert row[0].type == StringType()
 
     def test_read_simple_tsv(self):
         fh = horror_fobj('example.tsv')
@@ -86,24 +101,25 @@ class RowSetTestCase(unittest.TestCase):
 
     def test_type_guess(self):
         csv_file = StringIO.StringIO('''
-            1,   2012/2/12, 2
-            2.4, 2012/2/12, 1.1
-            foo, bar,       1
-            4.3, ,          42
-             ,   2012/2/12, 21''')
+            1,   2012/2/12, 2,   02 October 2011
+            2.4, 2012/2/12, 1.1, 1 May 2011
+            foo, bar,       1,
+            4.3, ,          42,  24 October 2012
+             ,   2012/2/12, 21,  24 December 2013''')
         rows = CSVTableSet(csv_file).tables[0]
         guessed_types = type_guess(rows)
-        assert guessed_types == [DecimalType(), DateType('%Y/%m/%d'), IntegerType()], guessed_types
+
+        assert guessed_types == [DecimalType(), DateType('%Y/%m/%d'), IntegerType(), DateType('%d %B %Y')], guessed_types
 
     def test_type_guess_strict(self):
         csv_file = StringIO.StringIO('''
-            1,   2012/2/12, 2,   2
-            2,   2012/2/12, 1.1,
-            foo, bar,       1,   0
-            4,   2012/2/12, 42,  -2''')
+            1,   2012/2/12, 2,   2, 02 October 2011
+            2,   2012/2/12, 1.1,  , 1 May 2011
+            foo, bar,       1,   0,
+            4,   2012/2/12, 42,  -2, 24 October 2012''')
         rows = CSVTableSet(csv_file).tables[0]
         guessed_types = type_guess(rows, strict=True)
-        assert guessed_types == [StringType(), StringType(), DecimalType(), IntegerType()], guessed_types
+        assert guessed_types == [StringType(), StringType(), DecimalType(), IntegerType(), DateType('%d %B %Y')], guessed_types
 
     def test_read_type_guess_simple(self):
         fh = horror_fobj('simple.csv')

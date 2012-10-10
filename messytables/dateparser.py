@@ -1,13 +1,24 @@
 
+
 def create_date_formats(day_first=True):
     """generate combinations of time and date formats with different delimeters"""
 
     if day_first:
-        date_formats = "dd/mm/yyyy yyyy/mm/dd".split()
-        python_date_formats = "%d/%m/%Y %Y/%m/%d".split()
+        date_formats = ['dd/mm/yyyy', 'yyyy/mm/dd']
+        python_date_formats = ['%d/%m/%Y', '%Y/%m/%d']
     else:
-        date_formats = "mm/dd/yyyy yyyy/mm/dd".split()
-        python_date_formats = "%m/%d/%Y %Y/%m/%d".split()
+        date_formats = ['mm/dd/yyyy', 'yyyy/mm/dd']
+        python_date_formats = ['%m/%d/%Y', '%Y/%m/%d']
+
+    date_formats += [
+        # Things with words in
+        'dd/bb/yyyy', 'bb/yy', 'bb/yyyy', 'dd/bbb/yyyy'
+    ]
+    python_date_formats += [
+        # Things with words in
+        '%d/%b/%Y', '%b/%y', '%b/%Y', '%d/%B/%Y'
+        ]
+
     both_date_formats = zip(date_formats, python_date_formats)
 
     #time_formats = "hh:mmz hh:mm:ssz hh:mmtzd hh:mm:sstzd".split()
@@ -16,7 +27,7 @@ def create_date_formats(day_first=True):
     both_time_fromats = zip(time_formats, python_time_formats)
 
     #date_seperators = ["-","."," ","","/","\\"]
-    date_seperators = ["-",".","/"]
+    date_seperators = ["-", ".", "/", " "]
 
     all_date_formats = []
 
@@ -46,4 +57,3 @@ def create_date_formats(day_first=True):
     return all_formats.values()
 
 DATE_FORMATS = create_date_formats()
-
