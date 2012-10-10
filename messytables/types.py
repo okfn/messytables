@@ -110,6 +110,7 @@ class DateType(CellType):
     def __hash__(self):
         return hash(self.__class__) + hash(self.format)
 
+
 TYPES = [StringType, IntegerType, FloatType, DecimalType, DateType]
 
 
