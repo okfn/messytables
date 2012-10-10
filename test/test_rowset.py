@@ -156,8 +156,8 @@ class RowSetTestCase(unittest.TestCase):
         fh = horror_fobj('long.csv')
         table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
-        length = len(list(row_set))
-        assert 4000 == length, length
+        data = list(row_set)
+        assert 4000 == len(data), len(data)
 
 if __name__ == '__main__':
     unittest.main()
