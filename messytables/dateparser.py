@@ -13,7 +13,7 @@ def create_date_formats(day_first=True):
     date_formats += [
         # Things with words in
         'dd/bb/yyyy', 'bbb/yyyy', 'dd/bbb/yyyy'
-    ]
+        ]
     python_date_formats += [
         # Things with words in
         '%d/%b/%Y', '%B/%Y', '%d/%B/%Y'
@@ -22,8 +22,8 @@ def create_date_formats(day_first=True):
     both_date_formats = zip(date_formats, python_date_formats)
 
     #time_formats = "hh:mmz hh:mm:ssz hh:mmtzd hh:mm:sstzd".split()
-    time_formats = "hh:mm:ssz hh:mm:sstzd".split()
-    python_time_formats = "%H:%M%Z %H:%M:%S%Z %H:%M%z %H:%M:%S%z".split()
+    time_formats = "hh:mm:ssz hh:mm:ss hh:mm:sstzd".split()
+    python_time_formats = "%H:%M%Z %H:%M:%S %H:%M:%S%Z %H:%M%z %H:%M:%S%z".split()
     both_time_fromats = zip(time_formats, python_time_formats)
 
     #date_seperators = ["-","."," ","","/","\\"]
