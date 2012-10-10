@@ -2,9 +2,12 @@ import decimal
 from datetime import datetime
 from collections import defaultdict
 from itertools import izip_longest
+import locale
 #from pprint import pprint
 
 from messytables.dateparser import DATE_FORMATS
+
+locale.setlocale(locale.LC_ALL, '')
 
 
 class CellType(object):
@@ -56,7 +59,10 @@ class IntegerType(CellType):
     guessing_weight = 4
 
     def cast(self, value):
-        return int(value)
+        try:
+            return int(value)
+        except:
+            return locale.atoi(value)
 
 
 class FloatType(CellType):
@@ -64,7 +70,7 @@ class FloatType(CellType):
     guessing_weight = 1
 
     def cast(self, value):
-        return float(value)
+        return locale.atof(value)
 
 
 class DecimalType(CellType):

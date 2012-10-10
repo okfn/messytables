@@ -103,7 +103,7 @@ class RowSetTestCase(unittest.TestCase):
         csv_file = StringIO.StringIO('''
             1,   2012/2/12, 2,   02 October 2011
             2.4, 2012/2/12, 1.1, 1 May 2011
-            foo, bar,       1,
+            foo, bar,       1000,
             4.3, ,          42,  24 October 2012
              ,   2012/2/12, 21,  24 December 2013''')
         rows = CSVTableSet(csv_file).tables[0]
@@ -115,7 +115,7 @@ class RowSetTestCase(unittest.TestCase):
         csv_file = StringIO.StringIO('''
             1,   2012/2/12, 2,   2, 02 October 2011
             2,   2012/2/12, 1.1,  , 1 May 2011
-            foo, bar,       1,   0,
+            foo, bar,       "1500",   0,
             4,   2012/2/12, 42,  -2, 24 October 2012''')
         rows = CSVTableSet(csv_file).tables[0]
         guessed_types = type_guess(rows, strict=True)
