@@ -79,11 +79,6 @@ class CSVRowSet(RowSet):
         super(CSVRowSet, self).__init__()
 
     @property
-    def _sample_lines(self):
-        for line in self._sample:
-            yield line
-
-    @property
     def _dialect(self):
         delim = '\n'
         sample = delim.join(self._sample)
@@ -97,28 +92,16 @@ class CSVRowSet(RowSet):
 
     @property
     def sample(self):
-        def rows():
-            for line in self._sample_lines:
-                yield line
-        try:
-            for row in csv.reader(rows(), delimiter=self.delimiter, dialect=self._dialect):
-                yield [Cell(to_unicode_or_bust(c)) for c in row]
-        except csv.Error, err:
-            if 'newline inside string' in unicode(err):
-                pass
-            elif 'line contains NULL byte' in unicode(err):
-                pass
-            else:
-                raise
+        for row in self.raw(sample=True):
+            yield row
 
     def raw(self, sample=False):
         def rows():
-            if sample:
-                generator = self._sample_lines
-            else:
-                generator = chain(self._sample_lines, self.lines)
-            for line in generator:
+            for line in self._sample:
                 yield line
+            if not sample:
+                for line in self.lines:
+                    yield line
         try:
             for row in csv.reader(rows(), delimiter=self.delimiter, dialect=self._dialect):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
