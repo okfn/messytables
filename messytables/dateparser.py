@@ -4,11 +4,11 @@ def create_date_formats(day_first=True):
     """generate combinations of time and date formats with different delimeters"""
 
     if day_first:
-        date_formats = ['dd/mm/yyyy', 'yyyy/mm/dd']
-        python_date_formats = ['%d/%m/%Y', '%Y/%m/%d']
+        date_formats = ['dd/mm/yyyy', 'dd/mm/yy', 'yyyy/mm/dd']
+        python_date_formats = ['%d/%m/%Y', '%d/%m/%y', '%Y/%m/%d']
     else:
-        date_formats = ['mm/dd/yyyy', 'yyyy/mm/dd']
-        python_date_formats = ['%m/%d/%Y', '%Y/%m/%d']
+        date_formats = ['mm/dd/yyyy', 'mm/dd/yy', 'yyyy/mm/dd']
+        python_date_formats = ['%m/%d/%Y', '%m/%d/%y', '%Y/%m/%d']
 
     date_formats += [
         # Things with words in
