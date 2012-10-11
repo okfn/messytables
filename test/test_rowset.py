@@ -52,17 +52,17 @@ class RowSetTestCase(unittest.TestCase):
         assert row[1].value == 'expr1_0_imp', row[1].value
         for row in list(row_set):
             assert 17 == len(row), len(row)
-            assert row[0].type==StringType()
-
+            assert row[0].type == StringType()
 
     def test_read_simple_xls(self):
         fh = horror_fobj('simple.xls')
         table_set = XLSTableSet.from_fileobj(fh)
-        assert 1==len(table_set.tables)
+        assert 1 == len(table_set.tables)
         row_set = table_set.tables[0]
         row = list(row_set.sample)[0]
         assert row[0].value == 'date'
         assert row[1].value == 'temperature'
+        assert row[2].value == 'place'
 
         for row in list(row_set):
             assert 3 == len(row), row
@@ -72,12 +72,32 @@ class RowSetTestCase(unittest.TestCase):
         table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
         offset, headers = headers_guess(row_set.sample)
-        assert 5==len(headers), headers
-        assert u'Region'==headers[1].strip(), headers[1]
+        assert 5 == len(headers), headers
+        assert u'Region' == headers[1].strip(), headers[1]
         row_set.register_processor(headers_processor(headers))
         row_set.register_processor(offset_processor(offset + 1))
         for row in row_set:
-            assert 5==len(row), row
+            assert 5 == len(row), row
+
+    def test_read_head_offset_csv(self):
+        fh = horror_fobj('simple.csv')
+        table_set = CSVTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        offset, headers = headers_guess(row_set.sample)
+        assert offset == 0, offset
+        row_set.register_processor(offset_processor(offset + 1))
+        data = list(row_set)
+        assert data[0][1].value == '1', data[0][1].value
+
+    def test_read_head_offset_excel(self):
+        fh = horror_fobj('simple.xls')
+        table_set = CSVTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        offset, headers = headers_guess(row_set.sample)
+        assert offset == 0, offset
+        row_set.register_processor(offset_processor(offset + 1))
+        data = list(row_set)
+        assert data[0][1].value == '1', data[0][1].value
 
     def test_guess_headers(self):
         fh = horror_fobj('weird_head_padding.csv')
