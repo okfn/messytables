@@ -86,6 +86,8 @@ class RowSetTestCase(unittest.TestCase):
         offset, headers = headers_guess(row_set.sample)
         assert offset == 0, offset
         row_set.register_processor(offset_processor(offset + 1))
+        data = list(row_set.sample)
+        assert data[0][1].value == 'temperature', data[0][1].value
         data = list(row_set)
         assert int(data[0][1].value) == 1, data[0][1].value
 
@@ -96,6 +98,8 @@ class RowSetTestCase(unittest.TestCase):
         offset, headers = headers_guess(row_set.sample)
         assert offset == 0, offset
         row_set.register_processor(offset_processor(offset + 1))
+        data = list(row_set.sample)
+        assert data[0][1].value == 'temperature', data[0][1].value
         data = list(row_set)
         assert int(data[0][1].value) == 1, data[0][1].value
 
