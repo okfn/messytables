@@ -87,17 +87,17 @@ class RowSetTestCase(unittest.TestCase):
         assert offset == 0, offset
         row_set.register_processor(offset_processor(offset + 1))
         data = list(row_set)
-        assert data[0][1].value == '1', data[0][1].value
+        assert int(data[0][1].value) == 1, data[0][1].value
 
     def test_read_head_offset_excel(self):
         fh = horror_fobj('simple.xls')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = XLSTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
         offset, headers = headers_guess(row_set.sample)
         assert offset == 0, offset
         row_set.register_processor(offset_processor(offset + 1))
         data = list(row_set)
-        assert data[0][1].value == '1', data[0][1].value
+        assert int(data[0][1].value) == 1, data[0][1].value
 
     def test_guess_headers(self):
         fh = horror_fobj('weird_head_padding.csv')
