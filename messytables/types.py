@@ -7,8 +7,6 @@ import locale
 
 from messytables.dateparser import DATE_FORMATS
 
-locale.setlocale(locale.LC_ALL, '')
-
 
 class CellType(object):
     """ A cell type maintains information about the format
@@ -17,6 +15,10 @@ class CellType(object):
     type. """
 
     guessing_weight = 1
+
+    def __init__(self):
+        if self.locale.getlocale() == (None, None):
+            locale.setlocale(locale.LC_ALL, '')
 
     @classmethod
     def test(cls, value):
