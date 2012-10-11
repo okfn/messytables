@@ -17,7 +17,7 @@ class CellType(object):
     guessing_weight = 1
 
     def __init__(self):
-        if self.locale.getlocale() == (None, None):
+        if locale.getlocale() == (None, None):
             locale.setlocale(locale.LC_ALL, '')
 
     @classmethod
