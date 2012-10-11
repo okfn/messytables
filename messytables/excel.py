@@ -10,7 +10,7 @@ from messytables.types import StringType, IntegerType, \
 
 XLS_TYPES = {
     # TODO: extend with float etc.
-    1: StringType(), 
+    1: StringType(),
     2: IntegerType(),
     3: DateType(None)
     }
@@ -18,8 +18,8 @@ XLS_TYPES = {
 class XLSTableSet(TableSet):
     """ An excel workbook wrapper object. As the underlying
     library is based on reading from a file name (as opposed to
-    a file object), a local, temporary copy is created and 
-    passed into the library. This has significant performance 
+    a file object), a local, temporary copy is created and
+    passed into the library. This has significant performance
     implication for large excel sheets. """
 
     def __init__(self, filename):
@@ -27,7 +27,7 @@ class XLSTableSet(TableSet):
 
     @classmethod
     def from_fileobj(cls, fileobj):
-        """ Create a local copy of the object and attempt 
+        """ Create a local copy of the object and attempt
         to open it with xlrd. """
         fd, name = mkstemp(suffix='xls')
         copyfileobj(fileobj, open(name, 'wb'))
@@ -56,7 +56,7 @@ class XLSRowSet(RowSet):
 
     def raw(self, sample=False):
         """ Iterate over all rows in this sheet. Types are automatically
-        converted according to the excel data types specified, including 
+        converted according to the excel data types specified, including
         conversion of excel dates, which are notoriously buggy. """
         num_rows = self.sheet.nrows
         for i in xrange(min(self.window, num_rows) if sample else num_rows):
@@ -69,7 +69,7 @@ class XLSRowSet(RowSet):
                         raise ValueError('Invalid date at "%s":%d,%d' % (self.sheet.name, j+1, i+1))
                     year, month, day, hour, minute, second = \
                             xlrd.xldate_as_tuple(value, self.sheet.book.datemode)
-                    value = datetime(year, month, day, hour, 
+                    value = datetime(year, month, day, hour,
                             minute, second)
                 row.append(Cell(value, type=type))
             yield row
