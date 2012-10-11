@@ -84,7 +84,7 @@ class CSVRowSet(RowSet):
         sample = delim.join(self._sample)
         try:
             dialect = csv.Sniffer().sniff(sample,
-                delimiters=['\t',',',';'])
+                delimiters=['\t', ',', ';'])
             dialect.lineterminator = delim
             return dialect
         except csv.Error:
