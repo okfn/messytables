@@ -9,4 +9,6 @@ from messytables.core import Cell, TableSet, RowSet
 from messytables.commas import CSVTableSet, CSVRowSet
 from messytables.excel import XLSTableSet, XLSRowSet
 from messytables.excelx import XLSXTableSet, XLSXRowSet
+from messytables.zip import ZIPTableSet
+from messytables.any import AnyTableSet
 
