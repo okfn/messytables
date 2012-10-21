@@ -13,6 +13,24 @@ class UTF8Recoder:
     """
     def __init__(self, f, encoding):
         self.reader = codecs.getreader(encoding)(f, 'ignore')
+        
+        # The reader only skips a BOM if the encoding isn't explicit about its
+        # endianness (i.e. if encoding is UTF-16 a BOM is handled properly
+        # and taken out, but if encoding is UTF-16LE a BOM is ignored).
+        # However, if chardet sees a BOM it returns an encoding with the
+        # endianness explicit, which results in the codecs stream leaving the
+        # BOM in the stream. This is ridiculously dumb. For UTF-{16,32}{LE,BE}
+        # encodings, check for a BOM and remove it if it's there.
+        if encoding in ("UTF-16LE", "UTF-16BE", "UTF-32LE", "UTF-32BE"):
+        	bom = getattr(codecs, "BOM_UTF" + encoding[4:6] + "_" + encoding[-2:], None)
+        	if bom:
+        		# Try to read the BOM, which is a byte sequence, from the underlying
+        		# stream. If all characters match, then go on. Otherwise when a character
+        		# doesn't match, seek the stream back to the beginning and go on.
+        		for c in bom:
+        			if f.read(1) != c:
+        				f.seek(0)
+        				break
 
     def __iter__(self):
         return self
