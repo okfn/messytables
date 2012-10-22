@@ -112,13 +112,20 @@ quoting mechanism used in the input file.
 Excel support
 -------------
 
-The library supports workbooks in the Microsoft Excel 2003 format. The 
-newer, XML-based Excel format is also supported.
+The library supports workbooks in the Microsoft Excel 2003 format.
 
 .. autoclass:: messytables.excel.XLSTableSet
   :members: from_fileobj, tables
 
 .. autoclass:: messytables.excel.XLSRowSet
+  :members: raw
+
+The newer, XML-based Excel format is also supported but uses a different class.
+
+.. autoclass:: messytables.excelx.XLSXTableSet
+  :members: from_fileobj, tables
+
+.. autoclass:: messytables.excelx.XLSXRowSet
   :members: raw
 
 ZIP file support
