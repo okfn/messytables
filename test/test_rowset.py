@@ -1,8 +1,5 @@
 import os
 import unittest
-import decimal
-from datetime import datetime
-from pprint import pprint
 import StringIO
 
 
@@ -11,6 +8,7 @@ def horror_fobj(name):
     return open(fn, 'rb')
 
 from messytables import *
+
 
 class RowSetTestCase(unittest.TestCase):
 
