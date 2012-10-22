@@ -43,6 +43,7 @@ setup(
         'python-magic==0.4.3',
         'openpyxl==1.5.7',
         'chardet==2.1.1',
+        'python-dateutil>=1.5.0,<2.0.0',
     ],
     tests_require=[],
     entry_points=\
