@@ -113,7 +113,7 @@ Excel support
 -------------
 
 The library supports workbooks in the Microsoft Excel 2003 format. The 
-newer, XML-based Excel format is not yet supported.
+newer, XML-based Excel format is also supported.
 
 .. autoclass:: messytables.excel.XLSTableSet
   :members: from_fileobj, tables
