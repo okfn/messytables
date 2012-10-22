@@ -19,7 +19,7 @@ See the full documentation at: http://messytables.readthedocs.org
 
 setup(
     name='messytables',
-    version='0.2.1',
+    version='0.3.0',
     description="Parse messy tabular data in various formats",
     long_description=long_desc,
     classifiers=[
@@ -39,8 +39,9 @@ setup(
     include_package_data=False,
     zip_safe=False,
     install_requires=[
-        'xlrd==0.7.1',
-        'openpyxl==1.5.7'
+        'xlrd>=0.7.1',
+        'openpyxl==1.5.7',
+        'chardet==2.1.1',
     ],
     tests_require=[],
     entry_points=\

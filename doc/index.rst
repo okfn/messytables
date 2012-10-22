@@ -11,6 +11,7 @@ data. Typical examples include:
 * Finding the header of a table when there are explanations and 
   text fragments in the first few rows of the table.
 * Guessing the type of columns in CSV data.
+* Guessing the format of a byte stream.
 
 This library provides data structures and some heuristics to 
 fix these problems and read a wide number of different tabular 
@@ -30,6 +31,10 @@ evaluate data. A typical use might look like this::
 
   # Load a file object:
   table_set = CSVTableSet.from_fileobj(fh)
+
+  # If you aren't sure what kind of file it is, you can use
+  # AnyTableSet instead.
+  #table_set = AnyTableSet.from_fileobj(fh)
   
   # A table set is a collection of tables:
   row_set = table_set.tables().next()
@@ -116,6 +121,22 @@ newer, XML-based Excel format is not yet supported.
 .. autoclass:: messytables.excel.XLSRowSet
   :members: raw
 
+ZIP file support
+-------------
+
+The library supports loading CSV or Excel files from within ZIP files.
+
+.. autoclass:: messytables.zip.ZIPTableSet
+  :members: from_fileobj, tables
+
+Auto-detecting file format
+-------------
+
+The library supports loading files in a generic way.
+
+.. autoclass:: messytables.any.AnyTableSet
+  :members: from_fileobj
+  
 Type detection
 --------------
 
