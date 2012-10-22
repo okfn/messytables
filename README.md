@@ -1,9 +1,6 @@
-Parsing for messy tables
-========================
+#Parsing for messy tables
 
-Build status: |Travis|_
-.. |Travis| image:: https://travis-ci.org/okfn/messytables.png 
-.. _Travis: https://travis-ci.org/okfn/messytables
+[![Build Status](https://travis-ci.org/okfn/messytables.png)](https://travis-ci.org/okfn/messytables)
 
 A library for dealing with messy tabular data in several formats, guessing 
 types and detecting headers.
