@@ -123,7 +123,11 @@ class DateType(CellType):
 
 class DateUtilType(CellType):
     """ The date util type uses the dateutil library to
-    parse the dates. Do not use this together with the DateType"""
+    parse the dates. The advantage of this type over
+    DateType is the speed and better date detection. However,
+    it does not offer format detection.
+
+    Do not use this together with the DateType"""
     guessing_weight = 3
 
     def cast(self, value):
