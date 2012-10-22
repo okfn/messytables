@@ -87,7 +87,7 @@ class RowSetTestCase(unittest.TestCase):
         assert offset == 0, offset
         row_set.register_processor(offset_processor(offset + 1))
         data = list(row_set.sample)
-        assert data[0][1].value == 1, data[0][1].value
+        assert int(data[0][1].value) == 1, data[0][1].value
         data = list(row_set)
         assert int(data[0][1].value) == 1, data[0][1].value
 
@@ -99,7 +99,7 @@ class RowSetTestCase(unittest.TestCase):
         assert offset == 0, offset
         row_set.register_processor(offset_processor(offset + 1))
         data = list(row_set.sample)
-        assert data[0][1].value == 1, data[0][1].value
+        assert int(data[0][1].value) == 1, data[0][1].value
         data = list(row_set)
         assert int(data[0][1].value) == 1, data[0][1].value
 
@@ -126,7 +126,8 @@ class RowSetTestCase(unittest.TestCase):
     def test_type_guess(self):
         csv_file = StringIO.StringIO('''
             1,   2012/2/12, 2,   02 October 2011
-            2.4, 2012/2/12, 1.1, 1 May 2011
+            2,   2012/2/12, 2,   02 October 2011
+            2.4, 2012/2/12, 1, 1 May 2011
             foo, bar,       1000,
             4.3, ,          42,  24 October 2012
              ,   2012/2/12, 21,  24 December 2013''')

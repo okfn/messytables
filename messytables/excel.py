@@ -50,10 +50,6 @@ class XLSRowSet(RowSet):
         self.window = window
         super(XLSRowSet, self).__init__(typed=True)
 
-    @property
-    def sample(self):
-        return islice(self, self.window)
-
     def raw(self, sample=False):
         """ Iterate over all rows in this sheet. Types are automatically
         converted according to the excel data types specified, including
