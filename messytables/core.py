@@ -80,9 +80,9 @@ class RowSet(object):
         argument. """
         self._processors.append(processor)
 
-    def __iter__(self):
+    def __iter__(self, sample=False):
         """ Apply processors to the row data. """
-        for row in self.raw():
+        for row in self.raw(sample=sample):
             for processor in self._processors:
                 row = processor(self, row)
                 if row is None:
@@ -90,24 +90,19 @@ class RowSet(object):
             if row is not None:
                 yield row
 
-    def sample_iter(self):
-        for row in self.raw(sample=True):
-            for processor in self._processors:
-                row = processor(self, row)
-                if row is None:
-                    break
-            if row is not None:
-                yield row
+        # this is a bit dirty but required for the offset processor:
+        self._offset = 0
+
+    @property
+    def sample(self):
+        return self.__iter__(sample=True)
 
     def dicts(self, sample=False):
         """ Return a representation of the data as an iterator of
         ordered dictionaries. This is less specific than the cell
         format returned by the generic iterator but only gives a 
         subset of the information. """
-        if sample:
-            generator = self.sample_iter()
-        else:
-            generator = self
+        generator = self.sample if sample else self
         for row in generator:
             yield OrderedDict([(c.column, c.value) for c in row])
 

@@ -60,7 +60,7 @@ class StringType(CellType):
 
 class IntegerType(CellType):
     """ An integer field. """
-    guessing_weight = 5
+    guessing_weight = 6
 
     def cast(self, value):
         try:
@@ -71,7 +71,7 @@ class IntegerType(CellType):
 
 class FloatType(CellType):
     """ Floating point number. """
-    guessing_weight = 3
+    guessing_weight = 4
 
     def cast(self, value):
         return locale.atof(value)
@@ -79,7 +79,7 @@ class FloatType(CellType):
 
 class DecimalType(CellType):
     """ Decimal number, ``decimal.Decimal``. """
-    guessing_weight = 4
+    guessing_weight = 5
 
     def cast(self, value):
         return decimal.Decimal(value)
@@ -89,7 +89,7 @@ class DateType(CellType):
     """ The date type is special in that it also includes a specific
     date format that is used to parse the date, additionally to the
     basic type information. """
-    guessing_weight = 2
+    guessing_weight = 3
     formats = DATE_FORMATS
 
     def __init__(self, format):

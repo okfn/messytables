@@ -109,11 +109,6 @@ class CSVRowSet(RowSet):
         except csv.Error:
             return csv.excel
 
-    @property
-    def sample(self):
-        for row in self.raw(sample=True):
-            yield row
-
     def raw(self, sample=False):
         def rows():
             for line in self._sample:
