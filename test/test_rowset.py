@@ -67,6 +67,19 @@ class RowSetTestCase(unittest.TestCase):
         for row in list(row_set):
             assert 3 == len(row), row
 
+    def test_read_simple_xlsx(self):
+        fh = horror_fobj('simple.xlsx')
+        table_set = XLSXTableSet.from_fileobj(fh)
+        assert 1 == len(table_set.tables)
+        row_set = table_set.tables[0]
+        row = list(row_set.sample)[0]
+        assert row[0].value == 'date'
+        assert row[1].value == 'temperature'
+        assert row[2].value == 'place'
+
+        for row in list(row_set):
+            assert 3 == len(row), row
+
     def test_read_head_padding_csv(self):
         fh = horror_fobj('weird_head_padding.csv')
         table_set = CSVTableSet.from_fileobj(fh)

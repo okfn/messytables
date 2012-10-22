@@ -7,7 +7,6 @@ types and detecting headers.
 
 See the documentation at: http://messytables.readthedocs.org
 
-* Contact: Friedrich Lindenberg <friedrich.lindenberg@okfn.org>, David Raznick
-  <david.raznick@okfn.org>
-* License: MIT
-
+* **Contact**: Friedrich Lindenberg <friedrich.lindenberg@okfn.org>, David Raznick
+  <david.raznick@okfn.org>, Dominik Moritz <dominik.moritz@okfn.org>
+* **License**: MIT
