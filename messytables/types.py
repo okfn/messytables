@@ -149,6 +149,8 @@ def type_guess(rows, types=TYPES, strict=False):
     guesses = defaultdict(lambda: defaultdict(int))
     for row in rows:
         for i, cell in enumerate(row):
+            # add string guess so that we have at least one guess
+            guesses[i][StringType()] = 0
             for type in types:
                 if not cell.value:
                     continue

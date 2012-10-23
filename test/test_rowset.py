@@ -160,6 +160,17 @@ class RowSetTestCase(unittest.TestCase):
         guessed_types = type_guess(rows.sample, strict=True)
         assert guessed_types == [StringType(), StringType(), DecimalType(), IntegerType(), DateType('%d %B %Y'), FloatType()], guessed_types
 
+    def test_guessing_does_padding(self):
+        csv_file = StringIO.StringIO('''
+            1,   , 2
+            2,   , 1.1
+            foo, , 1500''')
+        rows = CSVTableSet(csv_file).tables[0]
+        guessed_types = type_guess(rows.sample, strict=True)
+        assert len(guessed_types) == 3
+        assert guessed_types == [StringType(), StringType(), DecimalType()], guessed_types
+
+
     def test_read_type_guess_simple(self):
         fh = horror_fobj('simple.csv')
         table_set = CSVTableSet.from_fileobj(fh)
