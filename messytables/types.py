@@ -168,10 +168,12 @@ def type_guess(rows, types=TYPES, strict=False):
     return _columns
 
 
-def types_processor(types):
+def types_processor(types, strict=False):
     """ Apply the column types set on the instance to the
     current row, attempting to cast each cell to the specified
-    type. """
+    type.
+
+    Strict means that casting errors are not ignored"""
     def apply_types(row_set, row):
         if types is None:
             return row
@@ -180,6 +182,7 @@ def types_processor(types):
                 cell.value = type.cast(cell.value)
                 cell.type = type
             except:
-                pass
+                if strict and type and cell.value:
+                    raise
         return row
     return apply_types
