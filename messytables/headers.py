@@ -56,20 +56,38 @@ def headers_processor(headers):
 def headers_make_unique(headers, max_length=None):
     """Make sure the header names are unique. For non-unique
     columns, append 1, 2, 3, ... after the name. If max_length
-    is set, first truncate the headers to that length."""
+    is set, truncate the original string so that the headers are
+    unique up to that length."""
     
     headers = [h.strip() for h in headers]
-    if max_length: headers = [h[0:max_length].strip() for h in headers]
-
-    header_count = { }
-    for h in headers:
-        header_count[h] = header_count.get(h, 0) + 1
-        
-    header_counter = { }
-    for i, h in enumerate(headers):
-        if header_count[h] > 1:
-            header_counter[h] = header_counter.get(h, 0) + 1
-            headers[i] += " %d" % header_counter[h]
-
-    return headers
     
+    new_digits_length = 0
+    while not max_length or new_digits_length <= max_length:
+        # If maxlength is 63 and we expect 1 digit for appending
+        # numerals to make the headers unique, then truncate the
+        # column names to 62 characters.
+        _headers = headers
+        if max_length:
+            _headers = [h[0:max_length-new_digits_length].strip() for h in headers]
+    
+        # For headers that are not unique, add a number to the end.
+        header_counter = { }
+        new_headers = list(_headers) # clone before using
+        for i, h in enumerate(new_headers):
+            if _headers.count(h) > 1:
+                header_counter[h] = header_counter.get(h, 0) + 1
+                new_headers[i] += "_%d" % header_counter[h]
+                
+        # If there is a max_length but adding a counter made a header longer than
+        # max_length, we have to truncate more up front (which may change which
+        # headers are nonunique) and try again.
+        if max_length and (True in [len(h) > max_length for h in new_headers]):
+            # Adding this counter made the new header longer than max_length.
+            # We have to truncate the original headers more.
+            new_digits_length += 1
+            continue
+    
+        # Otherwise, the new headers are unique.
+        return new_headers
+        
+    raise ValueError("max_length is so small that the column names cannot be made unique.")
