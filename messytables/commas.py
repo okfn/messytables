@@ -58,7 +58,9 @@ class CSVTableSet(TableSet):
         self.fileobj = fileobj
         self.name = name or 'table'
         self.delimiter = delimiter or ','
-        if not encoding:
+        if encoding:
+            self.encoding = encoding
+        else:
             buf = fileobj.read(100)
             results = chardet.detect(buf)
             self.encoding = results['encoding']
