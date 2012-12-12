@@ -10,7 +10,7 @@ def horror_fobj(name):
 from messytables import *
 
 
-class RowSetTestCase(unittest.TestCase):
+class ReadTest(unittest.TestCase):
 
     def test_read_simple_csv(self):
         fh = horror_fobj('simple.csv')
@@ -135,41 +135,6 @@ class RowSetTestCase(unittest.TestCase):
         assert 'Chirurgie' in data[12][0].value, \
             data[12][0].value
 
-    def test_type_guess(self):
-        csv_file = StringIO.StringIO('''
-            1,   2012/2/12, 2,   02 October 2011
-            2,   2012/2/12, 2,   02 October 2011
-            2.4, 2012/2/12, 1,   1 May 2011
-            foo, bar,       1000,
-            4.3, ,          42,  24 October 2012
-             ,   2012/2/12, 21,  24 December 2013''')
-        rows = CSVTableSet(csv_file).tables[0]
-        guessed_types = type_guess(rows.sample)
-
-        assert guessed_types == [DecimalType(), DateType('%Y/%m/%d'), IntegerType(), DateType('%d %B %Y')], guessed_types
-
-    def test_type_guess_strict(self):
-        import locale
-        locale.setlocale(locale.LC_ALL, '')
-        csv_file = StringIO.StringIO('''
-            1,   2012/2/12, 2,      2,02 October 2011,"100.234354"
-            2,   2012/2/12, 1.1,    0,1 May 2011,"100,000,000.12"
-            foo, bar,       1500,   0,,"NaN"
-            4,   2012/2/12, 42,"-2,000",24 October 2012,"42"''')
-        rows = CSVTableSet(csv_file).tables[0]
-        guessed_types = type_guess(rows.sample, strict=True)
-        assert guessed_types == [StringType(), StringType(), DecimalType(), IntegerType(), DateType('%d %B %Y'), FloatType()], guessed_types
-
-    def test_guessing_does_padding(self):
-        csv_file = StringIO.StringIO('''
-            1,   , 2
-            2,   , 1.1
-            foo, , 1500''')
-        rows = CSVTableSet(csv_file).tables[0]
-        guessed_types = type_guess(rows.sample, strict=True)
-        assert len(guessed_types) == 3
-        assert guessed_types == [StringType(), StringType(), DecimalType()], guessed_types
-
     def test_read_type_guess_simple(self):
         fh = horror_fobj('simple.csv')
         table_set = CSVTableSet.from_fileobj(fh)
@@ -207,6 +172,44 @@ class RowSetTestCase(unittest.TestCase):
         row_set = table_set.tables[0]
         data = list(row_set)
         assert 4000 == len(data), len(data)
+
+
+class TypeGuessTest(unittest.TestCase):
+    def test_type_guess(self):
+        csv_file = StringIO.StringIO('''
+            1,   2012/2/12, 2,   02 October 2011
+            2,   2012/2/12, 2,   02 October 2011
+            2.4, 2012/2/12, 1,   1 May 2011
+            foo, bar,       1000,
+            4.3, ,          42,  24 October 2012
+             ,   2012/2/12, 21,  24 December 2013''')
+        rows = CSVTableSet(csv_file).tables[0]
+        guessed_types = type_guess(rows.sample)
+
+        assert guessed_types == [DecimalType(), DateType('%Y/%m/%d'), IntegerType(), DateType('%d %B %Y')], guessed_types
+
+    def test_type_guess_strict(self):
+        import locale
+        locale.setlocale(locale.LC_ALL, '')
+        csv_file = StringIO.StringIO('''
+            1,   2012/2/12, 2,      2,02 October 2011,"100.234354"
+            2,   2012/2/12, 1.1,    0,1 May 2011,"100,000,000.12"
+            foo, bar,       1500,   0,,"NaN"
+            4,   2012/2/12, 42,"-2,000",24 October 2012,"42"''')
+        rows = CSVTableSet(csv_file).tables[0]
+        guessed_types = type_guess(rows.sample, strict=True)
+        assert guessed_types == [StringType(), StringType(), DecimalType(), IntegerType(), DateType('%d %B %Y'), FloatType()], guessed_types
+
+    def test_guessing_does_padding(self):
+        csv_file = StringIO.StringIO('''
+            1,   , 2
+            2,   , 1.1
+            foo, , 1500''')
+        rows = CSVTableSet(csv_file).tables[0]
+        guessed_types = type_guess(rows.sample, strict=True)
+        assert len(guessed_types) == 3
+        assert guessed_types == [StringType(), StringType(), DecimalType()], guessed_types
+
 
 if __name__ == '__main__':
     unittest.main()
