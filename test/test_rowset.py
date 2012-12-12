@@ -170,7 +170,6 @@ class RowSetTestCase(unittest.TestCase):
         assert len(guessed_types) == 3
         assert guessed_types == [StringType(), StringType(), DecimalType()], guessed_types
 
-
     def test_read_type_guess_simple(self):
         fh = horror_fobj('simple.csv')
         table_set = CSVTableSet.from_fileobj(fh)
