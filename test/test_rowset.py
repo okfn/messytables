@@ -1,6 +1,10 @@
 import os
 import unittest
 import StringIO
+import urllib2
+
+from httpretty import HTTPretty
+from httpretty import httprettified
 
 
 def horror_fobj(name):
@@ -209,6 +213,20 @@ class TypeGuessTest(unittest.TestCase):
         guessed_types = type_guess(rows.sample, strict=True)
         assert len(guessed_types) == 3
         assert guessed_types == [StringType(), StringType(), DecimalType()], guessed_types
+
+
+class TestStreamInput(unittest.TestCase):
+    @httprettified
+    def test_http_resource(self):
+        url = 'http://www.messytables.org/static/long.csv'
+        HTTPretty.register_uri(HTTPretty.GET, url,
+            body=horror_fobj('long.csv').read(),
+            content_type="application/csv")
+        fh = urllib2.urlopen(url)
+        table_set = CSVTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        data = list(row_set)
+        assert 4000 == len(data), len(data)
 
 
 if __name__ == '__main__':
