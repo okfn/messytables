@@ -41,7 +41,7 @@ evaluate data. A typical use might look like this::
 
   # A row set is an iterator over the table, but it can only 
   # be run once. To peek, a sample is provided:
-  print row_set.sample[0]
+  print row_set.sample.next()
 
   # guess column types:
   types = type_guess(row_set.sample)
