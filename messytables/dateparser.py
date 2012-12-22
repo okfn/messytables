@@ -1,3 +1,10 @@
+import re
+
+date_regex = re.compile(r'''^\d{1,4}[-\/\.\s]\S+[-\/\.\s]\S+''')
+
+
+def is_date(value):
+    return date_regex.match(value)
 
 
 def create_date_formats(day_first=True):
@@ -12,11 +19,11 @@ def create_date_formats(day_first=True):
 
     date_formats += [
         # Things with words in
-        'dd/bb/yyyy', 'bbb/yyyy', 'dd/bbb/yyyy'
+        'dd/bb/yyyy', 'dd/bbb/yyyy'
         ]
     python_date_formats += [
         # Things with words in
-        '%d/%b/%Y', '%B/%Y', '%d/%B/%Y'
+        '%d/%b/%Y', '%d/%B/%Y'
         ]
 
     both_date_formats = zip(date_formats, python_date_formats)

@@ -7,7 +7,7 @@ import locale
 
 import dateutil.parser as parser
 
-from messytables.dateparser import DATE_FORMATS
+from messytables.dateparser import DATE_FORMATS, is_date
 
 
 class CellType(object):
@@ -97,6 +97,8 @@ class DateType(CellType):
 
     @classmethod
     def test(cls, value):
+        if not is_date(value):
+            return
         for v in cls.formats:
             ins = cls(v)
             try:
