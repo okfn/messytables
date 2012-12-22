@@ -41,7 +41,6 @@ class ReadTest(unittest.TestCase):
         assert row[3].value == 'place'
 
         for row in list(row_set):
-            print row
             assert 4 == len(row), row
             assert row[0].type == StringType()
 
