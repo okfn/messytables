@@ -37,7 +37,7 @@ evaluate data. A typical use might look like this::
   #table_set = AnyTableSet.from_fileobj(fh)
   
   # A table set is a collection of tables:
-  row_set = table_set.tables().next()
+  row_set = table_set.tables[0]
 
   # A row set is an iterator over the table, but it can only 
   # be run once. To peek, a sample is provided:
