@@ -1,6 +1,6 @@
 from ilines import ilines
-from itertools import chain
 import csv
+import io
 import codecs
 import chardet
 
@@ -12,6 +12,11 @@ class UTF8Recoder:
     Iterator that reads an encoded stream and reencodes the input to UTF-8
     """
     def __init__(self, f, encoding):
+        sample = f.readline()
+        if not encoding:
+            results = chardet.detect(sample)
+            encoding = results['encoding']
+        f.seek(0)
         self.reader = codecs.getreader(encoding)(f, 'ignore')
 
         # The reader only skips a BOM if the encoding isn't explicit about its
@@ -58,13 +63,7 @@ class CSVTableSet(TableSet):
         self.fileobj = fileobj
         self.name = name or 'table'
         self.delimiter = delimiter or ','
-        if encoding:
-            self.encoding = encoding
-        else:
-            buf = fileobj.read(100)
-            results = chardet.detect(buf)
-            self.encoding = results['encoding']
-            fileobj.seek(0)
+        self.encoding = encoding
 
     @classmethod
     def from_fileobj(cls, fileobj, delimiter=',', name=None):
@@ -87,6 +86,8 @@ class CSVRowSet(RowSet):
     def __init__(self, name, fileobj, delimiter=None,
                  encoding='utf-8', window=1000):
         self.name = name
+        if not hasattr(fileobj, 'seek'):
+            fileobj = io.BytesIO(fileobj.read())
         self.fileobj = UTF8Recoder(fileobj, encoding)
         self.lines = ilines(self.fileobj)
         self._sample = []
