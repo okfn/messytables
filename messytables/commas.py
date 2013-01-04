@@ -1,10 +1,10 @@
 from ilines import ilines
 import csv
-import io
 import codecs
 import chardet
 
 from messytables.core import RowSet, TableSet, Cell
+import messytables
 
 
 class UTF8Recoder:
@@ -60,7 +60,7 @@ class CSVTableSet(TableSet):
     this is just a pass-through for the row set. """
 
     def __init__(self, fileobj, delimiter=None, name=None, encoding=None):
-        self.fileobj = fileobj
+        self.fileobj = messytables.seekable_stream(fileobj)
         self.name = name or 'table'
         self.delimiter = delimiter or ','
         self.encoding = encoding
@@ -86,9 +86,8 @@ class CSVRowSet(RowSet):
     def __init__(self, name, fileobj, delimiter=None,
                  encoding='utf-8', window=1000):
         self.name = name
-        if not hasattr(fileobj, 'seek'):
-            fileobj = io.BytesIO(fileobj.read())
-        self.fileobj = UTF8Recoder(fileobj, encoding)
+        seekable_fileobj = messytables.seekable_stream(fileobj)
+        self.fileobj = UTF8Recoder(seekable_fileobj, encoding)
         self.lines = ilines(self.fileobj)
         self._sample = []
         self.delimiter = delimiter or ','

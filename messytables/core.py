@@ -1,4 +1,17 @@
 from messytables.util import OrderedDict
+import io
+
+
+def seekable_stream(fileobj):
+    try:
+        fileobj.seek(0)
+        # if we got here, the stream is seekable
+    except:
+        # otherwise seek failed, so slurp in stream and wrap
+        # it in a BytesIO
+        fileobj = io.BytesIO(fileobj.read())
+    return fileobj
+
 
 class Cell(object):
     """ A cell is the basic value type. It always has a ``value`` (that
@@ -17,7 +30,7 @@ class Cell(object):
 
     def __repr__(self):
         if self.column is not None:
-            return "<Cell(%s=%s:%s>" % (self.column, 
+            return "<Cell(%s=%s:%s>" % (self.column,
                     self.type, self.value)
         return "<Cell(%r:%s>" % (self.type, self.value)
 
@@ -33,15 +46,16 @@ class Cell(object):
             return False
         return True
 
+
 class TableSet(object):
     """ A table set is used for data formats in which multiple tabular
-    objects are bundeled. This might include relational databases and 
+    objects are bundeled. This might include relational databases and
     workbooks used in spreadsheet software (Excel, LibreOffice). """
 
     @classmethod
     def from_fileobj(cls, fileobj):
-        """ The primary way to instantiate is through a file object 
-        pointer. This means you can stream a table set directly off 
+        """ The primary way to instantiate is through a file object
+        pointer. This means you can stream a table set directly off
         a web site or some similar source. """
         pass
 
@@ -53,12 +67,12 @@ class TableSet(object):
 
 
 class RowSet(object):
-    """ A row set (aka: table) is a simple wrapper for an iterator of 
+    """ A row set (aka: table) is a simple wrapper for an iterator of
     rows (which in turn is a list of ``Cell`` objects). The main table
-    iterable can only be traversed once, so on order to allow analytics 
+    iterable can only be traversed once, so on order to allow analytics
     like type and header guessing on the data, a sample of ``window``
     rows is read, cached, and made available. """
-    
+
     def __init__(self, typed=False):
         self.typed = typed
         self._processors = []
@@ -74,9 +88,9 @@ class RowSet(object):
     types = property(get_types, set_types)
 
     def register_processor(self, processor):
-        """ Register a stream processor to be used on each row. A 
-        processor is a function called with the ``RowSet`` as its 
-        first argument and the row to be processed as the second 
+        """ Register a stream processor to be used on each row. A
+        processor is a function called with the ``RowSet`` as its
+        first argument and the row to be processed as the second
         argument. """
         self._processors.append(processor)
 
@@ -100,7 +114,7 @@ class RowSet(object):
     def dicts(self, sample=False):
         """ Return a representation of the data as an iterator of
         ordered dictionaries. This is less specific than the cell
-        format returned by the generic iterator but only gives a 
+        format returned by the generic iterator but only gives a
         subset of the information. """
         generator = self.sample if sample else self
         for row in generator:

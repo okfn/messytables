@@ -7,6 +7,8 @@ import xlrd
 from messytables.core import RowSet, TableSet, Cell
 from messytables.types import StringType, IntegerType, \
         DateType
+import messytables
+
 
 XLS_TYPES = {
     # TODO: extend with float etc.
@@ -14,6 +16,7 @@ XLS_TYPES = {
     2: IntegerType(),
     3: DateType(None)
     }
+
 
 class XLSTableSet(TableSet):
     """ An excel workbook wrapper object. As the underlying
@@ -30,7 +33,7 @@ class XLSTableSet(TableSet):
         """ Create a local copy of the object and attempt
         to open it with xlrd. """
         fd, name = mkstemp(suffix='xls')
-        copyfileobj(fileobj, open(name, 'wb'))
+        copyfileobj(messytables.seekable_stream(fileobj), open(name, 'wb'))
         return cls(name)
 
     @property
