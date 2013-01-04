@@ -3,6 +3,7 @@ import unittest
 import StringIO
 import urllib2
 
+from nose.tools import assert_equal
 from httpretty import HTTPretty
 from httpretty import httprettified
 
@@ -236,7 +237,43 @@ class TestStreamInput(unittest.TestCase):
         table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
-        assert 4000 == len(data), len(data)
+        assert_equal(4000, len(data))
+
+    @httprettified
+    def test_http_csv_encoding(self):
+        url = 'http://www.messytables.org/static/utf-16le_encoded.csv'
+        HTTPretty.register_uri(HTTPretty.GET, url,
+            body=horror_fobj('utf-16le_encoded.csv').read(),
+            content_type="application/csv")
+        fh = urllib2.urlopen(url)
+        table_set = CSVTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        data = list(row_set)
+        assert_equal(328, len(data))
+
+    @httprettified
+    def test_http_xls(self):
+        url = 'http://www.messytables.org/static/simple.xls'
+        HTTPretty.register_uri(HTTPretty.GET, url,
+            body=horror_fobj('simple.xls').read(),
+            content_type="application/ms-excel")
+        fh = urllib2.urlopen(url)
+        table_set = XLSTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        data = list(row_set)
+        assert_equal(7, len(data))
+
+    @httprettified
+    def test_http_xlsx(self):
+        url = 'http://www.messytables.org/static/simple.xlsx'
+        HTTPretty.register_uri(HTTPretty.GET, url,
+            body=horror_fobj('simple.xlsx').read(),
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        fh = urllib2.urlopen(url)
+        table_set = XLSXTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        data = list(row_set)
+        assert_equal(7, len(data))
 
 
 if __name__ == '__main__':
