@@ -16,6 +16,8 @@ class UTF8Recoder:
         if not encoding:
             results = chardet.detect(sample)
             encoding = results['encoding']
+            if not encoding:
+                raise Exception('Could not determine encoding')
         f.seek(0)
         self.reader = codecs.getreader(encoding)(f, 'ignore')
 
@@ -66,8 +68,8 @@ class CSVTableSet(TableSet):
         self.encoding = encoding
 
     @classmethod
-    def from_fileobj(cls, fileobj, delimiter=',', name=None):
-        return cls(fileobj, delimiter=delimiter, name=name)
+    def from_fileobj(cls, fileobj, delimiter=',', name=None, encoding=None):
+        return cls(fileobj, delimiter=delimiter, name=name, encoding=encoding)
 
     @property
     def tables(self):
