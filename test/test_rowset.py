@@ -2,6 +2,7 @@ import os
 import unittest
 import StringIO
 import urllib2
+import requests
 
 from nose.tools import assert_equal
 from httpretty import HTTPretty
@@ -233,6 +234,20 @@ class TestStreamInput(unittest.TestCase):
             content_type="application/csv")
         fh = urllib2.urlopen(url)
         table_set = CSVTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        data = list(row_set)
+        assert_equal(4000, len(data))
+
+    @httprettified
+    def test_http_csv_requests(self):
+        url = 'http://www.messytables.org/static/long.csv'
+        HTTPretty.register_uri(HTTPretty.GET, url,
+            body=horror_fobj('long.csv').read(),
+            content_type="application/csv")
+        r = requests.get(url, stream=True)
+        # no full support for non blocking version yet, use urllib2
+        fh = StringIO.StringIO(r.raw.read())
+        table_set = CSVTableSet.from_fileobj(fh, encoding='utf-8')
         row_set = table_set.tables[0]
         data = list(row_set)
         assert_equal(4000, len(data))

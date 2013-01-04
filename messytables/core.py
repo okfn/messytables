@@ -1,5 +1,5 @@
 from messytables.util import OrderedDict
-import io
+import cStringIO
 
 
 def seekable_stream(fileobj):
@@ -9,8 +9,77 @@ def seekable_stream(fileobj):
     except:
         # otherwise seek failed, so slurp in stream and wrap
         # it in a BytesIO
-        fileobj = io.BytesIO(fileobj.read())
+        fileobj = BufferedFile(fileobj)
     return fileobj
+
+
+class BufferedFile(object):
+    ''' A buffered file that preserves the beginning of a stream up to buffer_size
+    '''
+    def __init__(self, fp, buffer_size=1024):
+        self.data = cStringIO.StringIO()
+        self.fp = fp
+        self.offset = 0
+        self.len = 0
+        self.fp_offset = 0
+        self.buffer_size = buffer_size
+
+    def _next_line(self):
+        try:
+            return self.fp.readline()
+        except AttributeError:
+            return self.fp.next()
+
+    def _read(self, n):
+        return self.fp.read(n)
+
+    @property
+    def _buffer_full(self):
+        return self.len >= self.buffer_size
+
+    def readline(self):
+        if self.len < self.offset < self.fp_offset:
+            raise BufferError('Line is not available anymore')
+        if self.offset >= self.len:
+            line = self._next_line()
+            self.fp_offset += len(line)
+
+            self.offset += len(line)
+
+            if not self._buffer_full:
+                self.data.write(line)
+                self.len += len(line)
+        else:
+            line = self.data.readline()
+            self.offset += len(line)
+        return line
+
+    def read(self, n):
+        if self.len < self.offset < self.fp_offset:
+            raise BufferError('Data is not available anymore')
+        if self.offset >= self.len:
+            byte = self._read(n)
+            self.fp_offset += len(byte)
+
+            self.offset += len(byte)
+
+            if not self._buffer_full:
+                self.data.write(byte)
+                self.len += len(byte)
+        else:
+            byte = self.data.read(n)
+            self.offset += len(byte)
+        return byte
+
+    def tell(self):
+        return self.offset
+
+    def seek(self, offset):
+        if self.len < offset < self.fp_offset:
+            raise BufferError('Cannot seek because data is not buffered here')
+        self.offset = offset
+        if offset < self.len:
+            self.data.seek(offset)
 
 
 class Cell(object):
