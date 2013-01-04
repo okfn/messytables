@@ -1,18 +1,18 @@
 from tempfile import mkstemp
-from datetime import datetime
 from shutil import copyfileobj
-from itertools import islice
 from openpyxl.reader.excel import load_workbook
 
 from messytables.core import RowSet, TableSet, Cell
 from messytables.types import StringType, IntegerType, \
         DateType
+import messytables
+
 
 class XLSXTableSet(TableSet):
     """ An excel workbook wrapper object. As the underlying
     library is based on reading from a file name (as opposed to
-    a file object), a local, temporary copy is created and 
-    passed into the library. This has significant performance 
+    a file object), a local, temporary copy is created and
+    passed into the library. This has significant performance
     implication for large excel sheets. """
 
     def __init__(self, filename):
@@ -20,10 +20,10 @@ class XLSXTableSet(TableSet):
 
     @classmethod
     def from_fileobj(cls, fileobj):
-        """ Create a local copy of the object and attempt 
+        """ Create a local copy of the object and attempt
         to open it with xlrd. """
         fd, name = mkstemp(suffix='xls')
-        copyfileobj(fileobj, open(name, 'wb'))
+        copyfileobj(messytables.seekable_stream(fileobj), open(name, 'wb'))
         return cls(name)
 
     @property
@@ -44,7 +44,7 @@ class XLSXRowSet(RowSet):
 
     def raw(self, sample=False):
         """ Iterate over all rows in this sheet. Types are automatically
-        converted according to the excel data types specified, including 
+        converted according to the excel data types specified, including
         conversion of excel dates, which are notoriously buggy. """
         num_rows = self.sheet.get_highest_row()
         for i in xrange(min(self.window, num_rows) if sample else num_rows):

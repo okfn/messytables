@@ -5,7 +5,7 @@ from messytables.types import type_guess, types_processor
 from messytables.types import StringType, IntegerType, FloatType, \
         DecimalType, DateType
 
-from messytables.core import Cell, TableSet, RowSet
+from messytables.core import Cell, TableSet, RowSet, seekable_stream
 from messytables.commas import CSVTableSet, CSVRowSet
 from messytables.excel import XLSTableSet, XLSRowSet
 from messytables.excelx import XLSXTableSet, XLSXRowSet

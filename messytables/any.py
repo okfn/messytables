@@ -1,24 +1,15 @@
-import magic, StringIO
+import magic
 
 from messytables import TableSet, ZIPTableSet
 from messytables import CSVTableSet, XLSTableSet, XLSXTableSet
+import messytables
+
 
 class AnyTableSet(TableSet):
     """ Reads any supported table type according to a specified
     MIME type or file extension or automatically detecting the
     type by using the magic library which looks at the first few
     bytes of the file."""
-
-    @staticmethod
-    def make_stream_seekable(fileobj):
-        try:
-            fileobj.seek(0)
-            # if we got here, the stream is seekable
-        except:
-            # otherwise seek failed, so slurp in stream and wrap
-            # it in a StringIO
-            fileobj = StringIO.StringIO(fileobj.read())
-        return fileobj
 
     @classmethod
     def from_fileobj(cls, fileobj, mimetype=None, extension=None):
@@ -30,7 +21,7 @@ class AnyTableSet(TableSet):
         if mimetype == None:
             # Since we need to peek the start of the stream, make sure we can
             # seek back later. If not, slurp in the contents into a StringIO.
-            fileobj = make_stream_seekable(fileobj)
+            fileobj = messytables.seekable_stream(fileobj)
             header = fileobj.read(1024)
             mimetype = magic.from_buffer(header, mime=True)
             fileobj.seek(0)
