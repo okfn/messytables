@@ -1,10 +1,10 @@
 from ilines import ilines
-from itertools import chain
 import csv
 import codecs
 import chardet
 
 from messytables.core import RowSet, TableSet, Cell
+import messytables
 
 
 class UTF8Recoder:
@@ -12,6 +12,13 @@ class UTF8Recoder:
     Iterator that reads an encoded stream and reencodes the input to UTF-8
     """
     def __init__(self, f, encoding):
+        sample = f.readline()
+        if not encoding:
+            results = chardet.detect(sample)
+            encoding = results['encoding']
+            if not encoding:
+                raise Exception('Could not determine encoding')
+        f.seek(0)
         self.reader = codecs.getreader(encoding)(f, 'ignore')
 
         # The reader only skips a BOM if the encoding isn't explicit about its
@@ -55,20 +62,14 @@ class CSVTableSet(TableSet):
     this is just a pass-through for the row set. """
 
     def __init__(self, fileobj, delimiter=None, name=None, encoding=None):
-        self.fileobj = fileobj
+        self.fileobj = messytables.seekable_stream(fileobj)
         self.name = name or 'table'
         self.delimiter = delimiter or ','
-        if encoding:
-            self.encoding = encoding
-        else:
-            buf = fileobj.read(100)
-            results = chardet.detect(buf)
-            self.encoding = results['encoding']
-            fileobj.seek(0)
+        self.encoding = encoding
 
     @classmethod
-    def from_fileobj(cls, fileobj, delimiter=',', name=None):
-        return cls(fileobj, delimiter=delimiter, name=name)
+    def from_fileobj(cls, fileobj, delimiter=',', name=None, encoding=None):
+        return cls(fileobj, delimiter=delimiter, name=name, encoding=encoding)
 
     @property
     def tables(self):
@@ -87,7 +88,8 @@ class CSVRowSet(RowSet):
     def __init__(self, name, fileobj, delimiter=None,
                  encoding='utf-8', window=1000):
         self.name = name
-        self.fileobj = UTF8Recoder(fileobj, encoding)
+        seekable_fileobj = messytables.seekable_stream(fileobj)
+        self.fileobj = UTF8Recoder(seekable_fileobj, encoding)
         self.lines = ilines(self.fileobj)
         self._sample = []
         self.delimiter = delimiter or ','
