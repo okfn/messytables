@@ -61,21 +61,23 @@ class CSVTableSet(TableSet):
     """ A CSV table set. Since CSV is always just a single table,
     this is just a pass-through for the row set. """
 
-    def __init__(self, fileobj, delimiter=None, name=None, encoding=None):
+    def __init__(self, fileobj, delimiter=None, quotechar=None, name=None, encoding=None):
         self.fileobj = messytables.seekable_stream(fileobj)
         self.name = name or 'table'
         self.delimiter = delimiter or ','
+        self.quotechar = quotechar or '"'
         self.encoding = encoding
 
     @classmethod
-    def from_fileobj(cls, fileobj, delimiter=',', name=None, encoding=None):
-        return cls(fileobj, delimiter=delimiter, name=name, encoding=encoding)
+    def from_fileobj(cls, fileobj, delimiter=None, quotechar=None, name=None, encoding=None):
+        return cls(fileobj, delimiter=delimiter, quotechar=quotechar, name=name, encoding=encoding)
 
     @property
     def tables(self):
         """ Return the actual CSV table. """
         return [CSVRowSet(self.name, self.fileobj,
                           delimiter=self.delimiter,
+                          quotechar=self.quotechar,
                           encoding=self.encoding)]
 
 
@@ -85,7 +87,7 @@ class CSVRowSet(RowSet):
     a sample is read and cached so you can run analysis on the
     fragment. """
 
-    def __init__(self, name, fileobj, delimiter=None,
+    def __init__(self, name, fileobj, delimiter=None, quotechar=None,
                  encoding='utf-8', window=1000):
         self.name = name
         seekable_fileobj = messytables.seekable_stream(fileobj)
@@ -93,6 +95,7 @@ class CSVRowSet(RowSet):
         self.lines = ilines(self.fileobj)
         self._sample = []
         self.delimiter = delimiter or ','
+        self.quotechar = quotechar or '"'
         try:
             for i in xrange(window):
                 self._sample.append(self.lines.next())
@@ -121,7 +124,9 @@ class CSVRowSet(RowSet):
                 for line in self.lines:
                     yield line
         try:
-            for row in csv.reader(rows(), delimiter=self.delimiter, dialect=self._dialect):
+            for row in csv.reader(
+                    rows(), delimiter=self.delimiter, quotechar=self.quotechar,
+                    dialect=self._dialect):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
         except csv.Error, err:
             if 'newline inside string' in unicode(err) and sample:
