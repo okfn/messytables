@@ -1,4 +1,3 @@
-from tempfile import mkstemp
 from shutil import copyfileobj
 from openpyxl.reader.excel import load_workbook
 
@@ -22,6 +21,7 @@ class XLSXTableSet(TableSet):
     def from_fileobj(cls, fileobj):
         """ Create a local copy of the object and attempt
         to open it with xlrd. """
+        from tempfile import mkstemp
         fd, name = mkstemp(suffix='xls')
         copyfileobj(messytables.seekable_stream(fileobj), open(name, 'wb'))
         return cls(name)

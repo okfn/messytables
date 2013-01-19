@@ -1,4 +1,3 @@
-from tempfile import mkstemp
 from datetime import datetime
 from shutil import copyfileobj
 from itertools import islice
@@ -32,6 +31,7 @@ class XLSTableSet(TableSet):
     def from_fileobj(cls, fileobj):
         """ Create a local copy of the object and attempt
         to open it with xlrd. """
+        from tempfile import mkstemp
         fd, name = mkstemp(suffix='xls')
         copyfileobj(messytables.seekable_stream(fileobj), open(name, 'wb'))
         return cls(name)
