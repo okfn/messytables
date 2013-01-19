@@ -1,5 +1,6 @@
 from shutil import copyfileobj
 from openpyxl.reader.excel import load_workbook
+import cStringIO
 
 from messytables.core import RowSet, TableSet, Cell
 from messytables.types import StringType, IntegerType, \
@@ -15,16 +16,31 @@ class XLSXTableSet(TableSet):
     implication for large excel sheets. """
 
     def __init__(self, filename):
-        self.workbook = load_workbook(filename=filename)
+        '''Initialize the object.
+        
+        :param filename: may be a file path or a file-like object. Note the
+        file-like object *must* be in binary mode and must be seekable (it will
+        get passed to zipfile).
+        
+        As a specific tip: urllib2.urlopen returns a file-like object that is
+        not in file-like mode while urllib.urlopen *does*! 
+
+        To get a seekable file you *cannot* use
+        messytables.core.seekable_stream as it does not support the full seek
+        functionality.
+        '''
+        # looking at the openpyxl source code shows filename argument may be a fileobj
+        self.workbook = load_workbook(filename)
 
     @classmethod
     def from_fileobj(cls, fileobj):
         """ Create a local copy of the object and attempt
         to open it with xlrd. """
-        from tempfile import mkstemp
-        fd, name = mkstemp(suffix='xls')
-        copyfileobj(messytables.seekable_stream(fileobj), open(name, 'wb'))
-        return cls(name)
+        # wrap in a StringIO so we do not have hassle with seeks and binary etc
+        # (see notes to __init__ above)
+        # TODO: rather wasteful if in fact fileobj comes from disk
+        newfileobj = cStringIO.StringIO(fileobj.read())
+        return cls(newfileobj)
 
     @property
     def tables(self):
