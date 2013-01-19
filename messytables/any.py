@@ -1,5 +1,3 @@
-import magic
-
 from messytables import TableSet, ZIPTableSet
 from messytables import CSVTableSet, XLSTableSet, XLSXTableSet
 import messytables
@@ -19,6 +17,7 @@ class AnyTableSet(TableSet):
         Consult the source for recognized MIME types and file
         extensions."""
         if mimetype == None:
+            import magic
             # Since we need to peek the start of the stream, make sure we can
             # seek back later. If not, slurp in the contents into a StringIO.
             fileobj = messytables.seekable_stream(fileobj)

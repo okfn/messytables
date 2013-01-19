@@ -40,7 +40,8 @@ setup(
     zip_safe=False,
     install_requires=[
         'xlrd>=0.7.1',
-        'python-magic==0.4.3',
+        # this is only used if you want messytables to do type guessing
+        # 'python-magic==0.4.3',
         'openpyxl==1.5.7',
         'chardet==2.1.1',
         'python-dateutil>=1.5.0,<2.0.0'
