@@ -24,17 +24,19 @@ class XLSTableSet(TableSet):
     passed into the library. This has significant performance
     implication for large excel sheets. """
 
-    def __init__(self, filename):
-        self.workbook = xlrd.open_workbook(filename)
+    def __init__(self, filename=None, fileobj=None):
+        if filename:
+            self.workbook = xlrd.open_workbook(filename)
+        elif fileobj:
+            self.workbook = xlrd.open_workbook(file_contents=fileobj.read())
+        else:
+            raise Exception('You must provide one of filename of fileobj')
 
     @classmethod
     def from_fileobj(cls, fileobj):
         """ Create a local copy of the object and attempt
         to open it with xlrd. """
-        from tempfile import mkstemp
-        fd, name = mkstemp(suffix='xls')
-        copyfileobj(messytables.seekable_stream(fileobj), open(name, 'wb'))
-        return cls(name)
+        return cls(fileobj=fileobj)
 
     @property
     def tables(self):
