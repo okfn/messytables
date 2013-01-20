@@ -5,15 +5,20 @@ import xlrd
 
 from messytables.core import RowSet, TableSet, Cell
 from messytables.types import StringType, IntegerType, \
-        DateType
+        DateType, FloatType
 import messytables
 
 
 XLS_TYPES = {
-    # TODO: extend with float etc.
     1: StringType(),
-    2: IntegerType(),
-    3: DateType(None)
+    # NB: Excel does not distinguish floats from integers so we use floats
+    # We could try actual type detection between floats and ints later
+    # or use the excel format string info - see
+    # https://groups.google.com/forum/?fromgroups=#!topic/python-excel/cAQ1ndsCVxk
+    2: FloatType(),
+    3: DateType(None),
+    # this is actually boolean but we do not have a boolean type yet
+    4: IntegerType()
     }
 
 

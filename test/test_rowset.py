@@ -170,7 +170,7 @@ class ReadTest(unittest.TestCase):
         row_set = table_set.tables[0]
         row = list(row_set.sample)[1]
         types = [c.type for c in row]
-        assert_equal(types, [DateType(None), IntegerType(), StringType()])
+        assert_equal(types, [DateType(None), FloatType(), StringType()])
 
     def test_read_encoded_csv(self):
         fh = horror_fobj('utf-16le_encoded.csv')
