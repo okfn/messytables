@@ -1,4 +1,3 @@
-from tempfile import mkstemp
 from datetime import datetime
 from shutil import copyfileobj
 from itertools import islice
@@ -6,15 +5,20 @@ import xlrd
 
 from messytables.core import RowSet, TableSet, Cell
 from messytables.types import StringType, IntegerType, \
-        DateType
+        DateType, FloatType
 import messytables
 
 
 XLS_TYPES = {
-    # TODO: extend with float etc.
     1: StringType(),
-    2: IntegerType(),
-    3: DateType(None)
+    # NB: Excel does not distinguish floats from integers so we use floats
+    # We could try actual type detection between floats and ints later
+    # or use the excel format string info - see
+    # https://groups.google.com/forum/?fromgroups=#!topic/python-excel/cAQ1ndsCVxk
+    2: FloatType(),
+    3: DateType(None),
+    # this is actually boolean but we do not have a boolean type yet
+    4: IntegerType()
     }
 
 
@@ -25,16 +29,19 @@ class XLSTableSet(TableSet):
     passed into the library. This has significant performance
     implication for large excel sheets. """
 
-    def __init__(self, filename):
-        self.workbook = xlrd.open_workbook(filename)
+    def __init__(self, filename=None, fileobj=None):
+        if filename:
+            self.workbook = xlrd.open_workbook(filename)
+        elif fileobj:
+            self.workbook = xlrd.open_workbook(file_contents=fileobj.read())
+        else:
+            raise Exception('You must provide one of filename of fileobj')
 
     @classmethod
     def from_fileobj(cls, fileobj):
         """ Create a local copy of the object and attempt
         to open it with xlrd. """
-        fd, name = mkstemp(suffix='xls')
-        copyfileobj(messytables.seekable_stream(fileobj), open(name, 'wb'))
-        return cls(name)
+        return cls(fileobj=fileobj)
 
     @property
     def tables(self):

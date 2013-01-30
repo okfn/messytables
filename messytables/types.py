@@ -25,7 +25,7 @@ class CellType(object):
     def test(cls, value):
         """ Test if the value is of the given type. The
         default implementation calls ``cast`` and checks if
-        that throws an exception. """
+        that throws an exception. Returns the casted value or None"""
         try:
             ins = cls()
             ins.cast(value)
