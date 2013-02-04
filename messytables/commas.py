@@ -61,16 +61,17 @@ class CSVTableSet(TableSet):
     """ A CSV table set. Since CSV is always just a single table,
     this is just a pass-through for the row set. """
 
-    def __init__(self, fileobj, delimiter=None, quotechar=None, name=None, encoding=None):
+    def __init__(self, fileobj, delimiter=None, quotechar=None, name=None, encoding=None, window=None):
         self.fileobj = messytables.seekable_stream(fileobj)
         self.name = name or 'table'
         self.delimiter = delimiter or ','
         self.quotechar = quotechar or '"'
         self.encoding = encoding
+        self.window = window
 
     @classmethod
-    def from_fileobj(cls, fileobj, delimiter=None, quotechar=None, name=None, encoding=None):
-        return cls(fileobj, delimiter=delimiter, quotechar=quotechar, name=name, encoding=encoding)
+    def from_fileobj(cls, fileobj, delimiter=None, quotechar=None, name=None, encoding=None, window=None):
+        return cls(fileobj, delimiter=delimiter, quotechar=quotechar, name=name, encoding=encoding, window=window)
 
     @property
     def tables(self):
@@ -78,7 +79,8 @@ class CSVTableSet(TableSet):
         return [CSVRowSet(self.name, self.fileobj,
                           delimiter=self.delimiter,
                           quotechar=self.quotechar,
-                          encoding=self.encoding)]
+                          encoding=self.encoding,
+                          window=self.window)]
 
 
 class CSVRowSet(RowSet):
@@ -88,7 +90,7 @@ class CSVRowSet(RowSet):
     fragment. """
 
     def __init__(self, name, fileobj, delimiter=None, quotechar=None,
-                 encoding='utf-8', window=1000):
+                 encoding='utf-8', window=None):
         self.name = name
         seekable_fileobj = messytables.seekable_stream(fileobj)
         self.fileobj = UTF8Recoder(seekable_fileobj, encoding)
@@ -96,8 +98,9 @@ class CSVRowSet(RowSet):
         self._sample = []
         self.delimiter = delimiter or ','
         self.quotechar = quotechar or '"'
+        self.window = window or 1000
         try:
-            for i in xrange(window):
+            for i in xrange(self.window):
                 self._sample.append(self.lines.next())
         except StopIteration:
             pass
