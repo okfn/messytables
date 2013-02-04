@@ -15,7 +15,7 @@ class XLSXTableSet(TableSet):
     passed into the library. This has significant performance
     implication for large excel sheets. """
 
-    def __init__(self, filename):
+    def __init__(self, filename, window=None):
         '''Initialize the object.
         
         :param filename: may be a file path or a file-like object. Note the
@@ -23,39 +23,40 @@ class XLSXTableSet(TableSet):
         get passed to zipfile).
         
         As a specific tip: urllib2.urlopen returns a file-like object that is
-        not in file-like mode while urllib.urlopen *does*! 
+        not in file-like mode while urllib.urlopen *does*!
 
         To get a seekable file you *cannot* use
         messytables.core.seekable_stream as it does not support the full seek
         functionality.
         '''
+        self.window = window
         # looking at the openpyxl source code shows filename argument may be a fileobj
         self.workbook = load_workbook(filename)
 
     @classmethod
-    def from_fileobj(cls, fileobj):
+    def from_fileobj(cls, fileobj, window=None):
         """ Create a local copy of the object and attempt
         to open it with xlrd. """
         # wrap in a StringIO so we do not have hassle with seeks and binary etc
         # (see notes to __init__ above)
         # TODO: rather wasteful if in fact fileobj comes from disk
         newfileobj = cStringIO.StringIO(fileobj.read())
-        return cls(newfileobj)
+        return cls(filename=newfileobj, window=window)
 
     @property
     def tables(self):
         """ Return the sheets in the workbook. """
-        return [XLSXRowSet(sheet) for sheet in self.workbook.worksheets]
+        return [XLSXRowSet(sheet, self.window) for sheet in self.workbook.worksheets]
 
 
 class XLSXRowSet(RowSet):
     """ Excel support for a single sheet in the excel workbook. Unlike
     the CSV row set this is not a streaming operation. """
 
-    def __init__(self, sheet, window=1000):
+    def __init__(self, sheet, window=None):
         self.name = sheet.title
         self.sheet = sheet
-        self.window = window
+        self.window = window or 1000
         super(XLSXRowSet, self).__init__(typed=True)
 
     def raw(self, sample=False):

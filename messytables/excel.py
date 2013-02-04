@@ -29,7 +29,8 @@ class XLSTableSet(TableSet):
     passed into the library. This has significant performance
     implication for large excel sheets. """
 
-    def __init__(self, filename=None, fileobj=None):
+    def __init__(self, filename=None, fileobj=None, window=None):
+        self.window = window
         if filename:
             self.workbook = xlrd.open_workbook(filename)
         elif fileobj:
@@ -38,15 +39,15 @@ class XLSTableSet(TableSet):
             raise Exception('You must provide one of filename of fileobj')
 
     @classmethod
-    def from_fileobj(cls, fileobj):
+    def from_fileobj(cls, fileobj, window=None):
         """ Create a local copy of the object and attempt
         to open it with xlrd. """
-        return cls(fileobj=fileobj)
+        return cls(fileobj=fileobj, window=window)
 
     @property
     def tables(self):
         """ Return the sheets in the workbook. """
-        return [XLSRowSet(name, self.workbook.sheet_by_name(name)) \
+        return [XLSRowSet(name, self.workbook.sheet_by_name(name), self.window) \
                 for name in self.workbook.sheet_names()]
 
 
@@ -54,10 +55,10 @@ class XLSRowSet(RowSet):
     """ Excel support for a single sheet in the excel workbook. Unlike
     the CSV row set this is not a streaming operation. """
 
-    def __init__(self, name, sheet, window=1000):
+    def __init__(self, name, sheet, window=None):
         self.name = name
         self.sheet = sheet
-        self.window = window
+        self.window = window or 1000
         super(XLSRowSet, self).__init__(typed=True)
 
     def raw(self, sample=False):
