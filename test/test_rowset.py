@@ -204,7 +204,7 @@ class TypeGuessTest(unittest.TestCase):
 
     def test_type_guess_strict(self):
         import locale
-        locale.setlocale(locale.LC_ALL, '')
+        locale.setlocale(locale.LC_ALL, 'en_GB.UTF-8')
         csv_file = StringIO.StringIO('''
             1,   2012/2/12, 2,      2,02 October 2011,"100.234354"
             2,   2012/2/12, 1.1,    0,1 May 2011,"100,000,000.12"
