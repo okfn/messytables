@@ -9,9 +9,6 @@ import dateutil.parser as parser
 
 from messytables.dateparser import DATE_FORMATS, is_date
 
-if locale.getlocale() == (None, None):
-    locale.setlocale(locale.LC_ALL, '')
-
 
 class CellType(object):
     """ A cell type maintains information about the format
