@@ -59,7 +59,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_simple_tsv(self):
         fh = horror_fobj('example.tsv')
-        table_set = CSVTableSet.from_fileobj(fh, delimiter='\t')
+        table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
         assert_equal(141, len(list(row_set)))
         row = list(row_set.sample)[0]
@@ -68,6 +68,29 @@ class ReadTest(unittest.TestCase):
         for row in list(row_set):
             assert_equal(17, len(row))
             assert_equal(row[0].type, StringType())
+
+    def test_read_simple_ssv(self):
+        # semicolon separated values
+        fh = horror_fobj('simple.ssv')
+        table_set = CSVTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        assert_equal(7, len(list(row_set)))
+        row = list(row_set.sample)[0]
+        assert_equal(row[0].value, 'date')
+        assert_equal(row[1].value, 'temperature')
+
+        for row in list(row_set):
+            assert_equal(3, len(row))
+            assert_equal(row[0].type, StringType())
+
+    def test_overriding_sniffed(self):
+        # semicolon separated values
+        fh = horror_fobj('simple.csv')
+        table_set = CSVTableSet.from_fileobj(fh, delimiter=";")
+        row_set = table_set.tables[0]
+        assert_equal(7, len(list(row_set)))
+        row = list(row_set.sample)[0]
+        assert_equal(len(row), 1)
 
     def test_read_simple_xls(self):
         fh = horror_fobj('simple.xls')
@@ -100,12 +123,12 @@ class ReadTest(unittest.TestCase):
         table_set = CSVTableSet.from_fileobj(fh)
         row_set = table_set.tables[0]
         offset, headers = headers_guess(row_set.sample)
-        assert 5 == len(headers), headers
-        assert_equal(u'Region', headers[1].strip())
+        assert 11 == len(headers), headers
+        assert_equal(u'1985', headers[1].strip())
         row_set.register_processor(headers_processor(headers))
         row_set.register_processor(offset_processor(offset + 1))
         for row in row_set:
-            assert_equal(5, len(row))
+            assert_equal(11, len(row))
 
     def test_read_head_offset_csv(self):
         fh = horror_fobj('simple.csv')
@@ -139,7 +162,7 @@ class ReadTest(unittest.TestCase):
         row_set.register_processor(headers_processor(headers))
         row_set.register_processor(offset_processor(offset + 1))
         data = list(row_set)
-        assert 'Chirurgie' in data[9][0].value, data[9][0].value
+        assert 'Frauenheilkunde' in data[9][0].value, data[9][0].value
 
         fh = horror_fobj('weird_head_padding.csv')
         table_set = CSVTableSet.from_fileobj(fh)

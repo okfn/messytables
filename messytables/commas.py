@@ -64,8 +64,8 @@ class CSVTableSet(TableSet):
     def __init__(self, fileobj, delimiter=None, quotechar=None, name=None, encoding=None, window=None):
         self.fileobj = messytables.seekable_stream(fileobj)
         self.name = name or 'table'
-        self.delimiter = delimiter or ','
-        self.quotechar = quotechar or '"'
+        self.delimiter = delimiter
+        self.quotechar = quotechar
         self.encoding = encoding
         self.window = window
 
@@ -96,8 +96,8 @@ class CSVRowSet(RowSet):
         self.fileobj = UTF8Recoder(seekable_fileobj, encoding)
         self.lines = ilines(self.fileobj)
         self._sample = []
-        self.delimiter = delimiter or ','
-        self.quotechar = quotechar or '"'
+        self.delimiter = delimiter
+        self.quotechar = quotechar
         self.window = window or 1000
         try:
             for i in xrange(self.window):
@@ -119,6 +119,16 @@ class CSVRowSet(RowSet):
         except csv.Error:
             return csv.excel
 
+    @property
+    def _overrides(self):
+        # some variables in the dialect can be overriden
+        d = {}
+        if self.delimiter:
+            d['delimiter'] = self.delimiter
+        if self.quotechar:
+            d['quotechar'] = self.quotechar
+        return d
+
     def raw(self, sample=False):
         def rows():
             for line in self._sample:
@@ -127,9 +137,8 @@ class CSVRowSet(RowSet):
                 for line in self.lines:
                     yield line
         try:
-            for row in csv.reader(
-                    rows(), delimiter=self.delimiter, quotechar=self.quotechar,
-                    dialect=self._dialect):
+            for row in csv.reader(rows(),
+                    dialect=self._dialect, **self._overrides):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
         except csv.Error, err:
             if 'newline inside string' in unicode(err) and sample:
