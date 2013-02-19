@@ -19,11 +19,11 @@ See the full documentation at: http://messytables.readthedocs.org
 
 setup(
     name='messytables',
-    version='0.4.0',
+    version='0.5.0',
     description="Parse messy tabular data in various formats",
     long_description=long_desc,
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
