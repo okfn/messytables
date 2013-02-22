@@ -232,7 +232,8 @@ class TypeGuessTest(unittest.TestCase):
             1,   2012/2/12, 2,      2,02 October 2011,"100.234354"
             2,   2012/2/12, 1.1,    0,1 May 2011,"100,000,000.12"
             foo, bar,       1500,   0,,"NaN"
-            4,   2012/2/12, 42,"-2,000",24 October 2012,"42"''')
+            4,   2012/2/12, 42,"-2,000",24 October 2012,"42"
+            ,,,,,''')
         rows = CSVTableSet(csv_file).tables[0]
         guessed_types = type_guess(rows.sample, strict=True)
         assert_equal(guessed_types, [StringType(), StringType(), DecimalType(), IntegerType(), DateType('%d %B %Y'), FloatType()])
