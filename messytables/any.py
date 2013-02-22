@@ -34,7 +34,7 @@ class AnyTableSet(TableSet):
 
         if mimetype in ('text/csv', 'text/comma-separated-values') or \
                 (extension and extension.lower() in ('csv',)):
-            return CSVTableSet.from_fileobj(fileobj, delimiter=',')
+            return CSVTableSet.from_fileobj(fileobj)  # guess delimiter
         if mimetype in ('text/tsv', 'text/tab-separated-values') or \
                 (extension and extension.lower() in ('tsv',)):
             return CSVTableSet.from_fileobj(fileobj, delimiter='\t')
