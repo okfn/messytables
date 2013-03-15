@@ -210,6 +210,13 @@ class ReadTest(unittest.TestCase):
         data = list(row_set)
         assert_equal(4000, len(data))
 
+    def test_bad_first_sheet(self):
+        # First sheet appears to have no cells
+        fh = horror_fobj('problematic_first_sheet.xls')
+        table_set = XLSTableSet.from_fileobj(fh)
+        tables = table_set.tables
+        assert_equal(0, len(list(tables[0].sample)))
+        assert_equal(1000, len(list(tables[1].sample)))
 
 class TypeGuessTest(unittest.TestCase):
     def test_type_guess(self):
@@ -254,7 +261,7 @@ class TestStreamInput(unittest.TestCase):
     def test_http_csv(self):
         url = 'http://www.messytables.org/static/long.csv'
         HTTPretty.register_uri(HTTPretty.GET, url,
-            body=horror_fobj('long.csv').read(),
+            body=horror_fobj('long.csv').read(-1),
             content_type="application/csv")
         fh = urllib2.urlopen(url)
         table_set = CSVTableSet.from_fileobj(fh)
