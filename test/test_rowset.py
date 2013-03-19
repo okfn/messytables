@@ -210,6 +210,20 @@ class ReadTest(unittest.TestCase):
         data = list(row_set)
         assert_equal(4000, len(data))
 
+    def test_skip_initials(self):
+        def rows(skip_policy):
+            fh = horror_fobj('skip_initials.csv')
+            table_set = CSVTableSet.from_fileobj(fh, 
+                                                 skipinitialspace=skip_policy)
+            row_set = table_set.tables[0]
+            return row_set
+
+        second = lambda r: r[1].value
+
+        print map(second, rows(True))
+
+        assert "goodbye" in map(second, rows(True))
+        assert "    goodbye" in map(second, rows(False))
 
 class TypeGuessTest(unittest.TestCase):
     def test_type_guess(self):
