@@ -62,17 +62,20 @@ class CSVTableSet(TableSet):
     """ A CSV table set. Since CSV is always just a single table,
     this is just a pass-through for the row set. """
 
-    def __init__(self, fileobj, delimiter=None, quotechar=None, name=None, encoding=None, window=None):
+    def __init__(self, fileobj, delimiter=None, quotechar=None, name=None, encoding=None, window=None, doublequote=None, lineterminator=None, skipinitialspace=None):
         self.fileobj = messytables.seekable_stream(fileobj)
         self.name = name or 'table'
         self.delimiter = delimiter
         self.quotechar = quotechar
         self.encoding = encoding
         self.window = window
+        self.doublequote = doublequote
+        self.lineterminator = lineterminator
+        self.skipinitialspace = skipinitialspace
 
     @classmethod
-    def from_fileobj(cls, fileobj, delimiter=None, quotechar=None, name=None, encoding=None, window=None):
-        return cls(fileobj, delimiter=delimiter, quotechar=quotechar, name=name, encoding=encoding, window=window)
+    def from_fileobj(cls, fileobj, delimiter=None, quotechar=None, name=None, encoding=None, window=None, doublequote=None, lineterminator=None, skipinitialspace=None):
+        return cls(fileobj, delimiter=delimiter, quotechar=quotechar, name=name, encoding=encoding, window=window, doublequote=doublequote, lineterminator=lineterminator, skipinitialspace=skipinitialspace)
 
     @property
     def tables(self):
@@ -81,7 +84,10 @@ class CSVTableSet(TableSet):
                           delimiter=self.delimiter,
                           quotechar=self.quotechar,
                           encoding=self.encoding,
-                          window=self.window)]
+                          window=self.window,
+                          doublequote=self.doublequote,
+                          lineterminator=self.lineterminator,
+                          skipinitialspace=self.skipinitialspace)]
 
 
 class CSVRowSet(RowSet):
@@ -91,7 +97,8 @@ class CSVRowSet(RowSet):
     fragment. """
 
     def __init__(self, name, fileobj, delimiter=None, quotechar=None,
-                 encoding='utf-8', window=None):
+                 encoding='utf-8', window=None, doublequote=None, 
+                 lineterminator=None, skipinitialspace=None):
         self.name = name
         seekable_fileobj = messytables.seekable_stream(fileobj)
         self.fileobj = UTF8Recoder(seekable_fileobj, encoding)
@@ -100,6 +107,9 @@ class CSVRowSet(RowSet):
         self.delimiter = delimiter
         self.quotechar = quotechar
         self.window = window or 1000
+        self.doublequote = doublequote
+        self.lineterminator = lineterminator
+        self.skipinitialspace = skipinitialspace
         try:
             for i in xrange(self.window):
                 self._sample.append(self.lines.next())
@@ -128,6 +138,12 @@ class CSVRowSet(RowSet):
             d['delimiter'] = self.delimiter
         if self.quotechar:
             d['quotechar'] = self.quotechar
+        if self.doublequote:
+            d['doublequote'] = self.doublequote
+        if self.lineterminator:
+            d['lineterminator'] = self.lineterminator
+        if self.skipinitialspace is not None:
+            d['skipinitialspace'] = self.skipinitialspace
         return d
 
     def raw(self, sample=False):
