@@ -210,10 +210,10 @@ class ReadTest(unittest.TestCase):
         data = list(row_set)
         assert_equal(4000, len(data))
 
-	def test_skip_initials(self):
+    def test_skip_initials(self):
         def rows(skip_policy):
             fh = horror_fobj('skip_initials.csv')
-            table_set = CSVTableSet.from_fileobj(fh, 
+            table_set = CSVTableSet.from_fileobj(fh,
                                                  skipinitialspace=skip_policy)
             row_set = table_set.tables[0]
             return row_set
@@ -225,7 +225,6 @@ class ReadTest(unittest.TestCase):
         assert "goodbye" in map(second, rows(True))
         assert "    goodbye" in map(second, rows(False))
 
-
     def test_bad_first_sheet(self):
         # First sheet appears to have no cells
         fh = horror_fobj('problematic_first_sheet.xls')
@@ -233,6 +232,7 @@ class ReadTest(unittest.TestCase):
         tables = table_set.tables
         assert_equal(0, len(list(tables[0].sample)))
         assert_equal(1000, len(list(tables[1].sample)))
+
 
 class TypeGuessTest(unittest.TestCase):
     def test_type_guess(self):
