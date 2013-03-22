@@ -261,7 +261,7 @@ class TestStreamInput(unittest.TestCase):
     def test_http_csv(self):
         url = 'http://www.messytables.org/static/long.csv'
         HTTPretty.register_uri(HTTPretty.GET, url,
-            body=horror_fobj('long.csv').read(-1),
+            body=horror_fobj('long.csv').read(),
             content_type="application/csv")
         fh = urllib2.urlopen(url)
         table_set = CSVTableSet.from_fileobj(fh)
