@@ -17,7 +17,8 @@ class UTF8Recoder:
             results = chardet.detect(sample)
             encoding = results['encoding']
             if not encoding:
-                raise Exception('Could not determine encoding')
+                # Don't break, just try and load the data with a semi-sane encoding
+                encoding = 'utf-8'
         f.seek(0)
         self.reader = codecs.getreader(encoding)(f, 'ignore')
 
@@ -152,6 +153,10 @@ class CSVRowSet(RowSet):
             if not sample:
                 for line in self.lines:
                     yield line
+
+        # Fix the maximum field size to something a little larger
+        csv.field_size_limit(256000)
+
         try:
             for row in csv.reader(rows(),
                     dialect=self._dialect, **self._overrides):

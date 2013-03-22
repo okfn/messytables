@@ -12,7 +12,6 @@ def seekable_stream(fileobj):
         fileobj = BufferedFile(fileobj)
     return fileobj
 
-
 class BufferedFile(object):
     ''' A buffered file that preserves the beginning of a stream up to buffer_size
     '''
@@ -54,7 +53,13 @@ class BufferedFile(object):
             self.offset += len(line)
         return line
 
-    def read(self, n):
+    def read(self, n=-1):
+        if n == -1:
+            # if the request is to do a complete read, then do a complete
+            # read.
+            self.data.seek(self.offset)
+            return self.data.read(-1) + self.fp.read(-1)
+
         if self.len < self.offset < self.fp_offset:
             raise BufferError('Data is not available anymore')
         if self.offset >= self.len:
@@ -80,6 +85,7 @@ class BufferedFile(object):
         self.offset = offset
         if offset < self.len:
             self.data.seek(offset)
+
 
 
 class Cell(object):

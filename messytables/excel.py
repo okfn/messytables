@@ -30,13 +30,19 @@ class XLSTableSet(TableSet):
     implication for large excel sheets. """
 
     def __init__(self, filename=None, fileobj=None, window=None):
+        from xlrd.biffh import XLRDError
+
         self.window = window
-        if filename:
-            self.workbook = xlrd.open_workbook(filename)
-        elif fileobj:
-            self.workbook = xlrd.open_workbook(file_contents=fileobj.read())
-        else:
-            raise Exception('You must provide one of filename of fileobj')
+        try:
+            if filename:
+                self.workbook = xlrd.open_workbook(filename)
+            elif fileobj:
+                self.workbook = xlrd.open_workbook(file_contents=fileobj.read())
+            else:
+                raise Exception('You must provide one of filename of fileobj')
+        except XLRDError, e:
+            raise XLRDError("Unsupported format, or corrupt file")
+
 
     @classmethod
     def from_fileobj(cls, fileobj, window=None):

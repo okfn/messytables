@@ -39,7 +39,7 @@ setup(
     include_package_data=False,
     zip_safe=False,
     install_requires=[
-        'xlrd>=0.7.1',
+        'xlrd>=0.8.0',
         # this is only used if you want messytables to do type guessing
         # 'python-magic==0.4.3',
         'openpyxl==1.5.7',
