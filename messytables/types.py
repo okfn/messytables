@@ -1,5 +1,5 @@
 import decimal
-from datetime import datetime
+import datetime
 from collections import defaultdict
 from itertools import izip_longest
 import locale
@@ -17,12 +17,16 @@ class CellType(object):
     type. """
 
     guessing_weight = 1
+    # the type that the result will have
+    result_type = None
 
     @classmethod
     def test(cls, value):
         """ Test if the value is of the given type. The
         default implementation calls ``cast`` and checks if
         that throws an exception. Returns the casted value or None"""
+        if isinstance(value, cls.result_type):
+            return cls()
         try:
             ins = cls()
             ins.cast(value)
@@ -47,6 +51,7 @@ class CellType(object):
 
 class StringType(CellType):
     """ A string or other unconverted type. """
+    result_type = basestring
 
     def cast(self, value):
         if not isinstance(value, basestring):
@@ -57,6 +62,7 @@ class StringType(CellType):
 class IntegerType(CellType):
     """ An integer field. """
     guessing_weight = 6
+    result_type = int
 
     def cast(self, value):
         try:
@@ -68,6 +74,7 @@ class IntegerType(CellType):
 class FloatType(CellType):
     """ Floating point number. """
     guessing_weight = 4
+    result_type = float
 
     def cast(self, value):
         return locale.atof(value)
@@ -76,6 +83,7 @@ class FloatType(CellType):
 class DecimalType(CellType):
     """ Decimal number, ``decimal.Decimal``. """
     guessing_weight = 5
+    result_type = decimal.Decimal
 
     def cast(self, value):
         return decimal.Decimal(value)
@@ -87,13 +95,14 @@ class DateType(CellType):
     basic type information. """
     guessing_weight = 3
     formats = DATE_FORMATS
+    result_type = datetime.datetime
 
     def __init__(self, format):
         self.format = format
 
     @classmethod
     def test(cls, value):
-        if not is_date(value):
+        if isinstance(value, basestring) and not is_date(value):
             return
         for v in cls.formats:
             ins = cls(v)
@@ -104,9 +113,11 @@ class DateType(CellType):
                 pass
 
     def cast(self, value):
+        if isinstance(value, self.result_type):
+            return value
         if self.format is None:
             return value
-        return datetime.strptime(value, self.format)
+        return datetime.datetime.strptime(value, self.format)
 
     def __eq__(self, other):
         return isinstance(other, DateType) and \
@@ -127,6 +138,7 @@ class DateUtilType(CellType):
 
     Do not use this together with the DateType"""
     guessing_weight = 3
+    result_type = datetime.datetime
 
     def cast(self, value):
         return parser.parse(value)
