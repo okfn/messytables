@@ -12,7 +12,7 @@ class UTF8Recoder:
     Iterator that reads an encoded stream and reencodes the input to UTF-8
     """
     def __init__(self, f, encoding):
-        sample = f.readline()
+        sample = f.read(2000)
         if not encoding:
             results = chardet.detect(sample)
             encoding = results['encoding']

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import unittest
 import StringIO
@@ -127,8 +128,11 @@ class ReadTest(unittest.TestCase):
         assert_equal(u'1985', headers[1].strip())
         row_set.register_processor(headers_processor(headers))
         row_set.register_processor(offset_processor(offset + 1))
+        data = list(row_set.sample)
         for row in row_set:
             assert_equal(11, len(row))
+        value = data[1][0].value.strip()
+        assert value == u'Gefäßchirurgie', value
 
     def test_read_head_offset_csv(self):
         fh = horror_fobj('simple.csv')
@@ -209,6 +213,13 @@ class ReadTest(unittest.TestCase):
         row_set = table_set.tables[0]
         data = list(row_set)
         assert_equal(4000, len(data))
+
+    def test_small_csv(self):
+        fh = horror_fobj('small.csv')
+        table_set = CSVTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        data = list(row_set)
+        assert_equal(1, len(data))
 
     def test_skip_initials(self):
         def rows(skip_policy):

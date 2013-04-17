@@ -12,10 +12,11 @@ def seekable_stream(fileobj):
         fileobj = BufferedFile(fileobj)
     return fileobj
 
+
 class BufferedFile(object):
     ''' A buffered file that preserves the beginning of a stream up to buffer_size
     '''
-    def __init__(self, fp, buffer_size=1024):
+    def __init__(self, fp, buffer_size=2048):
         self.data = cStringIO.StringIO()
         self.fp = fp
         self.offset = 0
