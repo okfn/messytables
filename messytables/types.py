@@ -54,9 +54,12 @@ class StringType(CellType):
     result_type = basestring
 
     def cast(self, value):
-        if not isinstance(value, basestring):
-            raise ValueError()
-        return value
+        if isinstance(value, self.result_type):
+            return value
+        try:
+            return unicode(value)
+        except UnicodeEncodeError:
+            return str(value)
 
 
 class IntegerType(CellType):
