@@ -14,23 +14,28 @@ class ZIPTableSet(TableSet):
         from messytables.any import AnyTableSet  # avoid circular dependency by not importing at the top
         tables = []
         found = []
-        z = zipfile.ZipFile(fileobj, 'r')
-        for f in z.infolist():
-            ext = None
-            if "." in f.filename:
-                ext = f.filename[f.filename.rindex(".")+1:]
+	try:
+            z = zipfile.ZipFile(fileobj, 'r')
+            for f in z.infolist():
+                ext = None
+                if "." in f.filename:
+                    ext = f.filename[f.filename.rindex(".")+1:]
 
-            try:
-                filetables = AnyTableSet.from_fileobj(z.open(f), extension=ext)
-            except ValueError as e:
-                found.append(f.filename + ": " + e.message)
-                continue
+                try:
+                    filetables = AnyTableSet.from_fileobj(z.open(f), extension=ext)
+                except ValueError as e:
+                    found.append(f.filename + ": " + e.message)
+                    continue
 
-            tables.extend(filetables.tables)
+                tables.extend(filetables.tables)
 
-        if len(tables) == 0:
-            raise ValueError("ZIP file has no recognized tables (%s)." % ", ".join(found))
-
+            if len(tables) == 0:
+                raise ValueError("ZIP file has no recognized tables (%s)." % ", ".join(found))
+        except Exception as e:
+		raise ValueError(str(e))		
+	finally:
+		if z != None:
+			z.close()
         return ZIPTableSet(tables)
 
     @property
