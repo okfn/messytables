@@ -43,6 +43,19 @@ class ReadTest(unittest.TestCase):
             assert_equal(3, len(row))
             assert_equal(row[0].type, StringType())
 
+    def test_read_simple_zip(self):
+        fh = horror_fobj('simple.zip')
+        table_set = ZIPTableSet.from_fileobj(fh)
+        row_set = table_set.tables[0]
+        assert_equal(7, len(list(row_set)))
+        row = list(row_set.sample)[0]
+        assert_equal(row[0].value, 'date')
+        assert_equal(row[1].value, 'temperature')
+
+        for row in list(row_set):
+            assert_equal(3, len(row))
+            assert_equal(row[0].type, StringType())
+
     def test_read_complex_csv(self):
         fh = horror_fobj('complex.csv')
         table_set = CSVTableSet.from_fileobj(fh)
