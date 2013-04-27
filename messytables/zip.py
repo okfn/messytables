@@ -15,7 +15,7 @@ class ZIPTableSet(TableSet):
         tables = []
         found = []
         z = zipfile.ZipFile(fileobj, 'r')
-	try:
+        try:
             for f in z.infolist():
                 ext = None
                 if "." in f.filename:
@@ -31,8 +31,8 @@ class ZIPTableSet(TableSet):
 
             if len(tables) == 0:
                 raise ValueError("ZIP file has no recognized tables (%s)." % ", ".join(found))
-	finally:
-		z.close()
+        finally:
+            z.close()
         return ZIPTableSet(tables)
 
     @property
