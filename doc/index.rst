@@ -4,17 +4,17 @@
 messytables: all your rows are belong to us
 ===========================================
 
-Tabular data as published on the web is often not well formatted 
-and structured. Messytables tries to detect and fix errors in the 
+Tabular data as published on the web is often not well formatted
+and structured. Messytables tries to detect and fix errors in the
 data. Typical examples include:
 
-* Finding the header of a table when there are explanations and 
+* Finding the header of a table when there are explanations and
   text fragments in the first few rows of the table.
 * Guessing the type of columns in CSV data.
 * Guessing the format of a byte stream.
 
-This library provides data structures and some heuristics to 
-fix these problems and read a wide number of different tabular 
+This library provides data structures and some heuristics to
+fix these problems and read a wide number of different tabular
 abominations.
 
 Example
@@ -35,18 +35,18 @@ evaluate data. A typical use might look like this::
   # If you aren't sure what kind of file it is, you can use
   # AnyTableSet instead.
   #table_set = AnyTableSet.from_fileobj(fh)
-  
+
   # A table set is a collection of tables:
   row_set = table_set.tables[0]
 
-  # A row set is an iterator over the table, but it can only 
+  # A row set is an iterator over the table, but it can only
   # be run once. To peek, a sample is provided:
   print row_set.sample.next()
 
   # guess column types:
   types = type_guess(row_set.sample)
 
-  # and tell the row set to apply these types to 
+  # and tell the row set to apply these types to
   # each row when traversing the iterator:
   row_set.register_processor(types_processor(types))
 
@@ -61,7 +61,7 @@ evaluate data. A typical use might look like this::
   for row in row_set:
     do_something(row)
 
-As you can see in the example above, messytables gives you a toolbox 
+As you can see in the example above, messytables gives you a toolbox
 of independent methods. There is no ready-made ``row_set.guess_types()``
 because there are many ways to perform type guessing that we may
 implement in the future. Therefore, heuristic operations are independent
@@ -75,9 +75,9 @@ in generic data types (a dict in a list in a dict).
 
 .. autoclass:: messytables.core.Cell
   :members: empty
-  
+
   .. attribute:: value
-    
+
     The actual content of the cell.
 
   .. attribute:: column
@@ -100,7 +100,7 @@ in generic data types (a dict in a list in a dict).
 CSV support
 -----------
 
-CSV support uses Python's dialect sniffer to detect the separator and 
+CSV support uses Python's dialect sniffer to detect the separator and
 quoting mechanism used in the input file.
 
 .. autoclass:: messytables.commas.CSVTableSet
@@ -129,7 +129,7 @@ The newer, XML-based Excel format is also supported but uses a different class.
   :members: raw
 
 ZIP file support
--------------
+----------------
 
 The library supports loading CSV or Excel files from within ZIP files.
 
@@ -137,13 +137,13 @@ The library supports loading CSV or Excel files from within ZIP files.
   :members: from_fileobj, tables
 
 Auto-detecting file format
--------------
+--------------------------
 
 The library supports loading files in a generic way.
 
 .. autoclass:: messytables.any.AnyTableSet
   :members: from_fileobj
-  
+
 Type detection
 --------------
 
@@ -166,9 +166,9 @@ The supported types include:
 Headers detection
 -----------------
 
-While the CSV convention is to include column headers as the first row of 
-the data file. Unfortunately, many people feel the need to put titles, 
-general info etc. in the top of tabular data. Therefore, we need to scan 
+While the CSV convention is to include column headers as the first row of
+the data file. Unfortunately, many people feel the need to put titles,
+general info etc. in the top of tabular data. Therefore, we need to scan
 the first few rows of the data, to guess which one is actually the header.
 
 .. automethod:: messytables.headers.headers_guess
@@ -177,9 +177,9 @@ Stream processors
 -----------------
 
 Stream processors are used to apply transformations to the row set upon
-iteration. In order to apply transformations to a ``RowSet`` you can 
-register a stream processor. A processor is simply a function that takes 
-the ``RowSet`` and the current row (a list of ``Cell``) as arguments and 
+iteration. In order to apply transformations to a ``RowSet`` you can
+register a stream processor. A processor is simply a function that takes
+the ``RowSet`` and the current row (a list of ``Cell``) as arguments and
 returns a modified version of the row or ``None`` to indicate the row
 should be dropped.
 
@@ -191,26 +191,39 @@ Most processors are implemented as closures called with some arguments:
 
 .. automethod:: messytables.headers.headers_processor
 
+
+JSON table schema
+-----------------
+
+Messytables can convert guessed headers and types to the `JSON table schema`_.
+
+.. _JSON Table Schema: http://www.dataprotocols.org/en/latest/json-table-schema.html
+
+.. automethod:: messytables.jts.rowset_as_jts
+
+.. automethod:: messytables.jts.headers_and_typed_as_jts
+
+
 License
 -------
 
-Copyright (c) 2011 The Open Knowledge Foundation Ltd.
+Copyright (c) 2013 The Open Knowledge Foundation Ltd.
 
-Permission is hereby granted, free of charge, to any person obtaining a 
-copy of this software and associated documentation files (the "Software"), 
-to deal in the Software without restriction, including without limitation 
-the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the 
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
 Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included 
+The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 

@@ -198,4 +198,3 @@ class RowSet(object):
 
     def __repr__(self):
         return "RowSet(%s)" % self.name
-
