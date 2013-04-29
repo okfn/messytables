@@ -244,8 +244,6 @@ class ReadTest(unittest.TestCase):
 
         second = lambda r: r[1].value
 
-        print map(second, rows(True))
-
         assert "goodbye" in map(second, rows(True))
         assert "    goodbye" in map(second, rows(False))
 
@@ -256,6 +254,14 @@ class ReadTest(unittest.TestCase):
         tables = table_set.tables
         assert_equal(0, len(list(tables[0].sample)))
         assert_equal(1000, len(list(tables[1].sample)))
+
+    def test_rowset_as_schema(self):
+        from StringIO import StringIO as sio
+        ts = CSVTableSet.from_fileobj(sio('''name,dob\nmk,2012-01-02\n'''))
+        rs = ts.tables[0]
+        jts = rowset_as_jts(rs).as_dict()
+        assert_equal(jts['fields'], [{'type': 'string', 'id': u'name', 'label': u'name'},
+                                     {'type': 'date', 'id': u'dob', 'label': u'dob'}])
 
 
 class TypeGuessTest(unittest.TestCase):
