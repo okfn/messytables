@@ -1,17 +1,12 @@
 import zipfile
 
-from messytables import TableSet
+import messytables
 
 
-class ZIPTableSet(TableSet):
+class ZIPTableSet(messytables.TableSet):
     """ Reads TableSets from inside a ZIP file """
 
-    def __init__(self, tables):
-        self._tables = tables
-
-    @classmethod
-    def from_fileobj(cls, fileobj):
-        from messytables.any import AnyTableSet  # avoid circular dependency by not importing at the top
+    def __init__(self, fileobj):
         tables = []
         found = []
         z = zipfile.ZipFile(fileobj, 'r')
@@ -19,10 +14,10 @@ class ZIPTableSet(TableSet):
             for f in z.infolist():
                 ext = None
                 if "." in f.filename:
-                    ext = f.filename[f.filename.rindex(".")+1:]
+                    ext = f.filename[f.filename.rindex(".") + 1:]
 
                 try:
-                    filetables = AnyTableSet.from_fileobj(z.open(f), extension=ext)
+                    filetables = messytables.any.any_tableset(z.open(f), extension=ext)
                 except ValueError as e:
                     found.append(f.filename + ": " + e.message)
                     continue
@@ -33,7 +28,7 @@ class ZIPTableSet(TableSet):
                 raise ValueError("ZIP file has no recognized tables (%s)." % ", ".join(found))
         finally:
             z.close()
-        return ZIPTableSet(tables)
+        self._tables = tables
 
     @property
     def tables(self):

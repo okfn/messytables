@@ -10,6 +10,6 @@ from messytables.commas import CSVTableSet, CSVRowSet
 from messytables.excel import XLSTableSet, XLSRowSet
 from messytables.excelx import XLSXTableSet, XLSXRowSet
 from messytables.zip import ZIPTableSet
-from messytables.any import AnyTableSet
+from messytables.any import any_tableset
 
 from messytables.jts import rowset_as_jts, headers_and_typed_as_jts

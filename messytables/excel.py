@@ -1,12 +1,9 @@
 from datetime import datetime
-from shutil import copyfileobj
-from itertools import islice
 import xlrd
 
 from messytables.core import RowSet, TableSet, Cell
 from messytables.types import StringType, IntegerType, \
         DateType, FloatType
-import messytables
 
 
 XLS_TYPES = {
@@ -19,14 +16,14 @@ XLS_TYPES = {
     3: DateType(None),
     # this is actually boolean but we do not have a boolean type yet
     4: IntegerType()
-    }
+}
 
 
 class XLSTableSet(TableSet):
     """An excel workbook wrapper object.
     """
 
-    def __init__(self, filename=None, fileobj=None, window=None, encoding=None):
+    def __init__(self, fileobj=None, filename=None, window=None, encoding=None):
         '''Initilize the tableset.
 
         :param encoding: passed on to xlrd.open_workbook function as encoding_override
@@ -37,20 +34,14 @@ class XLSTableSet(TableSet):
         try:
             if filename:
                 self.workbook = xlrd.open_workbook(filename,
-                        encoding_override=encoding)
+                                                   encoding_override=encoding)
             elif fileobj:
                 self.workbook = xlrd.open_workbook(file_contents=fileobj.read(),
-                        encoding_override=encoding)
+                                                   encoding_override=encoding)
             else:
                 raise Exception('You must provide one of filename of fileobj')
-        except XLRDError, e:
+        except XLRDError:
             raise XLRDError("Unsupported format, or corrupt file")
-
-
-    @classmethod
-    def from_fileobj(cls, fileobj, window=None, encoding=None):
-        """Open a fileobj and open with xlrd."""
-        return cls(fileobj=fileobj, window=window, encoding=encoding)
 
     @property
     def tables(self):
@@ -81,7 +72,7 @@ class XLSRowSet(RowSet):
                 type = XLS_TYPES.get(cell.ctype, StringType())
                 if type == DateType(None):
                     if value == 0:
-                        raise ValueError('Invalid date at "%s":%d,%d' % (self.sheet.name, j+1, i+1))
+                        raise ValueError('Invalid date at "%s":%d,%d' % (self.sheet.name, j + 1, i + 1))
                     year, month, day, hour, minute, second = \
                             xlrd.xldate_as_tuple(value, self.sheet.book.datemode)
                     value = datetime(year, month, day, hour,
