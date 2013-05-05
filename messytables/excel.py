@@ -23,21 +23,24 @@ XLS_TYPES = {
 
 
 class XLSTableSet(TableSet):
-    """ An excel workbook wrapper object. As the underlying
-    library is based on reading from a file name (as opposed to
-    a file object), a local, temporary copy is created and
-    passed into the library. This has significant performance
-    implication for large excel sheets. """
+    """An excel workbook wrapper object.
+    """
 
-    def __init__(self, filename=None, fileobj=None, window=None):
+    def __init__(self, filename=None, fileobj=None, window=None, encoding=None):
+        '''Initilize the tableset.
+
+        :param encoding: passed on to xlrd.open_workbook function as encoding_override
+        '''
         from xlrd.biffh import XLRDError
 
         self.window = window
         try:
             if filename:
-                self.workbook = xlrd.open_workbook(filename)
+                self.workbook = xlrd.open_workbook(filename,
+                        encoding_override=encoding)
             elif fileobj:
-                self.workbook = xlrd.open_workbook(file_contents=fileobj.read())
+                self.workbook = xlrd.open_workbook(file_contents=fileobj.read(),
+                        encoding_override=encoding)
             else:
                 raise Exception('You must provide one of filename of fileobj')
         except XLRDError, e:
@@ -45,10 +48,9 @@ class XLSTableSet(TableSet):
 
 
     @classmethod
-    def from_fileobj(cls, fileobj, window=None):
-        """ Create a local copy of the object and attempt
-        to open it with xlrd. """
-        return cls(fileobj=fileobj, window=window)
+    def from_fileobj(cls, fileobj, window=None, encoding=None):
+        """Open a fileobj and open with xlrd."""
+        return cls(fileobj=fileobj, window=window, encoding=encoding)
 
     @property
     def tables(self):
