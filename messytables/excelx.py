@@ -15,13 +15,13 @@ class XLSXTableSet(TableSet):
     passed into the library. This has significant performance
     implication for large excel sheets. """
 
-    def __init__(self, filename, window=None):
+    def __init__(self, fileobj, window=None):
         '''Initialize the object.
-        
-        :param filename: may be a file path or a file-like object. Note the
+
+        :param fileobj: may be a file path or a file-like object. Note the
         file-like object *must* be in binary mode and must be seekable (it will
         get passed to zipfile).
-        
+
         As a specific tip: urllib2.urlopen returns a file-like object that is
         not in file-like mode while urllib.urlopen *does*!
 
@@ -29,19 +29,14 @@ class XLSXTableSet(TableSet):
         messytables.core.seekable_stream as it does not support the full seek
         functionality.
         '''
+        if hasattr(fileobj, 'read'):
+            # wrap in a StringIO so we do not have hassle with seeks and binary etc
+            # (see notes to __init__ above)
+            # TODO: rather wasteful if in fact fileobj comes from disk
+            fileobj = cStringIO.StringIO(fileobj.read())
         self.window = window
         # looking at the openpyxl source code shows filename argument may be a fileobj
-        self.workbook = load_workbook(filename)
-
-    @classmethod
-    def from_fileobj(cls, fileobj, window=None):
-        """ Create a local copy of the object and attempt
-        to open it with xlrd. """
-        # wrap in a StringIO so we do not have hassle with seeks and binary etc
-        # (see notes to __init__ above)
-        # TODO: rather wasteful if in fact fileobj comes from disk
-        newfileobj = cStringIO.StringIO(fileobj.read())
-        return cls(filename=newfileobj, window=window)
+        self.workbook = load_workbook(fileobj)
 
     @property
     def tables(self):

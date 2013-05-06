@@ -88,7 +88,6 @@ class BufferedFile(object):
             self.data.seek(offset)
 
 
-
 class Cell(object):
     """ A cell is the basic value type. It always has a ``value`` (that
     may be ``None`` and may optionally also have a type and column name
@@ -126,20 +125,23 @@ class Cell(object):
 class TableSet(object):
     """ A table set is used for data formats in which multiple tabular
     objects are bundeled. This might include relational databases and
-    workbooks used in spreadsheet software (Excel, LibreOffice). """
+    workbooks used in spreadsheet software (Excel, LibreOffice).
 
-    @classmethod
-    def from_fileobj(cls, fileobj):
-        """ The primary way to instantiate is through a file object
-        pointer. This means you can stream a table set directly off
-        a web site or some similar source. """
-        pass
+    The primary way to instantiate is through a file object passed to
+    the constructor pointer. This means you can stream a table set
+    directly off a web site or some similar source.
+    """
 
     @property
     def tables(self):
         """ Return a listing of tables in the ``TableSet``. Each table
         has a name. """
         pass
+
+    @classmethod
+    def from_fileobj(cls, fileobj, *args, **kwargs):
+        """ Deprecated, only for compatibility reasons """
+        return cls(fileobj, *args, **kwargs)
 
 
 class RowSet(object):
