@@ -6,12 +6,12 @@ import messytables
 import jsontableschema
 
 MESSYTABLES_TO_JTS_MAPPING = {
-    messytables.types.StringType: 'string',
-    messytables.types.IntegerType: 'integer',
-    messytables.types.FloatType: 'number',
-    messytables.types.DecimalType: 'number',
-    messytables.types.DateType: 'date',
-    messytables.types.DateUtilType: 'date'
+    messytables.StringType: 'string',
+    messytables.IntegerType: 'integer',
+    messytables.FloatType: 'number',
+    messytables.DecimalType: 'number',
+    messytables.DateType: 'date',
+    messytables.DateUtilType: 'date'
 }
 
 

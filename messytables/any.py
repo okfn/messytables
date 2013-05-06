@@ -50,3 +50,9 @@ def any_tableset(fileobj, mimetype=None, extension=None):
         raise ValueError("Could not determine MIME type and "
          + "unrecognized extension: " + extension)
     raise ValueError("Could not determine MIME type and no extension given.")
+
+class AnyTableSet:
+    '''Deprecated - use any_tableset instead.'''
+    @staticmethod
+    def from_fileobj(fileobj, mimetype=None, extension=None):
+        return any_tableset(fileobj, mimetype=mimetype, extension=extension)
