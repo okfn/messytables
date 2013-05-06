@@ -73,10 +73,6 @@ class CSVTableSet(TableSet):
         self.lineterminator = lineterminator
         self.skipinitialspace = skipinitialspace
 
-    @classmethod
-    def from_fileobj(cls, fileobj, delimiter=None, quotechar=None, name=None, encoding=None, window=None, doublequote=None, lineterminator=None, skipinitialspace=None):
-        return cls(fileobj, delimiter=delimiter, quotechar=quotechar, name=name, encoding=encoding, window=window, doublequote=doublequote, lineterminator=lineterminator, skipinitialspace=skipinitialspace)
-
     @property
     def tables(self):
         """ Return the actual CSV table. """
@@ -97,7 +93,7 @@ class CSVRowSet(RowSet):
     fragment. """
 
     def __init__(self, name, fileobj, delimiter=None, quotechar=None,
-                 encoding='utf-8', window=None, doublequote=None, 
+                 encoding='utf-8', window=None, doublequote=None,
                  lineterminator=None, skipinitialspace=None):
         self.name = name
         seekable_fileobj = messytables.seekable_stream(fileobj)

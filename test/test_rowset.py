@@ -32,7 +32,7 @@ class DateParserTest(unittest.TestCase):
 class ReadTest(unittest.TestCase):
     def test_read_simple_csv(self):
         fh = horror_fobj('simple.csv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         assert_equal(7, len(list(row_set)))
         row = list(row_set.sample)[0]
@@ -45,7 +45,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_simple_zip(self):
         fh = horror_fobj('simple.zip')
-        table_set = ZIPTableSet.from_fileobj(fh)
+        table_set = ZIPTableSet(fh)
         row_set = table_set.tables[0]
         assert_equal(7, len(list(row_set)))
         row = list(row_set.sample)[0]
@@ -58,7 +58,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_complex_csv(self):
         fh = horror_fobj('complex.csv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         assert_equal(4, len(list(row_set)))
         row = list(row_set.sample)[0]
@@ -73,7 +73,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_simple_tsv(self):
         fh = horror_fobj('example.tsv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         assert_equal(141, len(list(row_set)))
         row = list(row_set.sample)[0]
@@ -86,7 +86,7 @@ class ReadTest(unittest.TestCase):
     def test_read_simple_ssv(self):
         # semicolon separated values
         fh = horror_fobj('simple.ssv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         assert_equal(7, len(list(row_set)))
         row = list(row_set.sample)[0]
@@ -100,7 +100,7 @@ class ReadTest(unittest.TestCase):
     def test_overriding_sniffed(self):
         # semicolon separated values
         fh = horror_fobj('simple.csv')
-        table_set = CSVTableSet.from_fileobj(fh, delimiter=";")
+        table_set = CSVTableSet(fh, delimiter=";")
         row_set = table_set.tables[0]
         assert_equal(7, len(list(row_set)))
         row = list(row_set.sample)[0]
@@ -108,7 +108,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_simple_xls(self):
         fh = horror_fobj('simple.xls')
-        table_set = XLSTableSet.from_fileobj(fh)
+        table_set = XLSTableSet(fh)
         assert_equal(1, len(table_set.tables))
         row_set = table_set.tables[0]
         row = list(row_set.sample)[0]
@@ -121,7 +121,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_simple_xlsx(self):
         fh = horror_fobj('simple.xlsx')
-        table_set = XLSXTableSet.from_fileobj(fh)
+        table_set = XLSXTableSet(fh)
         assert_equal(1, len(table_set.tables))
         row_set = table_set.tables[0]
         row = list(row_set.sample)[0]
@@ -134,7 +134,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_head_padding_csv(self):
         fh = horror_fobj('weird_head_padding.csv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         offset, headers = headers_guess(row_set.sample)
         assert 11 == len(headers), headers
@@ -149,7 +149,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_head_offset_csv(self):
         fh = horror_fobj('simple.csv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         offset, headers = headers_guess(row_set.sample)
         assert_equal(offset, 0)
@@ -161,7 +161,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_head_offset_excel(self):
         fh = horror_fobj('simple.xls')
-        table_set = XLSTableSet.from_fileobj(fh)
+        table_set = XLSTableSet(fh)
         row_set = table_set.tables[0]
         offset, headers = headers_guess(row_set.sample)
         assert_equal(offset, 0)
@@ -173,7 +173,7 @@ class ReadTest(unittest.TestCase):
 
     def test_guess_headers(self):
         fh = horror_fobj('weird_head_padding.csv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         offset, headers = headers_guess(row_set.sample)
         row_set.register_processor(headers_processor(headers))
@@ -182,7 +182,7 @@ class ReadTest(unittest.TestCase):
         assert 'Frauenheilkunde' in data[9][0].value, data[9][0].value
 
         fh = horror_fobj('weird_head_padding.csv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         row_set.register_processor(headers_processor(['foo', 'bar']))
         data = list(row_set)
@@ -191,7 +191,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_type_guess_simple(self):
         fh = horror_fobj('simple.csv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         types = type_guess(row_set.sample)
         expected_types = [DateType("%Y-%m-%d"), IntegerType(), StringType()]
@@ -206,7 +206,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_type_know_simple(self):
         fh = horror_fobj('simple.xls')
-        table_set = XLSTableSet.from_fileobj(fh)
+        table_set = XLSTableSet(fh)
         row_set = table_set.tables[0]
         row = list(row_set.sample)[1]
         types = [c.type for c in row]
@@ -214,7 +214,7 @@ class ReadTest(unittest.TestCase):
 
     def test_read_encoded_csv(self):
         fh = horror_fobj('utf-16le_encoded.csv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         assert_equal(328, len(list(row_set)))
         row = list(row_set.sample)[0]
@@ -222,14 +222,14 @@ class ReadTest(unittest.TestCase):
 
     def test_long_csv(self):
         fh = horror_fobj('long.csv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
         assert_equal(4000, len(data))
 
     def test_small_csv(self):
         fh = horror_fobj('small.csv')
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
         assert_equal(1, len(data))
@@ -237,8 +237,8 @@ class ReadTest(unittest.TestCase):
     def test_skip_initials(self):
         def rows(skip_policy):
             fh = horror_fobj('skip_initials.csv')
-            table_set = CSVTableSet.from_fileobj(fh,
-                                                 skipinitialspace=skip_policy)
+            table_set = CSVTableSet(fh,
+                                    skipinitialspace=skip_policy)
             row_set = table_set.tables[0]
             return row_set
 
@@ -250,14 +250,14 @@ class ReadTest(unittest.TestCase):
     def test_bad_first_sheet(self):
         # First sheet appears to have no cells
         fh = horror_fobj('problematic_first_sheet.xls')
-        table_set = XLSTableSet.from_fileobj(fh)
+        table_set = XLSTableSet(fh)
         tables = table_set.tables
         assert_equal(0, len(list(tables[0].sample)))
         assert_equal(1000, len(list(tables[1].sample)))
 
     def test_rowset_as_schema(self):
         from StringIO import StringIO as sio
-        ts = CSVTableSet.from_fileobj(sio('''name,dob\nmk,2012-01-02\n'''))
+        ts = CSVTableSet(sio('''name,dob\nmk,2012-01-02\n'''))
         rs = ts.tables[0]
         jts = rowset_as_jts(rs).as_dict()
         assert_equal(jts['fields'], [{'type': 'string', 'id': u'name', 'label': u'name'},
@@ -310,7 +310,7 @@ class TestStreamInput(unittest.TestCase):
             body=horror_fobj('long.csv').read(),
             content_type="application/csv")
         fh = urllib2.urlopen(url)
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
         assert_equal(4000, len(data))
@@ -324,7 +324,7 @@ class TestStreamInput(unittest.TestCase):
         r = requests.get(url, stream=True)
         # no full support for non blocking version yet, use urllib2
         fh = StringIO.StringIO(r.raw.read())
-        table_set = CSVTableSet.from_fileobj(fh, encoding='utf-8')
+        table_set = CSVTableSet(fh, encoding='utf-8')
         row_set = table_set.tables[0]
         data = list(row_set)
         assert_equal(4000, len(data))
@@ -336,7 +336,7 @@ class TestStreamInput(unittest.TestCase):
             body=horror_fobj('utf-16le_encoded.csv').read(),
             content_type="application/csv")
         fh = urllib2.urlopen(url)
-        table_set = CSVTableSet.from_fileobj(fh)
+        table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
         assert_equal(328, len(data))
@@ -348,7 +348,7 @@ class TestStreamInput(unittest.TestCase):
             body=horror_fobj('simple.xls').read(),
             content_type="application/ms-excel")
         fh = urllib2.urlopen(url)
-        table_set = XLSTableSet.from_fileobj(fh)
+        table_set = XLSTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
         assert_equal(7, len(data))
@@ -360,7 +360,7 @@ class TestStreamInput(unittest.TestCase):
             body=horror_fobj('simple.xlsx').read(),
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         fh = urllib2.urlopen(url)
-        table_set = XLSXTableSet.from_fileobj(fh)
+        table_set = XLSXTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
         assert_equal(7, len(data))
