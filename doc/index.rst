@@ -25,16 +25,16 @@ evaluate data. A typical use might look like this::
 
   from messytables import CSVTableSet, type_guess, \
     types_processor, headers_guess, headers_processor, \
-    offset_processor
+    offset_processor, any_tableset
 
   fh = open('messy.csv', 'rb')
 
   # Load a file object:
-  table_set = CSVTableSet.from_fileobj(fh)
+  table_set = CSVTableSet(fh)
 
   # If you aren't sure what kind of file it is, you can use
-  # AnyTableSet instead.
-  #table_set = AnyTableSet.from_fileobj(fh)
+  # any_tableset.
+  #table_set = any_tableset(fh)
 
   # A table set is a collection of tables:
   row_set = table_set.tables[0]
@@ -89,7 +89,7 @@ in generic data types (a dict in a list in a dict).
     ``CellType`` of this cell.
 
 .. autoclass:: messytables.core.TableSet
-  :members: from_fileobj, tables
+  :members: tables
 
 .. autoclass:: messytables.core.RowSet
   :members: sample, register_processor, __iter__, dicts, sample
@@ -115,7 +115,7 @@ Excel support
 The library supports workbooks in the Microsoft Excel 2003 format.
 
 .. autoclass:: messytables.excel.XLSTableSet
-  :members: from_fileobj, tables
+  :members: tables
 
 .. autoclass:: messytables.excel.XLSRowSet
   :members: raw
@@ -123,7 +123,7 @@ The library supports workbooks in the Microsoft Excel 2003 format.
 The newer, XML-based Excel format is also supported but uses a different class.
 
 .. autoclass:: messytables.excelx.XLSXTableSet
-  :members: from_fileobj, tables
+  :members: tables
 
 .. autoclass:: messytables.excelx.XLSXRowSet
   :members: raw
@@ -134,15 +134,14 @@ ZIP file support
 The library supports loading CSV or Excel files from within ZIP files.
 
 .. autoclass:: messytables.zip.ZIPTableSet
-  :members: from_fileobj, tables
+  :members: tables
 
 Auto-detecting file format
 --------------------------
 
 The library supports loading files in a generic way.
 
-.. autoclass:: messytables.any.AnyTableSet
-  :members: from_fileobj
+.. automethod:: messytables.any.any_tableset
 
 Type detection
 --------------
