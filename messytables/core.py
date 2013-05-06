@@ -138,6 +138,11 @@ class TableSet(object):
         has a name. """
         pass
 
+    @classmethod
+    def from_fileobj(cls, fileobj, *args, **kwargs):
+        """ Deprecated, only for compatibility reasons """
+        return cls(fileobj, *args, **kwargs)
+
 
 class RowSet(object):
     """ A row set (aka: table) is a simple wrapper for an iterator of
