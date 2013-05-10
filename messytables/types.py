@@ -67,6 +67,8 @@ class IntegerType(CellType):
     result_type = int
 
     def cast(self, value):
+        if value == '':
+            return None
         try:
             return int(value)
         except:
@@ -79,7 +81,12 @@ class FloatType(CellType):
     result_type = float
 
     def cast(self, value):
-        return locale.atof(value)
+        if value == '':
+            return None
+        try:
+            return float(value)
+        except:
+            return locale.atof(value)
 
 
 class DecimalType(CellType):
@@ -88,6 +95,8 @@ class DecimalType(CellType):
     result_type = decimal.Decimal
 
     def cast(self, value):
+        if value == '':
+            return None
         return decimal.Decimal(value)
 
 
@@ -117,6 +126,8 @@ class DateType(CellType):
     def cast(self, value):
         if isinstance(value, self.result_type):
             return value
+        if value == '':
+            return None
         if self.format is None:
             return value
         return datetime.datetime.strptime(value, self.format)
@@ -143,6 +154,8 @@ class DateUtilType(CellType):
     result_type = datetime.datetime
 
     def cast(self, value):
+        if value == '':
+            return None
         return parser.parse(value)
 
 
@@ -196,7 +209,7 @@ def types_processor(types, strict=False):
                 cell.value = type.cast(cell.value)
                 cell.type = type
             except:
-                if strict and type and cell.value:
+                if strict and type:
                     raise
         return row
     return apply_types
