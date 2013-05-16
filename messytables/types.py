@@ -19,19 +19,21 @@ class CellType(object):
     # the type that the result will have
     result_type = None
 
-    @classmethod
-    def test(cls, value):
+    def test(self, value):
         """ Test if the value is of the given type. The
         default implementation calls ``cast`` and checks if
-        that throws an exception. Returns the casted value or None"""
-        if isinstance(value, cls.result_type):
-            return cls()
+        that throws an exception. True or False"""
+        if isinstance(value, self.result_type):
+            return True
         try:
-            ins = cls()
-            ins.cast(value)
-            return ins
+            self.cast(value)
+            return True
         except:
-            return None
+            return False
+
+    @classmethod
+    def instances(cls):
+        return [cls()]
 
     def cast(self, value):
         """ Convert the value to the type. This may throw
@@ -114,16 +116,13 @@ class DateType(CellType):
         self.format = format
 
     @classmethod
-    def test(cls, value):
+    def instances(cls):
+        return [cls(v) for v in cls.formats]
+
+    def test(self, value):
         if isinstance(value, basestring) and not is_date(value):
-            return
-        for v in cls.formats:
-            ins = cls(v)
-            try:
-                ins.cast(value)
-                return ins
-            except:
-                pass
+            return False
+        return CellType.test(self, value)
 
     def cast(self, value):
         if isinstance(value, self.result_type):
@@ -173,26 +172,50 @@ def type_guess(rows, types=TYPES, strict=False):
 
     Strict means that a type will not be guessed
     if parsing fails for a single cell in the column."""
-    guesses = defaultdict(lambda: defaultdict(int))
-    for row in rows:
-        for i, cell in enumerate(row):
-            # add string guess so that we have at least one guess
-            guesses[i][StringType()] = 0
-            for type in types:
+    guesses = []
+    type_instances = [i for t in types for i in t.instances()]
+    if strict:
+        at_least_one_value = []
+        for ri, row in enumerate(rows):
+            diff = len(row) - len(guesses)
+            for _ in range(diff):
+                typesdict = {}
+                for type in type_instances:
+                    typesdict[type] = 0
+                guesses.append(typesdict)
+                at_least_one_value.append(False)
+            for ci, cell in enumerate(row):
                 if not cell.value:
                     continue
-                guess = type.test(cell.value)
-                if guess is None:
-                    if strict:
-                        for key in guesses[i].keys():
-                            if isinstance(key, type):
-                                guesses[i][key] = None
-                else:
-                    if guesses[i][guess] is None:
-                        continue
-                    guesses[i][guess] += type.guessing_weight
+                at_least_one_value[ci] = True
+                for type in guesses[ci].keys():
+                    if not type.test(cell.value):
+                        guesses[ci].pop(type)
+        # no need to set guessing weights before this
+        for i, guess in enumerate(guesses):
+            for type in guess.keys():
+                guesses[i][type] = type.guessing_weight
+        # in case there were no values at all in the column,
+        # we just set the guessed type to string
+        for i, v in enumerate(at_least_one_value):
+            if not v:
+                guesses[i] = {StringType(): 0}
+    else:
+        for i, row in enumerate(rows):
+            diff = len(row) - len(guesses)
+            for _ in range(diff):
+                guesses.append(defaultdict(int))
+            for i, cell in enumerate(row):
+                # add string guess so that we have at least one guess
+                guesses[i][StringType()] = 0
+                if not cell.value:
+                    continue
+                for type in type_instances:
+                    if type.test(cell.value):
+                        guesses[i][type] += type.guessing_weight
+        _columns = []
     _columns = []
-    for i, types in guesses.items():
+    for types in guesses:
         _columns.append(max(types.items(), key=lambda (t, n): n)[0])
     return _columns
 

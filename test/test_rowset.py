@@ -291,7 +291,7 @@ class TypeGuessTest(unittest.TestCase):
         guessed_types = type_guess(rows.sample, strict=True)
         assert_equal(guessed_types, [StringType(), StringType(), DecimalType(), IntegerType(), DateType('%d %B %Y'), FloatType()])
 
-    def test_guessing_does_padding(self):
+    def test_strict_guessing_handles_padding(self):
         csv_file = StringIO.StringIO('''
             1,   , 2
             2,   , 1.1
@@ -300,6 +300,16 @@ class TypeGuessTest(unittest.TestCase):
         guessed_types = type_guess(rows.sample, strict=True)
         assert_equal(len(guessed_types), 3)
         assert_equal(guessed_types, [StringType(), StringType(), DecimalType()])
+
+    def test_non_strict_guessing_handles_padding(self):
+        csv_file = StringIO.StringIO('''
+            1,   , 2
+            2,   , 1.1
+            foo, , 1500''')
+        rows = CSVTableSet(csv_file).tables[0]
+        guessed_types = type_guess(rows.sample, strict=False)
+        assert_equal(len(guessed_types), 3)
+        assert_equal(guessed_types, [IntegerType(), StringType(), DecimalType()])
 
 
 class TestStreamInput(unittest.TestCase):
