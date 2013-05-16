@@ -190,15 +190,17 @@ def type_guess(rows, types=TYPES, strict=False):
                     continue
                 at_least_one_value[ci] = True
                 for type in guesses[ci].keys():
-                    if type.test(cell.value):
-                        guesses[ci][type] += type.guessing_weight
-                    else:
+                    if not type.test(cell.value):
                         guesses[ci].pop(type)
-            # in case there were no values at all in the column,
-            # we just set the guessed type to string
-            for i, v in enumerate(at_least_one_value):
-                if not v:
-                    guesses[i] = {StringType(): 0}
+        # no need to set guessing weights before this
+        for i, guess in enumerate(guesses):
+            for type in guess.keys():
+                guesses[i][type] = type.guessing_weight
+        # in case there were no values at all in the column,
+        # we just set the guessed type to string
+        for i, v in enumerate(at_least_one_value):
+            if not v:
+                guesses[i] = {StringType(): 0}
     else:
         for i, row in enumerate(rows):
             diff = len(row) - len(guesses)
