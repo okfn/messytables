@@ -73,9 +73,10 @@ except ImportError:
             return d
     ## end of http://code.activestate.com/recipes/576669/ }}}
 
+
 def offset_processor(offset):
-    """ Skip ``offset`` from the given iterator. This can 
-    be used in combination with the ``headers_processor`` to 
+    """ Skip ``offset`` from the given iterator. This can
+    be used in combination with the ``headers_processor`` to
     apply the result of a header scan to the table. """
     def apply_offset(row_set, row):
         if not hasattr(row_set, '_offset'):
