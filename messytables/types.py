@@ -178,13 +178,12 @@ def type_guess(rows, types=TYPES, strict=False):
         at_least_one_value = []
         for ri, row in enumerate(rows):
             diff = len(row) - len(guesses)
-            if diff > 0:
-                for _ in range(diff):
-                    typesdict = {}
-                    for type in type_instances:
-                        typesdict[type] = 0
-                    guesses.append(typesdict)
-                    at_least_one_value.append(False)
+            for _ in range(diff):
+                typesdict = {}
+                for type in type_instances:
+                    typesdict[type] = 0
+                guesses.append(typesdict)
+                at_least_one_value.append(False)
             for ci, cell in enumerate(row):
                 if not cell.value:
                     continue
@@ -204,9 +203,8 @@ def type_guess(rows, types=TYPES, strict=False):
     else:
         for i, row in enumerate(rows):
             diff = len(row) - len(guesses)
-            if diff > 0:
-                for _ in range(diff):
-                    guesses.append(defaultdict(int))
+            for _ in range(diff):
+                guesses.append(defaultdict(int))
             for i, cell in enumerate(row):
                 # add string guess so that we have at least one guess
                 guesses[i][StringType()] = 0
