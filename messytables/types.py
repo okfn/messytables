@@ -119,6 +119,11 @@ class DateType(CellType):
     def instances(cls):
         return [cls(v) for v in cls.formats]
 
+    def test(self, value):
+        if isinstance(value, basestring) and not is_date(value):
+            return False
+        return CellType.test(self, value)
+
     def cast(self, value):
         if isinstance(value, self.result_type):
             return value
