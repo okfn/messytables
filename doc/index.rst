@@ -43,19 +43,19 @@ evaluate data. A typical use might look like this::
   # be run once. To peek, a sample is provided:
   print row_set.sample.next()
 
-  # guess column types:
-  types = type_guess(row_set.sample)
-
-  # and tell the row set to apply these types to
-  # each row when traversing the iterator:
-  row_set.register_processor(types_processor(types))
-
   # guess header names and the offset of the header:
   offset, headers = headers_guess(row_set.sample)
   row_set.register_processor(headers_processor(headers))
 
   # add one to begin with content, not the header:
   row_set.register_processor(offset_processor(offset + 1))
+
+  # guess column types:
+  types = type_guess(row_set.sample, strict=True)
+
+  # and tell the row set to apply these types to
+  # each row when traversing the iterator:
+  row_set.register_processor(types_processor(types))
 
   # now run some operation on the data:
   for row in row_set:
@@ -65,7 +65,9 @@ As you can see in the example above, messytables gives you a toolbox
 of independent methods. There is no ready-made ``row_set.guess_types()``
 because there are many ways to perform type guessing that we may
 implement in the future. Therefore, heuristic operations are independent
-of the main data structures.
+of the main data structures. Also note that `type_guess` is done after
+adding the `offset_processor` so that the headers are not part of the sample
+that we use for type guessing.
 
 Core entities
 -------------
