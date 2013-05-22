@@ -193,7 +193,7 @@ def type_guess(rows, types=TYPES, strict=False):
                         guesses[ci].pop(type)
         # no need to set guessing weights before this
         for i, guess in enumerate(guesses):
-            for type in guess.keys():
+            for type in guess:
                 guesses[i][type] = type.guessing_weight
         # in case there were no values at all in the column,
         # we just set the guessed type to string
@@ -207,7 +207,7 @@ def type_guess(rows, types=TYPES, strict=False):
                 guesses.append(defaultdict(int))
             for i, cell in enumerate(row):
                 # add string guess so that we have at least one guess
-                guesses[i][StringType()] = 0
+                guesses[i][StringType()] = guesses[i].get(StringType(), 0)
                 if not cell.value:
                     continue
                 for type in type_instances:
@@ -216,7 +216,7 @@ def type_guess(rows, types=TYPES, strict=False):
         _columns = []
     _columns = []
     for types in guesses:
-        _columns.append(max(types.items(), key=lambda (t, n): n)[0])
+        _columns.append(max(types.iteritems(), key=lambda (t, n): n)[0])
     return _columns
 
 
