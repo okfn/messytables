@@ -311,8 +311,37 @@ class TypeGuessTest(unittest.TestCase):
         assert_equal(len(guessed_types), 3)
         assert_equal(guessed_types, [IntegerType(), StringType(), DecimalType()])
 
+    def test_strict_type_guessing_with_large_file(self):
+        fh = horror_fobj('211.csv')
+        rows = CSVTableSet(fh).tables[0]
+        offset, headers = headers_guess(rows.sample)
+        rows.register_processor(offset_processor(offset + 1))
+        types = [StringType, IntegerType, FloatType, DecimalType, DateUtilType]
+        guessed_types = type_guess(rows.sample, types, True)
+        assert_equal(len(guessed_types), 96)
+        assert_equal(guessed_types, [IntegerType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), IntegerType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), IntegerType(),
+            StringType(), DecimalType(), DecimalType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), IntegerType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), IntegerType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(), StringType(),
+            StringType(), DateUtilType(), DateUtilType(), DateUtilType(),
+            DateUtilType(), StringType(), StringType(), StringType()])
 
-class TestStreamInput(unittest.TestCase):
+
+class StreamInputTest(unittest.TestCase):
     @httprettified
     def test_http_csv(self):
         url = 'http://www.messytables.org/static/long.csv'
