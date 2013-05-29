@@ -1,11 +1,11 @@
 from messytables.core import RowSet, TableSet, Cell
-from messytables.types import StringType, IntegerType, DateType, FloatType
 import lxml.html
-import requests
+import json
+
 
 class HTMLTableSet(TableSet):
     def __init__(self, fileobj=None, filename=None, window=None, encoding=None):
-        
+
         if filename:
             fh = open(filename, 'r')
         else:
@@ -14,23 +14,22 @@ class HTMLTableSet(TableSet):
             raise Exception('You must provide one of filename or fileobj')
 
         self.htmltables = lxml.html.fromstring(fh.read()).xpath('//table')
-        #html = requests.get('http://unstats.un.org/unsd/methods/m49/m49alpha.htm').content
-        #self.htmltables = lxml.html.fromstring(html)
 
     @property
     def tables(self):
-        return [HTMLRowSet('test', x) for x in self.htmltables]
+        return [HTMLRowSet(json.dumps(dict(x.attrib)), x) for x in self.htmltables]
 
 
 class HTMLRowSet(RowSet):
-    def __init__(self, name, sheet, window=None):  # TODO verify all required
+    def __init__(self, name, sheet, window=None):
         self.name = name
         self.sheet = sheet
         self.window = window or 1000
-        super(HTMLRowSet, self).__init__(typed=True)  # TODO turn off typing?
+        super(HTMLRowSet, self).__init__()
 
     def raw(self, sample=False):
         # TODO handle rowspan/colspan gracefully.
         for row in self.sheet.xpath('.//tr'):
-            # TODO: handle header nicer
-            yield [Cell(cell.text_content(), StringType) for cell in row.xpath('.//*[name()="td" or name()="th"]')]
+            # TODO: handle header nicer - preserve the fact it's a header!
+            yield [Cell(cell.text_content())
+                   for cell in row.xpath('.//*[name()="td" or name()="th"]')]

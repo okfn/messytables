@@ -22,8 +22,3 @@ class ReadTest(unittest.TestCase):
         row = list(row_set.sample)[0]
         assert_equal(row[0].value.strip(), 'HDI Rank')
         assert_equal(row[1].value.strip(), 'Country')
-
-        #TODO
-        #for row in list(row_set):
-        #    assert_equal(4, len(row))
-        #    assert_equal(row[0].type, StringType())
