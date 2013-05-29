@@ -7,6 +7,9 @@ class ZIPTableSet(messytables.TableSet):
     """ Reads TableSets from inside a ZIP file """
 
     def __init__(self, fileobj):
+        '''
+        On error it will raise ValueError.
+        '''
         tables = []
         found = []
         z = zipfile.ZipFile(fileobj, 'r')

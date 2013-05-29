@@ -405,5 +405,37 @@ class StreamInputTest(unittest.TestCase):
         assert_equal(7, len(data))
 
 
+class TestAny(unittest.TestCase):
+    def test_simple_csv(self):
+        fh = horror_fobj('simple.csv')
+        table_set = any_tableset(fh, extension='csv')
+        assert isinstance(table_set, CSVTableSet)
+
+    def test_simple_xls(self):
+        fh = horror_fobj('simple.xls')
+        table_set = any_tableset(fh, extension='xls')
+        assert isinstance(table_set, XLSTableSet)
+
+    def test_simple_xlsx(self):
+        fh = horror_fobj('simple.xlsx')
+        table_set = any_tableset(fh, extension='xlsx')
+        assert isinstance(table_set, XLSXTableSet)
+
+    def test_simple_zip(self):
+        fh = horror_fobj('simple.zip')
+        table_set = any_tableset(fh, extension='zip')
+        assert isinstance(table_set, ZIPTableSet)
+
+    def test_xlsm(self):
+        # This example found at:
+        # http://data.gov.uk/dataset/bi-annual-analysis-of-mental-capacity-act-2005-deprivation-of-liberty-safeguards-assessments-england/resource/9c6602dd-1361-4ce0-afea-8b20d13b4091
+        # https://catalogue.ic.nhs.uk/publications/mental-health/legislation/bian-anal-mca-2005-dols-eng-1011-0312/bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm
+        fh = horror_fobj('bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm')
+        table_set = any_tableset(fh, extension='xls')
+        row_set = table_set.tables[0]
+        data = list(row_set)
+        assert_equal(62, len(data))
+
+
 if __name__ == '__main__':
     unittest.main()

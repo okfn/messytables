@@ -12,9 +12,15 @@ def any_tableset(fileobj, mimetype=None, extension=None):
     Matching is done by looking at the type (e.g mimetype='text/csv')
     or file extension (e.g. extension='tsv'), or otherwise autodetecting
     the file format by using the magic library which looks at the first few
-    bytes of the file. Consult the source for recognized MIME types and file
-    extensions."""
-    if mimetype is None:
+    bytes of the file BUT is often wrong. Consult the source for recognized
+    MIME types and file extensions.
+
+    On error it raises one of: ValueError, xlrd.biffh.XLRDError, csv.Error
+    TODO: make these exceptions consistent
+    """
+    # Auto-detect if the caller has offered no clue. (Because the
+    # auto-detection routine is pretty poor.)
+    if mimetype is None and extension is None:
         import magic
         # Since we need to peek the start of the stream, make sure we can
         # seek back later. If not, slurp in the contents into a StringIO.
