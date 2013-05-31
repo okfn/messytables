@@ -28,7 +28,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        ],
+    ],
     keywords='',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',

@@ -8,7 +8,9 @@ def is_date(value):
 
 
 def create_date_formats(day_first=True):
-    """generate combinations of time and date formats with different delimeters"""
+    """generate combinations of time and date
+    formats with different delimeters
+    """
 
     if day_first:
         date_formats = ['dd/mm/yyyy', 'dd/mm/yy', 'yyyy/mm/dd']
@@ -20,11 +22,11 @@ def create_date_formats(day_first=True):
     date_formats += [
         # Things with words in
         'dd/bb/yyyy', 'dd/bbb/yyyy'
-        ]
+    ]
     python_date_formats += [
         # Things with words in
         '%d/%b/%Y', '%d/%B/%Y'
-        ]
+    ]
 
     both_date_formats = zip(date_formats, python_date_formats)
 
@@ -41,10 +43,8 @@ def create_date_formats(day_first=True):
     for seperator in date_seperators:
         for date_format, python_date_format in both_date_formats:
             all_date_formats.append(
-                (
-                 date_format.replace("/", seperator),
-                 python_date_format.replace("/", seperator)
-                )
+                (date_format.replace("/", seperator),
+                 python_date_format.replace("/", seperator))
             )
 
     all_formats = {}
@@ -54,13 +54,13 @@ def create_date_formats(day_first=True):
         for time_format, python_time_format in both_time_fromats:
 
             all_formats[date_format + time_format] = \
-                    python_date_format + python_time_format
+                python_date_format + python_time_format
 
             all_formats[date_format + "T" + time_format] =\
-                    python_date_format + "T" + python_time_format
+                python_date_format + "T" + python_time_format
 
             all_formats[date_format + " " + time_format] =\
-                    python_date_format + " " + python_time_format
+                python_date_format + " " + python_time_format
     return all_formats.values()
 
 DATE_FORMATS = create_date_formats()

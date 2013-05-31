@@ -11,7 +11,8 @@ XLS_TYPES = {
     # NB: Excel does not distinguish floats from integers so we use floats
     # We could try actual type detection between floats and ints later
     # or use the excel format string info - see
-    # https://groups.google.com/forum/?fromgroups=#!topic/python-excel/cAQ1ndsCVxk
+    # https://groups.google.com/forum/?fromgroups=#!topic/
+    #  python-excel/cAQ1ndsCVxk
     2: FloatType(),
     3: DateType(None),
     # this is actually boolean but we do not have a boolean type yet
@@ -23,10 +24,12 @@ class XLSTableSet(TableSet):
     """An excel workbook wrapper object.
     """
 
-    def __init__(self, fileobj=None, filename=None, window=None, encoding=None):
+    def __init__(self, fileobj=None, filename=None,
+                 window=None, encoding=None):
         '''Initilize the tableset.
 
-        :param encoding: passed on to xlrd.open_workbook function as encoding_override
+        :param encoding: passed on to xlrd.open_workbook function
+            as encoding_override
         '''
         from xlrd.biffh import XLRDError
 
@@ -36,8 +39,9 @@ class XLSTableSet(TableSet):
                 self.workbook = xlrd.open_workbook(filename,
                                                    encoding_override=encoding)
             elif fileobj:
-                self.workbook = xlrd.open_workbook(file_contents=fileobj.read(),
-                                                   encoding_override=encoding)
+                self.workbook = xlrd.open_workbook(
+                    file_contents=fileobj.read(),
+                    encoding_override=encoding)
             else:
                 raise Exception('You must provide one of filename of fileobj')
         except XLRDError:
@@ -46,7 +50,7 @@ class XLSTableSet(TableSet):
     @property
     def tables(self):
         """ Return the sheets in the workbook. """
-        return [XLSRowSet(name, self.workbook.sheet_by_name(name), self.window) \
+        return [XLSRowSet(name, self.workbook.sheet_by_name(name), self.window)
                 for name in self.workbook.sheet_names()]
 
 
@@ -72,11 +76,11 @@ class XLSRowSet(RowSet):
                 type = XLS_TYPES.get(cell.ctype, StringType())
                 if type == DateType(None):
                     if value == 0:
-                        raise ValueError('Invalid date at "%s":%d,%d' % (self.sheet.name, j + 1, i + 1))
+                        raise ValueError('Invalid date at "%s":%d,%d' % (
+                            self.sheet.name, j + 1, i + 1))
                     year, month, day, hour, minute, second = \
-                            xlrd.xldate_as_tuple(value, self.sheet.book.datemode)
+                        xlrd.xldate_as_tuple(value, self.sheet.book.datemode)
                     value = datetime(year, month, day, hour,
-                            minute, second)
+                                     minute, second)
                 row.append(Cell(value, type=type))
             yield row
-

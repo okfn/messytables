@@ -1,11 +1,9 @@
-from shutil import copyfileobj
 from openpyxl.reader.excel import load_workbook
 import cStringIO
 
 from messytables.core import RowSet, TableSet, Cell
-from messytables.types import StringType, IntegerType, \
-        DateType
-import messytables
+from messytables.types import (StringType, IntegerType,
+                               DateType)
 
 
 class XLSXTableSet(TableSet):
@@ -30,18 +28,20 @@ class XLSXTableSet(TableSet):
         functionality.
         '''
         if hasattr(fileobj, 'read'):
-            # wrap in a StringIO so we do not have hassle with seeks and binary etc
-            # (see notes to __init__ above)
+            # wrap in a StringIO so we do not have hassle with seeks and
+            # binary etc (see notes to __init__ above)
             # TODO: rather wasteful if in fact fileobj comes from disk
             fileobj = cStringIO.StringIO(fileobj.read())
         self.window = window
-        # looking at the openpyxl source code shows filename argument may be a fileobj
+        # looking at the openpyxl source code shows filename argument may
+        # be a fileobj
         self.workbook = load_workbook(fileobj)
 
     @property
     def tables(self):
         """ Return the sheets in the workbook. """
-        return [XLSXRowSet(sheet, self.window) for sheet in self.workbook.worksheets]
+        return [XLSXRowSet(sheet, self.window)
+                for sheet in self.workbook.worksheets]
 
 
 class XLSXRowSet(RowSet):

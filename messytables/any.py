@@ -29,33 +29,36 @@ def any_tableset(fileobj, mimetype=None, extension=None):
         mimetype = magic.from_buffer(header, mime=True)
         fileobj.seek(0)
 
-    if mimetype in ('application/x-zip-compressed', 'application/zip') \
-            or (extension and extension.lower() in ('zip',)):
+    if (mimetype in ('application/x-zip-compressed', 'application/zip')
+            or (extension and extension.lower() in ('zip',))):
         # Do this first because the extension applies to the content
         # type of the inner files, so don't check them before we check
         # for a ZIP file.
         return ZIPTableSet(fileobj)
 
-    if mimetype in ('text/csv', 'text/comma-separated-values') or \
-            (extension and extension.lower() in ('csv',)):
+    if (mimetype in ('text/csv', 'text/comma-separated-values') or
+            (extension and extension.lower() in ('csv',))):
         return CSVTableSet(fileobj)  # guess delimiter
-    if mimetype in ('text/tsv', 'text/tab-separated-values') or \
-            (extension and extension.lower() in ('tsv',)):
+    if (mimetype in ('text/tsv', 'text/tab-separated-values') or
+            (extension and extension.lower() in ('tsv',))):
         return CSVTableSet(fileobj, delimiter='\t')
     if mimetype in ('application/ms-excel', 'application/vnd.ms-excel',
-            'application/xls') or (extension and extension.lower() in \
-                ('xls',)):
+                    'application/xls') or (extension and extension.lower() in
+                                           ('xls',)):
         return XLSTableSet(fileobj)
-    if mimetype in ('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',) \
-            or (extension and extension.lower() in ('xlsx',)):
+    if (mimetype in (
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',)
+            or (extension and extension.lower() in ('xlsx',))):
         return XLSXTableSet(fileobj)
 
     if mimetype:
-        raise ValueError("Unrecognized MIME type: " + mimetype)
+        raise ValueError("Unrecognized MIME type: {mimetype}".format(
+            mimetype=mimetype))
     if extension:
-        raise ValueError("Could not determine MIME type and "
-         + "unrecognized extension: " + extension)
+        raise ValueError('''Could not determine MIME type and
+         unrecognized extension: {extension}'''.fomrat(extension=extension))
     raise ValueError("Could not determine MIME type and no extension given.")
+
 
 class AnyTableSet:
     '''Deprecated - use any_tableset instead.'''

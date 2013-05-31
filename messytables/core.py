@@ -14,7 +14,8 @@ def seekable_stream(fileobj):
 
 
 class BufferedFile(object):
-    ''' A buffered file that preserves the beginning of a stream up to buffer_size
+    ''' A buffered file that preserves the beginning of
+    a stream up to buffer_size
     '''
     def __init__(self, fp, buffer_size=2048):
         self.data = cStringIO.StringIO()
@@ -124,7 +125,7 @@ class Cell(object):
 
 class TableSet(object):
     """ A table set is used for data formats in which multiple tabular
-    objects are bundeled. This might include relational databases and
+    objects are bundled. This might include relational databases and
     workbooks used in spreadsheet software (Excel, LibreOffice).
 
     The primary way to instantiate is through a file object passed to
