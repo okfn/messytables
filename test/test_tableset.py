@@ -12,7 +12,7 @@ class TestTableSet(unittest.TestCase):
         fh = horror_fobj('simple.xls')
         table_set = any_tableset(fh, extension='xls')
 
-        self.assertIsInstance(table_set['simple.csv'], RowSet)
+        self.assertTrue(isinstance(table_set['simple.csv'], RowSet))
         self.assertRaises(KeyError, lambda: table_set['non-existent'])
 
         # TODO: It would be good if we could manipulate a tableset to have

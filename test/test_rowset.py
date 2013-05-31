@@ -16,4 +16,4 @@ class TestRowSet(unittest.TestCase):
         table_set = any_tableset(fh, extension='xls')
 
         x = repr(table_set.tables)
-        self.assertIsInstance(x, str)
+        self.assertTrue(isinstance(x, str))
