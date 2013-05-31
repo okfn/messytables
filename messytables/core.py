@@ -139,6 +139,15 @@ class TableSet(object):
         has a name. """
         pass
 
+    def __getitem__(self, name):
+        """ Return a RowSet based on the name given """
+        matching = [table for table in self.tables if table.name == name]
+        if not matching:
+            raise KeyError("No RowSet called '%s'" % name)
+        elif len(matching) > 1:
+            raise LookupError("Multiple RowSets match '%s'" % name)
+        return matching[0]
+
     @classmethod
     def from_fileobj(cls, fileobj, *args, **kwargs):
         """ Deprecated, only for compatibility reasons """
@@ -200,4 +209,4 @@ class RowSet(object):
             yield OrderedDict([(c.column, c.value) for c in row])
 
     def __repr__(self):
-        return "RowSet(%s)" % self.name
+        return "RowSet(%r)" % self.name
