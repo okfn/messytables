@@ -6,8 +6,7 @@ import urllib2
 import requests
 
 from nose.tools import assert_equal
-from httpretty import HTTPretty
-from httpretty import httprettified
+import httpretty
 
 
 def horror_fobj(name):
@@ -260,8 +259,9 @@ class ReadTest(unittest.TestCase):
         ts = CSVTableSet(sio('''name,dob\nmk,2012-01-02\n'''))
         rs = ts.tables[0]
         jts = rowset_as_jts(rs).as_dict()
-        assert_equal(jts['fields'], [{'type': 'string', 'id': u'name', 'label': u'name'},
-                                     {'type': 'date', 'id': u'dob', 'label': u'dob'}])
+        assert_equal(jts['fields'], [
+            {'type': 'string', 'id': u'name', 'label': u'name'},
+            {'type': 'date', 'id': u'dob', 'label': u'dob'}])
 
 
 class TypeGuessTest(unittest.TestCase):
@@ -276,7 +276,9 @@ class TypeGuessTest(unittest.TestCase):
         rows = CSVTableSet(csv_file).tables[0]
         guessed_types = type_guess(rows.sample)
 
-        assert_equal(guessed_types, [DecimalType(), DateType('%Y/%m/%d'), IntegerType(), DateType('%d %B %Y')])
+        assert_equal(guessed_types, [
+            DecimalType(), DateType('%Y/%m/%d'),
+            IntegerType(), DateType('%d %B %Y')])
 
     def test_type_guess_strict(self):
         import locale
@@ -289,7 +291,10 @@ class TypeGuessTest(unittest.TestCase):
             ,,,,,''')
         rows = CSVTableSet(csv_file).tables[0]
         guessed_types = type_guess(rows.sample, strict=True)
-        assert_equal(guessed_types, [StringType(), StringType(), DecimalType(), IntegerType(), DateType('%d %B %Y'), FloatType()])
+        assert_equal(guessed_types, [
+            StringType(), StringType(),
+            DecimalType(), IntegerType(), DateType('%d %B %Y'),
+            FloatType()])
 
     def test_strict_guessing_handles_padding(self):
         csv_file = StringIO.StringIO('''
@@ -319,33 +324,57 @@ class TypeGuessTest(unittest.TestCase):
         types = [StringType, IntegerType, FloatType, DecimalType, DateUtilType]
         guessed_types = type_guess(rows.sample, types, True)
         assert_equal(len(guessed_types), 96)
-        assert_equal(guessed_types, [IntegerType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), IntegerType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), IntegerType(),
-            StringType(), DecimalType(), DecimalType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), IntegerType(), StringType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), StringType(), IntegerType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), StringType(), StringType(), StringType(), StringType(),
-            StringType(), DateUtilType(), DateUtilType(), DateUtilType(),
-            DateUtilType(), StringType(), StringType(), StringType()])
+        assert_equal(guessed_types, [
+            IntegerType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            IntegerType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), IntegerType(), StringType(), DecimalType(),
+            DecimalType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            IntegerType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            IntegerType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), DateUtilType(),
+            DateUtilType(), DateUtilType(), DateUtilType(), StringType(),
+            StringType(), StringType()])
+
+    def test_file_with_few_strings_in_integer(self):
+        fh = horror_fobj('mixedGLB.csv')
+        rows = CSVTableSet(fh).tables[0]
+        offset, headers = headers_guess(rows.sample)
+        rows.register_processor(offset_processor(offset + 1))
+        types = [StringType, IntegerType, FloatType, DecimalType, DateUtilType]
+        guessed_types = type_guess(rows.sample, types, True)
+        assert_equal(len(guessed_types), 19)
+        print guessed_types
+        assert_equal(guessed_types, [
+            IntegerType(), IntegerType(),
+            IntegerType(), IntegerType(), IntegerType(), IntegerType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), StringType(), StringType(),
+            StringType(), StringType(), IntegerType(), StringType(),
+            StringType()])
 
 
 class StreamInputTest(unittest.TestCase):
-    @httprettified
+    @httpretty.activate
     def test_http_csv(self):
         url = 'http://www.messytables.org/static/long.csv'
-        HTTPretty.register_uri(HTTPretty.GET, url,
+        httpretty.register_uri(
+            httpretty.GET, url,
             body=horror_fobj('long.csv').read(),
             content_type="application/csv")
         fh = urllib2.urlopen(url)
@@ -354,10 +383,11 @@ class StreamInputTest(unittest.TestCase):
         data = list(row_set)
         assert_equal(4000, len(data))
 
-    @httprettified
+    @httpretty.activate
     def test_http_csv_requests(self):
         url = 'http://www.messytables.org/static/long.csv'
-        HTTPretty.register_uri(HTTPretty.GET, url,
+        httpretty.register_uri(
+            httpretty.GET, url,
             body=horror_fobj('long.csv').read(),
             content_type="application/csv")
         r = requests.get(url, stream=True)
@@ -368,10 +398,11 @@ class StreamInputTest(unittest.TestCase):
         data = list(row_set)
         assert_equal(4000, len(data))
 
-    @httprettified
+    @httpretty.activate
     def test_http_csv_encoding(self):
         url = 'http://www.messytables.org/static/utf-16le_encoded.csv'
-        HTTPretty.register_uri(HTTPretty.GET, url,
+        httpretty.register_uri(
+            httpretty.GET, url,
             body=horror_fobj('utf-16le_encoded.csv').read(),
             content_type="application/csv")
         fh = urllib2.urlopen(url)
@@ -380,10 +411,11 @@ class StreamInputTest(unittest.TestCase):
         data = list(row_set)
         assert_equal(328, len(data))
 
-    @httprettified
+    @httpretty.activate
     def test_http_xls(self):
         url = 'http://www.messytables.org/static/simple.xls'
-        HTTPretty.register_uri(HTTPretty.GET, url,
+        httpretty.register_uri(
+            httpretty.GET, url,
             body=horror_fobj('simple.xls').read(),
             content_type="application/ms-excel")
         fh = urllib2.urlopen(url)
@@ -392,10 +424,11 @@ class StreamInputTest(unittest.TestCase):
         data = list(row_set)
         assert_equal(7, len(data))
 
-    @httprettified
+    @httpretty.activate
     def test_http_xlsx(self):
         url = 'http://www.messytables.org/static/simple.xlsx'
-        HTTPretty.register_uri(HTTPretty.GET, url,
+        httpretty.register_uri(
+            httpretty.GET, url,
             body=horror_fobj('simple.xlsx').read(),
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         fh = urllib2.urlopen(url)
