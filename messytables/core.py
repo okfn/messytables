@@ -200,4 +200,4 @@ class RowSet(object):
             yield OrderedDict([(c.column, c.value) for c in row])
 
     def __repr__(self):
-        return "RowSet(%s)" % self.name
+        return "RowSet(%r)" % self.name
