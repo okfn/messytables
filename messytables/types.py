@@ -134,8 +134,8 @@ class DateType(CellType):
         return datetime.datetime.strptime(value, self.format)
 
     def __eq__(self, other):
-        return isinstance(other, DateType) and \
-                self.format == other.format
+        return (isinstance(other, DateType) and
+                self.format == other.format)
 
     def __repr__(self):
         return "Date(%s)" % self.format
