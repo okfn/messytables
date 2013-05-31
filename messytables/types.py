@@ -79,29 +79,23 @@ class IntegerType(CellType):
             return locale.atoi(value)
 
 
-class FloatType(CellType):
-    """ Floating point number. """
-    guessing_weight = 4
-    result_type = float
-
-    def cast(self, value):
-        if value in ['', None]:
-            return None
-        try:
-            return float(value)
-        except:
-            return locale.atof(value)
-
-
 class DecimalType(CellType):
     """ Decimal number, ``decimal.Decimal``. """
-    guessing_weight = 5
+    guessing_weight = 4
     result_type = decimal.Decimal
 
     def cast(self, value):
         if value in ['', None]:
             return None
-        return decimal.Decimal(value)
+        try:
+            return decimal.Decimal(value)
+        except:
+            return decimal.Decimal(locale.atof(value))
+
+
+# FloatType is deprecated
+class FloatType(DecimalType):
+    pass
 
 
 class DateType(CellType):
@@ -160,7 +154,7 @@ class DateUtilType(CellType):
         return parser.parse(value)
 
 
-TYPES = [StringType, IntegerType, FloatType, DecimalType, DateType]
+TYPES = [StringType, IntegerType, DecimalType, DateType]
 
 
 def type_guess(rows, types=TYPES, strict=False):

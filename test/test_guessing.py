@@ -6,7 +6,7 @@ from . import horror_fobj
 from nose.tools import assert_equal
 from messytables import (CSVTableSet, type_guess, headers_guess,
                          offset_processor, DateType, StringType,
-                         DecimalType, FloatType, IntegerType,
+                         DecimalType, IntegerType,
                          DateUtilType)
 
 
@@ -40,7 +40,7 @@ class TypeGuessTest(unittest.TestCase):
         assert_equal(guessed_types, [
             StringType(), StringType(),
             DecimalType(), IntegerType(), DateType('%d %B %Y'),
-            FloatType()])
+            DecimalType()])
 
     def test_strict_guessing_handles_padding(self):
         csv_file = StringIO.StringIO('''
@@ -67,7 +67,7 @@ class TypeGuessTest(unittest.TestCase):
         rows = CSVTableSet(fh).tables[0]
         offset, headers = headers_guess(rows.sample)
         rows.register_processor(offset_processor(offset + 1))
-        types = [StringType, IntegerType, FloatType, DecimalType, DateUtilType]
+        types = [StringType, IntegerType, DecimalType, DateUtilType]
         guessed_types = type_guess(rows.sample, types, True)
         assert_equal(len(guessed_types), 96)
         assert_equal(guessed_types, [
@@ -102,7 +102,7 @@ class TypeGuessTest(unittest.TestCase):
         rows = CSVTableSet(fh).tables[0]
         offset, headers = headers_guess(rows.sample)
         rows.register_processor(offset_processor(offset + 1))
-        types = [StringType, IntegerType, FloatType, DecimalType, DateUtilType]
+        types = [StringType, IntegerType, DecimalType, DateUtilType]
         guessed_types = type_guess(rows.sample, types, True)
         assert_equal(len(guessed_types), 19)
         print guessed_types
