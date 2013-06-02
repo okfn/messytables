@@ -71,7 +71,7 @@ class IntegerType(CellType):
     result_type = int
 
     def cast(self, value):
-        if value in ['', None]:
+        if value in ('', None):
             return None
         try:
             return int(value)
@@ -85,7 +85,7 @@ class FloatType(CellType):
     result_type = float
 
     def cast(self, value):
-        if value in ['', None]:
+        if value in ('', None):
             return None
         try:
             return float(value)
@@ -99,7 +99,7 @@ class DecimalType(CellType):
     result_type = decimal.Decimal
 
     def cast(self, value):
-        if value in ['', None]:
+        if value in ('', None):
             return None
         return decimal.Decimal(value)
 
@@ -127,7 +127,7 @@ class DateType(CellType):
     def cast(self, value):
         if isinstance(value, self.result_type):
             return value
-        if value in ['', None]:
+        if value in ('', None):
             return None
         if self.format is None:
             return value
