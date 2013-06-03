@@ -29,7 +29,7 @@ def insert_blank_cells(row, blanks):
     Given a list of values, insert blank cells at the indexes given by blanks
     The letters in these examples should really be cells.
     >>> insert_blank_cells(["a","e","f"],[1,2,3])
-    ["a", <Cell(String:>, <Cell(String:>, <Cell(String:>, "e", "f"]
+    ['a', <Cell(String:>, <Cell(String:>, <Cell(String:>, 'e', 'f']
     """
     # DISCUSS: option to repeat top-left of col/rowspan.
     # or to identify that areas are a single cell, originally.
