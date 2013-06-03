@@ -1,37 +1,40 @@
 from messytables.core import RowSet, TableSet, Cell
 import lxml.html
 import json
-from collections import Counter, defaultdict
+from collections import defaultdict
 
 
 class HTMLTableSet(TableSet):
-    def __init__(self, fileobj=None, filename=None, window=None, encoding=None):
+    def __init__(self, fileobj=None, filename=None, window=None):
 
         if filename:
             fh = open(filename, 'r')
         else:
             fh = fileobj
         if not fh:
-            raise Exception('You must provide one of filename or fileobj')
+            raise TypeError('You must provide one of filename or fileobj')
 
         self.htmltables = lxml.html.fromstring(fh.read()).xpath('//table')
 
     @property
     def tables(self):
-        return [HTMLRowSet(json.dumps(dict(x.attrib)), x) for x in self.htmltables]
+        def rowset_name(x):
+            json.dumps(dict(x.attrib))
+
+        return [HTMLRowSet(rowset_name(x), x) for x in self.htmltables]
 
 
-def skipcols(row, skip):
+def insert_blank_cells(row, blanks):
     """
-    >>> skipcols([1,2,3],[1,2,3])
-    [1, <Cell(String:>, <Cell(String:>, <Cell(String:>, 2, 3]
-    >>> skipcols([1,2,4],[2])
-    [1, 2, <Cell(String:>, 4]
+    Given a list of values, insert blank cells at the indexes given by blanks
+    The letters in these examples should really be cells.
+    >>> insert_blank_cells(["a","e","f"],[1,2,3])
+    ["a", <Cell(String:>, <Cell(String:>, <Cell(String:>, "e", "f"]
     """
-    print "***", skip
-    for i in skip:
-        if i >= 0:  # TODO: negative hack!
-            row.insert(i, Cell(""))  # TODO: option to use top-left of col/rowspan.
+    # DISCUSS: option to repeat top-left of col/rowspan.
+    # or to identify that areas are a single cell, originally.
+    for i in blanks:
+        row.insert(i, Cell(""))
     return row
 
 
@@ -43,34 +46,30 @@ class HTMLRowSet(RowSet):
         super(HTMLRowSet, self).__init__()
 
     def raw(self, sample=False):
-        toskip = defaultdict(list)
-        assert "Element" not in repr(toskip), toskip
-        # TODO handle rowspan/colspan gracefully.
+        blank_cells = defaultdict(list)  # ie row 2, cols 3,4,6: { 2 : [3,4,6] }
         for r, row in enumerate(self.sheet.xpath('.//tr')):
             # TODO: handle header nicer - preserve the fact it's a header!
-            htmlcells = row.xpath('.//*[name()="td" or name()="th"]')
-            items = [Cell(cell.text_content()) for cell in htmlcells]
-            column = 0
-            """ at the end of this chunk, you will have an accurate toskip."""
-            # Add rowspan(or 1) to the next colspan(or 1) columns.
-            # Except the current column; add one less to that.
-            for htmlcell in htmlcells:
+            html_cells = row.xpath('.//*[name()="td" or name()="th"]')
+            # TODO: only select those that are not children of subtables?
+
+            """ at the end of this chunk, you will have an accurate blank_cells."""
+            output_column = 0
+            for html_cell in html_cells:
                 assert type(r) == int
-                while column in toskip[r]:
-                    column = column+1
-                rowspan = int(htmlcell.attrib.get('rowspan', "1"))
-                colspan = int(htmlcell.attrib.get('colspan', "1"))
-                x_range = range(column, column + colspan)
+                while output_column in blank_cells[r]:
+                    output_column += 1  # pass over col, doesn't exist in src table
+                rowspan = int(html_cell.attrib.get('rowspan', "1"))
+                colspan = int(html_cell.attrib.get('colspan', "1"))
+                x_range = range(output_column, output_column + colspan)
                 y_range = range(r, r + rowspan)
-                if rowspan + colspan > 2:
-                    print "span at %r, %r: %r, %r"%(r, column, rowspan, colspan)
                 for x in x_range:
                     for y in y_range:
-                        if column != x or r != y:
-                            print "blank %r, %r"%(x,y)
-                            toskip[y].append(x)
-                            print toskip
+                        if (output_column, r) != (x, y):  # don't skip current cell
+                            blank_cells[y].append(x)
+                output_column += 1
 
-                column = column + 1
-            
-            yield skipcols(items, toskip[r])
+            cells = [Cell(cell.text_content()) for cell in html_cells]
+            yield insert_blank_cells(cells, blank_cells[r])
+            if sample and r == self.window:
+                return
+            del blank_cells[r]
