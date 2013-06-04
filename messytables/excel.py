@@ -1,9 +1,11 @@
 from datetime import datetime
 import xlrd
+from xlrd.biffh import XLRDError
 
 from messytables.core import RowSet, TableSet, Cell
 from messytables.types import StringType, IntegerType, \
         DateType, FloatType
+from messytables.error import ReadError
 
 
 XLS_TYPES = {
@@ -31,8 +33,6 @@ class XLSTableSet(TableSet):
         :param encoding: passed on to xlrd.open_workbook function
             as encoding_override
         '''
-        from xlrd.biffh import XLRDError
-
         self.window = window
         try:
             if filename:
@@ -45,7 +45,7 @@ class XLSTableSet(TableSet):
             else:
                 raise Exception('You must provide one of filename of fileobj')
         except XLRDError:
-            raise XLRDError("Unsupported format, or corrupt file")
+            raise ReadError("Unsupported Excel format, or corrupt file")
 
     @property
     def tables(self):

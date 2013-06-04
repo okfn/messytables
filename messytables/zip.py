@@ -8,7 +8,7 @@ class ZIPTableSet(messytables.TableSet):
 
     def __init__(self, fileobj):
         """
-        On error it will raise ValueError.
+        On error it will raise messytables.ReadError.
         """
         tables = []
         found = []
@@ -29,7 +29,7 @@ class ZIPTableSet(messytables.TableSet):
                 tables.extend(filetables.tables)
 
             if len(tables) == 0:
-                raise ValueError('''ZIP file has no recognized
+                raise messytables.ReadError('''ZIP file has no recognized
                     tables (%s).''' % ', '.join(found))
         finally:
             z.close()

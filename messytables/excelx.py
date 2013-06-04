@@ -4,6 +4,7 @@ import cStringIO
 from messytables.core import RowSet, TableSet, Cell
 from messytables.types import (StringType, IntegerType,
                                DateType)
+from messytables.error import ReadError
 
 
 class XLSXTableSet(TableSet):
@@ -33,9 +34,12 @@ class XLSXTableSet(TableSet):
             # TODO: rather wasteful if in fact fileobj comes from disk
             fileobj = cStringIO.StringIO(fileobj.read())
         self.window = window
-        # looking at the openpyxl source code shows filename argument may
-        # be a fileobj
-        self.workbook = load_workbook(fileobj)
+        try:
+            # looking at the openpyxl source code shows filename argument may
+            # be a fileobj
+            self.workbook = load_workbook(fileobj)
+        except Exception, e:
+            raise ReadError('Could not open ExcelX file: %s', e)
 
     @property
     def tables(self):

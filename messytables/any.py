@@ -15,8 +15,7 @@ def any_tableset(fileobj, mimetype=None, extension=None):
     bytes of the file BUT is often wrong. Consult the source for recognized
     MIME types and file extensions.
 
-    On error it raises one of: ValueError, xlrd.biffh.XLRDError, csv.Error
-    TODO: make these exceptions consistent
+    On error it raises messytables.ReadError
     """
     # Auto-detect if the caller has offered no clue. (Because the
     # auto-detection routine is pretty poor.)

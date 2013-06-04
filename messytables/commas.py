@@ -168,4 +168,4 @@ class CSVRowSet(RowSet):
             elif 'line contains NULL byte' in unicode(err):
                 pass
             else:
-                raise
+                raise ReadError('Error reading CSV: %r', err)
