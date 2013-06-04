@@ -43,7 +43,7 @@ class XLSTableSet(TableSet):
                     file_contents=fileobj.read(),
                     encoding_override=encoding)
             else:
-                raise Exception('You must provide one of filename of fileobj')
+                raise Exception('You must provide one of filename or fileobj')
         except XLRDError:
             raise XLRDError("Unsupported format, or corrupt file")
 
