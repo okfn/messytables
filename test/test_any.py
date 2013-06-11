@@ -34,3 +34,9 @@ class TestAny(unittest.TestCase):
         row_set = table_set.tables[0]
         data = list(row_set)
         assert_equal(62, len(data))
+
+    def test_unknown(self):
+        fh = horror_fobj('simple.unknown')
+        self.assertRaises(ValueError, lambda: any_tableset(fh, extension='unknown'))
+
+
