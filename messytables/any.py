@@ -55,7 +55,7 @@ def any_tableset(fileobj, mimetype=None, extension=None):
             mimetype=mimetype))
     if extension:
         raise ValueError('''Could not determine MIME type and
-         unrecognized extension: {extension}'''.fomrat(extension=extension))
+         unrecognized extension: {extension}'''.format(extension=extension))
     raise ValueError("Could not determine MIME type and no extension given.")
 
 
