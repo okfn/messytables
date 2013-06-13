@@ -1,3 +1,8 @@
+0.11.0 (master, wip)
+* #60 Basic HTML table parsing
+* #55 Fix `__repr__` and unicode issue
+* #55 Add `__getitem__` to TableSet
+
 0.10.0 (16 May 2013)
 * #52 Rewrite type guessing
 * Properly handle empty values when applying types
