@@ -9,7 +9,7 @@ import messytables
 
 class UTF8Recoder:
     """
-    Iterator that reads an encoded stream and reencodes the input to UTF-8
+    Iterator that reads an encoded stream and re-encodes the input to UTF-8
     """
     def __init__(self, f, encoding):
         sample = f.read(2000)
@@ -17,7 +17,8 @@ class UTF8Recoder:
             results = chardet.detect(sample)
             encoding = results['encoding']
             if not encoding:
-                # Don't break, just try and load the data with a semi-sane encoding
+                # Don't break, just try and load the data with
+                # a semi-sane encoding
                 encoding = 'utf-8'
         f.seek(0)
         self.reader = codecs.getreader(encoding)(f, 'ignore')
@@ -30,11 +31,13 @@ class UTF8Recoder:
         # BOM in the stream. This is ridiculously dumb. For UTF-{16,32}{LE,BE}
         # encodings, check for a BOM and remove it if it's there.
         if encoding in ("UTF-16LE", "UTF-16BE", "UTF-32LE", "UTF-32BE"):
-            bom = getattr(codecs, "BOM_UTF" + encoding[4:6] + "_" + encoding[-2:], None)
+            bom = getattr(codecs, "BOM_UTF" + encoding[4:6] +
+                          "_" + encoding[-2:], None)
             if bom:
-                # Try to read the BOM, which is a byte sequence, from the underlying
-                # stream. If all characters match, then go on. Otherwise when a character
-                # doesn't match, seek the stream back to the beginning and go on.
+                # Try to read the BOM, which is a byte sequence, from
+                # the underlying stream. If all characters match, then
+                # go on. Otherwise when a character doesn't match, seek
+                # the stream back to the beginning and go on.
                 for c in bom:
                     if f.read(1) != c:
                         f.seek(0)
@@ -62,7 +65,9 @@ class CSVTableSet(TableSet):
     """ A CSV table set. Since CSV is always just a single table,
     this is just a pass-through for the row set. """
 
-    def __init__(self, fileobj, delimiter=None, quotechar=None, name=None, encoding=None, window=None, doublequote=None, lineterminator=None, skipinitialspace=None):
+    def __init__(self, fileobj, delimiter=None, quotechar=None, name=None,
+                 encoding=None, window=None, doublequote=None,
+                 lineterminator=None, skipinitialspace=None):
         self.fileobj = messytables.seekable_stream(fileobj)
         self.name = name or 'table'
         self.delimiter = delimiter
@@ -128,7 +133,7 @@ class CSVRowSet(RowSet):
 
     @property
     def _overrides(self):
-        # some variables in the dialect can be overriden
+        # some variables in the dialect can be overridden
         d = {}
         if self.delimiter:
             d['delimiter'] = self.delimiter
@@ -163,4 +168,4 @@ class CSVRowSet(RowSet):
             elif 'line contains NULL byte' in unicode(err):
                 pass
             else:
-                raise
+                raise ReadError('Error reading CSV: %r', err)

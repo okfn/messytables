@@ -14,7 +14,8 @@ def seekable_stream(fileobj):
 
 
 class BufferedFile(object):
-    ''' A buffered file that preserves the beginning of a stream up to buffer_size
+    ''' A buffered file that preserves the beginning of
+    a stream up to buffer_size
     '''
     def __init__(self, fp, buffer_size=2048):
         self.data = cStringIO.StringIO()
@@ -124,19 +125,34 @@ class Cell(object):
 
 class TableSet(object):
     """ A table set is used for data formats in which multiple tabular
-    objects are bundeled. This might include relational databases and
+    objects are bundled. This might include relational databases and
     workbooks used in spreadsheet software (Excel, LibreOffice).
 
-    The primary way to instantiate is through a file object passed to
-    the constructor pointer. This means you can stream a table set
-    directly off a web site or some similar source.
+    For each format, we derive from this abstract base class, providing a
+    constructor that takes a file object and tables() that returns each table.
+    This means you can stream a table set directly off a web site or some
+    similar source.
+
+    On any fatal errors, it should raise messytables.ReadError
     """
+    def __init__(self, fileobj):
+        """ Store the fileobj, and perhaps all or part of the file. """
+        pass
 
     @property
     def tables(self):
-        """ Return a listing of tables in the ``TableSet``. Each table
-        has a name. """
+        """ Return a listing of tables (i.e. RowSets) in the ``TableSet``.
+        Each table has a name. """
         pass
+
+    def __getitem__(self, name):
+        """ Return a RowSet based on the name given """
+        matching = [table for table in self.tables if table.name == name]
+        if not matching:
+            raise KeyError("No RowSet called '%s'" % name)
+        elif len(matching) > 1:
+            raise LookupError("Multiple RowSets match '%s'" % name)
+        return matching[0]
 
     @classmethod
     def from_fileobj(cls, fileobj, *args, **kwargs):
@@ -149,7 +165,10 @@ class RowSet(object):
     rows (which in turn is a list of ``Cell`` objects). The main table
     iterable can only be traversed once, so on order to allow analytics
     like type and header guessing on the data, a sample of ``window``
-    rows is read, cached, and made available. """
+    rows is read, cached, and made available.
+
+    On any fatal errors, it should raise messytables.ReadError
+    """
 
     def __init__(self, typed=False):
         self.typed = typed
@@ -199,4 +218,4 @@ class RowSet(object):
             yield OrderedDict([(c.column, c.value) for c in row])
 
     def __repr__(self):
-        return "RowSet(%s)" % self.name
+        return "RowSet(%r)" % self.name

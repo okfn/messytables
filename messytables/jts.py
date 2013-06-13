@@ -1,5 +1,6 @@
 '''
-Convert a rowset to the json table schema (http://www.dataprotocols.org/en/latest/json-table-schema.html)
+Convert a rowset to the json table schema
+(http://www.dataprotocols.org/en/latest/json-table-schema.html)
 '''
 
 import messytables
@@ -30,7 +31,8 @@ def rowset_as_jts(rowset, headers=None, types=None):
 
 def headers_and_typed_as_jts(headers, types):
     ''' Create a json table schema from headers and types as
-    returned from :meth:`~messytables.headers.headers_guess` and :meth:`~messytables.types.type_guess`.
+    returned from :meth:`~messytables.headers.headers_guess`
+    and :meth:`~messytables.types.type_guess`.
     '''
     j = jsontableschema.JSONTableSchema()
 

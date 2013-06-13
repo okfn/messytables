@@ -71,7 +71,7 @@ class IntegerType(CellType):
     result_type = int
 
     def cast(self, value):
-        if value in ['', None]:
+        if value in ('', None):
             return None
         try:
             return int(value)
@@ -85,7 +85,7 @@ class FloatType(CellType):
     result_type = float
 
     def cast(self, value):
-        if value in ['', None]:
+        if value in ('', None):
             return None
         try:
             return float(value)
@@ -99,7 +99,7 @@ class DecimalType(CellType):
     result_type = decimal.Decimal
 
     def cast(self, value):
-        if value in ['', None]:
+        if value in ('', None):
             return None
         return decimal.Decimal(value)
 
@@ -127,15 +127,15 @@ class DateType(CellType):
     def cast(self, value):
         if isinstance(value, self.result_type):
             return value
-        if value in ['', None]:
+        if value in ('', None):
             return None
         if self.format is None:
             return value
         return datetime.datetime.strptime(value, self.format)
 
     def __eq__(self, other):
-        return isinstance(other, DateType) and \
-                self.format == other.format
+        return (isinstance(other, DateType) and
+                self.format == other.format)
 
     def __repr__(self):
         return "Date(%s)" % self.format
@@ -178,7 +178,7 @@ def type_guess(rows, types=TYPES, strict=False):
         at_least_one_value = []
         for ri, row in enumerate(rows):
             diff = len(row) - len(guesses)
-            for _ in range(diff):
+            for _ in xrange(diff):
                 typesdict = {}
                 for type in type_instances:
                     typesdict[type] = 0
@@ -193,7 +193,7 @@ def type_guess(rows, types=TYPES, strict=False):
                         guesses[ci].pop(type)
         # no need to set guessing weights before this
         for i, guess in enumerate(guesses):
-            for type in guess.keys():
+            for type in guess:
                 guesses[i][type] = type.guessing_weight
         # in case there were no values at all in the column,
         # we just set the guessed type to string
@@ -203,11 +203,11 @@ def type_guess(rows, types=TYPES, strict=False):
     else:
         for i, row in enumerate(rows):
             diff = len(row) - len(guesses)
-            for _ in range(diff):
+            for _ in xrange(diff):
                 guesses.append(defaultdict(int))
             for i, cell in enumerate(row):
                 # add string guess so that we have at least one guess
-                guesses[i][StringType()] = 0
+                guesses[i][StringType()] = guesses[i].get(StringType(), 0)
                 if not cell.value:
                     continue
                 for type in type_instances:
@@ -216,7 +216,7 @@ def type_guess(rows, types=TYPES, strict=False):
         _columns = []
     _columns = []
     for types in guesses:
-        _columns.append(max(types.items(), key=lambda (t, n): n)[0])
+        _columns.append(max(types.iteritems(), key=lambda (t, n): n)[0])
     return _columns
 
 

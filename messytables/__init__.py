@@ -4,6 +4,7 @@ from messytables.headers import headers_guess, headers_processor, headers_make_u
 from messytables.types import type_guess, types_processor
 from messytables.types import StringType, IntegerType, FloatType, \
         DecimalType, DateType, DateUtilType
+from messytables.error import ReadError
 
 from messytables.core import Cell, TableSet, RowSet, seekable_stream
 from messytables.commas import CSVTableSet, CSVRowSet
