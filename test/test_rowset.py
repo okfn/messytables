@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import os
 import unittest
-
+from . import horror_fobj
 from messytables.any import any_tableset
-
-
-def horror_fobj(name):
-    fn = os.path.join(os.path.dirname(__file__), '..', 'horror', name)
-    return open(fn, 'rb')
 
 
 class TestRowSet(unittest.TestCase):
