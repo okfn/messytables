@@ -187,6 +187,24 @@ class ReadTest(unittest.TestCase):
         row_types = map(lambda c: c.type, data[2])
         assert_equal(expected_types, row_types)
 
+    def test_apply_null_values(self):
+        fh = horror_fobj('null.csv')
+        table_set = CSVTableSet(fh)
+        row_set = table_set.tables[0]
+        types = type_guess(row_set.sample, strict=True)
+        expected_types = [IntegerType(), StringType(), IntegerType(), StringType()]
+        assert_equal(types, expected_types)
+
+        row_set.register_processor(types_processor(types))
+        data = list(row_set)
+        # treat null as non empty text and 0 as non empty integer
+        assert not data[0][0].empty
+        assert not data[0][1].empty
+        assert not data[0][2].empty
+        assert not data[0][3].empty
+        assert data[2][2].empty
+        assert data[2][3].empty
+
     def test_read_type_know_simple(self):
         fh = horror_fobj('simple.xls')
         table_set = XLSTableSet(fh)
