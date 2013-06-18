@@ -1,6 +1,24 @@
 from messytables import ZIPTableSet
 from messytables import CSVTableSet, XLSTableSet, XLSXTableSet, HTMLTableSet
 import messytables
+import re
+
+
+def extension(filename):
+    """Takes a filename (or URL, or extension) and returns a better guess at
+    the extension in question.
+    >>> extension("")
+    ''
+    >>> extension("tsv")
+    'tsv'
+    >>> extension("file.zip")
+    'zip'
+    >>> extension("http://myserver.info/file.xlsx?download=True")
+    'xlsx'
+    """
+    dot_ext = '.'+filename
+    matches = re.findall('\.(\w*)',dot_ext)
+    return matches[-1]
 
 
 def any_tableset(fileobj, mimetype=None, extension=None):
@@ -17,6 +35,7 @@ def any_tableset(fileobj, mimetype=None, extension=None):
 
     On error it raises messytables.ReadError
     """
+
     # Auto-detect if the caller has offered no clue. (Because the
     # auto-detection routine is pretty poor.)
     if mimetype is None and extension is None:
