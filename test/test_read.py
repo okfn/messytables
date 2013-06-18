@@ -2,7 +2,7 @@
 import unittest
 
 from . import horror_fobj
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_in
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
@@ -319,6 +319,13 @@ class ReadHtmlTest(unittest.TestCase):
         assert_equal(row[0].value.strip(), 'HDI Rank')
         assert_equal(row[1].value.strip(), 'Country')
         assert_equal(row[4].value.strip(), '2010')
+    
+    def test_read_html_property(self):
+        fh = horror_fobj('html.html')
+        table_set = HTMLTableSet(fh)
+        row_set = table_set.tables[0]
+        row = list(row_set.sample)[0]
+        assert_in('</th>',row[4].properties['html'])
 
     def test_read_span_html(self):
         fh = horror_fobj('rowcolspan.html')
