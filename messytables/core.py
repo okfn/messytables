@@ -106,9 +106,9 @@ class Cell(object):
 
     def __repr__(self):
         if self.column is not None:
-            return "<Cell(%s=%s:%s>" % (self.column,
-                    self.type, self.value)
-        return "<Cell(%r:%s>" % (self.type, self.value)
+            return "<Cell(%r=%r:%r>" % (self.column,
+                                        self.type, self.value)
+        return "<Cell(%r:%r>" % (self.type, self.value)
 
     @property
     def empty(self):
