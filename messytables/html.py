@@ -19,7 +19,7 @@ class HTMLTableSet(TableSet):
     @property
     def tables(self):
         def rowset_name(x):
-            json.dumps(dict(x.attrib))
+            return json.dumps(dict(x.attrib))
 
         return [HTMLRowSet(rowset_name(x), x) for x in self.htmltables]
 
@@ -46,7 +46,7 @@ class HTMLRowSet(RowSet):
         super(HTMLRowSet, self).__init__()
 
     def raw(self, sample=False):
-        blank_cells = defaultdict(list)  # ie row 2, cols 3,4,6: { 2 : [3,4,6] }
+        blank_cells = defaultdict(list)  # ie row 2, cols 3,4,6: {2: [3,4,6]}
         for r, row in enumerate(self.sheet.xpath('.//tr')):
             # TODO: handle header nicer - preserve the fact it's a header!
             html_cells = row.xpath('.//*[name()="td" or name()="th"]')
