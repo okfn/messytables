@@ -51,7 +51,7 @@ def insert_blank_cells(row, blanks):
     # DISCUSS: option to repeat top-left of col/rowspan.
     # or to identify that areas are a single cell, originally.
     for i in blanks:
-        row.insert(i, Cell(""))
+        row.insert(i, Cell("", properties={'span':True}))
     return row
 
 
