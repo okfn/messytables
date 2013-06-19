@@ -4,7 +4,7 @@ import unittest
 from . import horror_fobj
 from nose.tools import assert_equal
 from messytables import (any_tableset, XLSTableSet, ZIPTableSet,
-                         CSVTableSet, XLSXTableSet)
+                         CSVTableSet, XLSXTableSet, ReadError)
 
 
 class TestAny(unittest.TestCase):
@@ -37,6 +37,6 @@ class TestAny(unittest.TestCase):
 
     def test_unknown(self):
         fh = horror_fobj('simple.unknown')
-        self.assertRaises(ValueError, lambda: any_tableset(fh, extension='unknown'))
+        self.assertRaises(ReadError, lambda: any_tableset(fh, extension='unknown'))
 
 
