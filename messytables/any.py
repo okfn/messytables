@@ -37,6 +37,9 @@ def get_mime(fileobj):
     header = fileobj.read(4096)
     mimetype = magic.from_buffer(header, mime=True)
     fileobj.seek(0)
+    # There's an issue with vnd.ms-excel being returned fro XLSX files, too.
+    if mimetype == 'application/vnd.ms-excel' and header[:2] == 'PK':
+        return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     return mimetype
 
 
