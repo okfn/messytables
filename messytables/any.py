@@ -45,6 +45,7 @@ def guess_mime(mimetype=None, fileobj=None):
         raise TypeError('guess_mime() takes at least 1 non-None argument (0 given)')
     if fileobj:
         return guess_mime(get_mime(fileobj))
+
     lookup = {'application/x-zip-compressed': ZIPTableSet,
               'application/zip': ZIPTableSet,
               'text/comma-separated-values': CSVTableSet,
@@ -52,7 +53,10 @@ def guess_mime(mimetype=None, fileobj=None):
               'application/ms-excel': XLSTableSet,
               'application/vnd.ms-excel': XLSTableSet,
               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': XLSXTableSet,
-              'text/html': HTMLTableSet}
+              'text/html': HTMLTableSet,
+              'application/xml': XLSXTableSet,
+              'text/plain': CSVTableSet,  # could be TAB.
+              }
     if mimetype in lookup:
         return lookup.get(mimetype, None)
 
@@ -64,7 +68,12 @@ def guess_ext(ext):
               'xls': XLSTableSet,
               'xlsx': XLSXTableSet,
               'htm': HTMLTableSet,
-              'html': HTMLTableSet}
+              'html': HTMLTableSet,
+              'xlt': XLSTableSet,  # obscure Excel extensions taken from
+              'xlm': XLSTableSet,  # http://en.wikipedia.org/wiki/List_of_Microsoft_Office_filename_extensions
+              'xlsm': XLSXTableSet,
+              'xltx': XLSXTableSet,
+              'xltm': XLSXTableSet}
     if ext in lookup:
         return lookup.get(ext, None)
 
