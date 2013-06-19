@@ -198,12 +198,15 @@ class ReadTest(unittest.TestCase):
         row_set.register_processor(types_processor(types))
         data = list(row_set)
         # treat null as non empty text and 0 as non empty integer
-        assert not data[0][0].empty
-        assert not data[0][1].empty
-        assert not data[0][2].empty
-        assert not data[0][3].empty
-        assert data[2][2].empty
-        assert data[2][3].empty
+        assert [x.empty for x in data[0]] == [False, False, False, False]
+        assert [x.empty for x in data[1]] == [False, False, False, False]
+        assert [x.empty for x in data[2]] == [False, False, True, True]
+        assert [x.empty for x in data[3]] == [False, False, False, False]
+        assert [x.empty for x in data[4]] == [False, False, False, True]
+        assert [x.empty for x in data[5]] == [False, False, False, True]
+
+        # we expect None for Integers and "" for empty strings in CSV
+        assert [x.value for x in data[2]] == [3, "null", None, ""], data[2]
 
     def test_read_type_know_simple(self):
         fh = horror_fobj('simple.xls')
