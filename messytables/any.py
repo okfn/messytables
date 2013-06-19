@@ -75,9 +75,9 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
     type.
 
     Best matching TableSet loaded with the fileobject is returned.
-    Matching is done by looking at the type (e.g mimetype='text/csv')
-    or file extension (e.g. extension='tsv'), or otherwise autodetecting
-    the file format by using the magic library which looks at the first few
+    Matching is done by looking at the type (e.g mimetype='text/csv'), then
+    the file extension (e.g. extension='tsv'), then autodetecting the
+    file format by using the magic library which looks at the first few
     bytes of the file BUT is often wrong. Consult the source for recognized
     MIME types and file extensions.
 
