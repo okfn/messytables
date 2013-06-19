@@ -1,5 +1,6 @@
 from messytables import ZIPTableSet
 from messytables import CSVTableSet, XLSTableSet, XLSXTableSet, HTMLTableSet
+from messytables.error import ReadError
 import messytables
 import re
 
@@ -112,9 +113,9 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
 
     # TODO: bruteforce
     if error:
-        raise ValueError('\n'.join(error))
+        raise ReadError('any: \n'.join(error))
     else:
-        raise TypeError("Did not attempt any detection.")
+        raise ReadError("any: Did not attempt any detection.")
 
 
 
