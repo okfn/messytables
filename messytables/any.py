@@ -63,6 +63,12 @@ def guess_mime(mimetype=None, fileobj=None):
     if mimetype in lookup:
         return lookup.get(mimetype, None)
 
+    # But some aren't mimetyped due to being buggy but load fine!
+    fuzzy_lookup = {'Composite Document File V2 Document': XLSTableSet}
+    for candidate in fuzzy_lookup:
+        if candidate in mimetype:
+            return fuzzy_lookup[candidate]
+
 
 def guess_ext(ext):
     lookup = {'zip': ZIPTableSet,
