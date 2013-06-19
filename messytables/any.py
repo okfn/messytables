@@ -34,7 +34,7 @@ def get_mime(fileobj):
     # Since we need to peek the start of the stream, make sure we can
     # seek back later. If not, slurp in the contents into a StringIO.
     fileobj = messytables.seekable_stream(fileobj)
-    header = fileobj.read(1024)
+    header = fileobj.read(4096)
     mimetype = magic.from_buffer(header, mime=True)
     fileobj.seek(0)
     return mimetype
