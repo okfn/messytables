@@ -4,9 +4,8 @@ import messytables
 import re
 
 
-class TABTableSet(CSVTableSet):
-    pass
-    # TODO - add delimiter
+def TABTableSet(fileobj):
+    return CSVTableSet(fileobj, delimiter='\t')
 
 priorities = [ZIPTableSet, XLSTableSet, XLSXTableSet,
               HTMLTableSet, TABTableSet, CSVTableSet]
