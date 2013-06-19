@@ -4,24 +4,72 @@ import messytables
 import re
 
 
-def extension(filename):
+class TABTableSet(CSVTableSet):
+    pass
+    # TODO - add delimiter
+
+priorities = [ZIPTableSet, XLSTableSet, XLSXTableSet,
+              HTMLTableSet, TABTableSet, CSVTableSet]
+
+
+def clean_ext(filename):
     """Takes a filename (or URL, or extension) and returns a better guess at
     the extension in question.
-    >>> extension("")
+    >>> clean_ext("")
     ''
-    >>> extension("tsv")
+    >>> clean_ext("tsv")
     'tsv'
-    >>> extension("file.zip")
+    >>> clean_ext("FILE.ZIP")
     'zip'
-    >>> extension("http://myserver.info/file.xlsx?download=True")
+    >>> clean_ext("http://myserver.info/file.xlsx?download=True")
     'xlsx'
     """
     dot_ext = '.'+filename
-    matches = re.findall('\.(\w*)',dot_ext)
-    return matches[-1]
+    matches = re.findall('\.(\w*)', dot_ext)
+    return matches[-1].lower()
 
 
-def any_tableset(fileobj, mimetype=None, extension=None):
+def get_mime(fileobj):
+    import magic
+    # Since we need to peek the start of the stream, make sure we can
+    # seek back later. If not, slurp in the contents into a StringIO.
+    fileobj = messytables.seekable_stream(fileobj)
+    header = fileobj.read(1024)
+    mimetype = magic.from_buffer(header, mime=True)
+    fileobj.seek(0)
+    return mimetype
+
+
+def guess_mime(mimetype=None, fileobj=None):
+    if mimetype is None and fileobj is None:
+        raise TypeError('guess_mime() takes at least 1 non-None argument (0 given)')
+    if fileobj:
+        return guess_mime(get_mime(fileobj))
+    lookup = {'application/x-zip-compressed': ZIPTableSet,
+              'application/zip': ZIPTableSet,
+              'text/comma-separated-values': CSVTableSet,
+              'text/tab-separated-values': TABTableSet,
+              'application/ms-excel': XLSTableSet,
+              'application/vnd.ms-excel': XLSTableSet,
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': XLSXTableSet,
+              'text/html': HTMLTableSet}
+    if mimetype in lookup:
+        return lookup.get(mimetype, None)
+
+
+def guess_ext(ext):
+    lookup = {'zip': ZIPTableSet,
+              'csv':  CSVTableSet,
+              'tsv': TABTableSet,
+              'xls': XLSTableSet,
+              'xlsx': XLSXTableSet,
+              'htm': HTMLTableSet,
+              'html': HTMLTableSet}
+    if ext in lookup:
+        return lookup.get(ext, None)
+
+
+def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
     """Reads any supported table type according to a specified
     MIME type or file extension or automatically detecting the
     type.
@@ -36,48 +84,39 @@ def any_tableset(fileobj, mimetype=None, extension=None):
     On error it raises messytables.ReadError
     """
 
+    short_ext = clean_ext(extension)
     # Auto-detect if the caller has offered no clue. (Because the
     # auto-detection routine is pretty poor.)
-    if mimetype is None and extension is None:
-        import magic
-        # Since we need to peek the start of the stream, make sure we can
-        # seek back later. If not, slurp in the contents into a StringIO.
-        fileobj = messytables.seekable_stream(fileobj)
-        header = fileobj.read(1024)
-        mimetype = magic.from_buffer(header, mime=True)
-        fileobj.seek(0)
+    error = []
 
-    if (mimetype in ('application/x-zip-compressed', 'application/zip')
-            or (extension and extension.lower() in ('zip',))):
-        # Do this first because the extension applies to the content
-        # type of the inner files, so don't check them before we check
-        # for a ZIP file.
-        return ZIPTableSet(fileobj)
+    if mimetype is not None:
+        attempt = guess_mime(mimetype)
+        if attempt:
+            return attempt(fileobj)
+        else:
+            error.append("Did not recognise MIME type given: {mimetype}.".format(mimetype=mimetype))
 
-    if (mimetype in ('text/csv', 'text/comma-separated-values') or
-            (extension and extension.lower() in ('csv',))):
-        return CSVTableSet(fileobj)  # guess delimiter
-    if (mimetype in ('text/tsv', 'text/tab-separated-values') or
-            (extension and extension.lower() in ('tsv',))):
-        return CSVTableSet(fileobj, delimiter='\t')
-    if mimetype in ('application/ms-excel', 'application/vnd.ms-excel',
-                    'application/xls') or (extension and extension.lower() in
-                                           ('xls',)):
-        return XLSTableSet(fileobj)
-    if (mimetype in (
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',)
-            or (extension and extension.lower() in ('xlsx',))):
-        return XLSXTableSet(fileobj)
-    if (mimetype in ('text/html',)
-            or (extension and extension.lower() in ('htm', 'html',))):
-        return HTMLTableSet(fileobj)
-    if mimetype:
-        raise ValueError("Unrecognized MIME type: {mimetype}".format(
-            mimetype=mimetype))
-    if extension:
-        raise ValueError('''Could not determine MIME type and
-         unrecognized extension: {extension}'''.format(extension=extension))
-    raise ValueError("Could not determine MIME type and no extension given.")
+    if short_ext is not '':
+        attempt = guess_ext(short_ext)
+        if attempt:
+            return attempt(fileobj)
+        else:
+            error.append("Did not recognise extension {ext} (given {full}.".format(ext=short_ext, full=extension))
+
+    if auto_detect is not False:
+        magic_mime = get_mime(fileobj)
+        attempt = guess_mime(magic_mime)
+        if attempt:
+            return attempt(fileobj)
+        else:
+            error.append("Did not recognise detected MIME type: {mimetype}.".format(mimetype=magic_mime))
+
+    # TODO: bruteforce
+    if error:
+        raise ValueError('\n'.join(error))
+    else:
+        raise TypeError("Did not attempt any detection.")
+
 
 
 class AnyTableSet:
