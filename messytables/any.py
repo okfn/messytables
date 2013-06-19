@@ -59,7 +59,7 @@ def guess_mime(mimetype=None, fileobj=None):
 
 def guess_ext(ext):
     lookup = {'zip': ZIPTableSet,
-              'csv':  CSVTableSet,
+              'csv': CSVTableSet,
               'tsv': TABTableSet,
               'xls': XLSTableSet,
               'xlsx': XLSXTableSet,
