@@ -60,11 +60,23 @@ class HTMLRowSet(RowSet):
         super(HTMLRowSet, self).__init__()
 
     def raw(self, sample=False):
+        def identify_anatomy(tag):
+            # 0: thead, 1: tbody, 2: tfoot
+            parts = ['.//ancestor::thead',
+                     './/ancestor::tbody',
+                     './/ancestor::tfoot']
+            for i, part in enumerate(parts):
+                if tag.xpath(part):
+                    return i
+            return 2 # default to body
+
         blank_cells = defaultdict(list)  # ie row 2, cols 3,4,6: {2: [3,4,6]}
-        for r, row in enumerate(self.sheet.xpath('.//tr')):
+        allrows = sorted(self.sheet.xpath(".//tr"), key = lambda tag: identify_anatomy(tag))
+        # http://stackoverflow.com/questions/1915376/ - sorted() is stable.
+
+        for r, row in enumerate(allrows):
             # TODO: handle header nicer - preserve the fact it's a header!
             html_cells = row.xpath('.//*[name()="td" or name()="th"]')
-            # TODO: only select those that are not children of subtables?
 
             """ at the end of this chunk, you will have an accurate blank_cells."""
             output_column = 0
