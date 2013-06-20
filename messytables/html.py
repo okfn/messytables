@@ -14,7 +14,21 @@ class HTMLTableSet(TableSet):
         if not fh:
             raise TypeError('You must provide one of filename or fileobj')
 
-        self.htmltables = lxml.html.fromstring(fh.read()).xpath('//table')
+        self.htmltables = []
+        root = lxml.html.fromstring(fh.read())
+
+        # Grab tables that don't contain tables, remove from root, repeat.
+        while True:
+            dropped = False
+            tables = root.xpath('//table')
+            if not tables:
+                break
+            for t in tables:
+                if not t.xpath(".//table"):
+                    self.htmltables.append(t)
+                    t.drop_tree()
+                    dropped = True
+            assert dropped, "Didn't find any tables not containing other tables. This is a bug."  # avoid infinite loops
 
     @property
     def tables(self):
