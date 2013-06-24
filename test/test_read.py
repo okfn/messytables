@@ -290,6 +290,31 @@ class ReadTest(unittest.TestCase):
         for test in tests:
             assert_equal(magic[test], tests[test])
 
+    def test_read_nested_html(self):
+        fh = horror_fobj('complex.html')
+        table_set = HTMLTableSet(fh)
+        row_set = {x.name: x for x in table_set.tables}
+
+        # contains_other_tables contains no meaningful data
+        other = row_set['{"style": "contains_other_tables"}']
+        rows = list(other)
+        assert_equal(len(rows),1)
+        assert_equal(len(rows[0]),1)
+        assert_equal(rows[0][0].value.strip(),'')
+
+    def test_read_anatomy_html(self):
+        fh = horror_fobj('complex.html')
+        table_set = HTMLTableSet(fh)
+        row_set = {x.name: x for x in table_set.tables}
+
+        # but contains_thead_tfoot_tbody has things in the right order
+        anatomy = row_set['{"style": "contains_thead_tfoot_tbody"}']
+        builder = []
+        for row in anatomy:
+            for cell in row:
+                builder.append(cell.value)
+        assert_equal(builder, ['head','body','foot'])
+
     def test_rowset_as_schema(self):
         from StringIO import StringIO as sio
         ts = CSVTableSet(sio('''name,dob\nmk,2012-01-02\n'''))
