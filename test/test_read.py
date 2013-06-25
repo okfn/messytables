@@ -293,7 +293,9 @@ class ReadTest(unittest.TestCase):
     def test_read_nested_html(self):
         fh = horror_fobj('complex.html')
         table_set = HTMLTableSet(fh)
-        row_set = {x.name: x for x in table_set.tables}
+        row_set={}
+        for table in table_set.tables:
+            row_set[table.name]=table
 
         # contains_other_tables contains no meaningful data
         other = row_set['{"style": "contains_other_tables"}']
@@ -305,7 +307,9 @@ class ReadTest(unittest.TestCase):
     def test_read_anatomy_html(self):
         fh = horror_fobj('complex.html')
         table_set = HTMLTableSet(fh)
-        row_set = {x.name: x for x in table_set.tables}
+        row_set={}
+        for table in table_set.tables:
+            row_set[table.name]=table
 
         # but contains_thead_tfoot_tbody has things in the right order
         anatomy = row_set['{"style": "contains_thead_tfoot_tbody"}']
