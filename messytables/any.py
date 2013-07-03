@@ -43,12 +43,7 @@ def get_mime(fileobj):
     return mimetype
 
 
-def guess_mime(mimetype=None, fileobj=None):
-    if mimetype is None and fileobj is None:
-        raise TypeError('guess_mime() takes at least 1 non-None argument (0 given)')
-    if fileobj:
-        return guess_mime(get_mime(fileobj))
-
+def guess_mime(mimetype):
     lookup = {'application/x-zip-compressed': ZIPTableSet,
               'application/zip': ZIPTableSet,
               'text/comma-separated-values': CSVTableSet,
