@@ -54,6 +54,7 @@ def guess_mime(mimetype):
               'text/html': HTMLTableSet,
               'application/xml': XLSXTableSet,
               'text/plain': CSVTableSet,  # could be TAB.
+              'application/CDFV2-corrupt': XLSTableSet,
               }
     if mimetype in lookup:
         return lookup.get(mimetype, None)
