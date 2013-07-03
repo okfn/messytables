@@ -117,7 +117,7 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
         else:
             error.append("Did not recognise extension {ext} (given {full}.".format(ext=short_ext, full=extension))
 
-    if auto_detect is not False:
+    if auto_detect:
         magic_mime = get_mime(fileobj)
         attempt = guess_mime(magic_mime)
         if attempt:
