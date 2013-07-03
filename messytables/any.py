@@ -125,7 +125,6 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
         else:
             error.append("Did not recognise detected MIME type: {mimetype}.".format(mimetype=magic_mime))
 
-    # TODO: bruteforce
     if error:
         raise ReadError('any: \n'.join(error))
     else:
