@@ -1,6 +1,8 @@
 #Parsing for messy tables
 
 [![Build Status](https://travis-ci.org/okfn/messytables.png?branch=master)](https://travis-ci.org/okfn/messytables)
+[![Version](https://pypip.in/v/messytables/badge.png)](https://crate.io/packages/messytables/)
+[![Downloads](https://pypip.in/d/messytables/badge.png)](https://crate.io/packages/messytables/)
 
 A library for dealing with messy tabular data in several formats, guessing types and detecting headers.
 
