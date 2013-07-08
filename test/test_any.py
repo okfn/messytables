@@ -4,12 +4,13 @@ import unittest
 from . import horror_fobj
 from nose.tools import assert_equal
 from messytables import (any_tableset, XLSTableSet, ZIPTableSet,
-                         CSVTableSet, XLSXTableSet, ReadError)
+                         CSVTableSet, XLSXTableSet, ODSTableSet, ReadError)
 
 suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
          {'filename': 'simple.xls', 'tableset': XLSTableSet},
          {'filename': 'simple.xlsx', 'tableset': XLSXTableSet},
          {'filename': 'simple.zip', 'tableset': ZIPTableSet},
+         {'filename': 'simple_ods.ods', 'tableset': ODSTableSet},
          {'filename': 'bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm', 'tableset': XLSXTableSet},
          ]
 
@@ -24,7 +25,6 @@ def check_no_filename(d):
     fh = horror_fobj(d['filename'])
     table_set = any_tableset(fh)
     assert isinstance(table_set, d['tableset']), type(table_set)
-
 
 def check_filename(d):
     fh = horror_fobj(d['filename'])

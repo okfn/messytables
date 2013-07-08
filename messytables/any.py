@@ -1,5 +1,5 @@
 from messytables import ZIPTableSet
-from messytables import CSVTableSet, XLSTableSet, XLSXTableSet, HTMLTableSet
+from messytables import CSVTableSet, XLSTableSet, XLSXTableSet, HTMLTableSet, ODSTableSet
 from messytables.error import ReadError
 import messytables
 import re
@@ -9,7 +9,8 @@ def TABTableSet(fileobj):
     return CSVTableSet(fileobj, delimiter='\t')
 
 priorities = [ZIPTableSet, XLSTableSet, XLSXTableSet,
-              HTMLTableSet, TABTableSet, CSVTableSet]
+              HTMLTableSet, TABTableSet, CSVTableSet,
+              ODSTableSet]
 
 
 def clean_ext(filename):
@@ -55,6 +56,8 @@ def guess_mime(mimetype):
               'application/xml': XLSXTableSet,
               'text/plain': CSVTableSet,  # could be TAB.
               'application/CDFV2-corrupt': XLSTableSet,
+              'application/vnd.oasis.opendocument.spreadsheet': ODSTableSet,
+              'application/x-vnd.oasis.opendocument.spreadsheet': ODSTableSet,
               }
     if mimetype in lookup:
         return lookup.get(mimetype, None)
@@ -80,7 +83,8 @@ def guess_ext(ext):
               'xlm': XLSTableSet,
               'xlsm': XLSXTableSet,
               'xltx': XLSXTableSet,
-              'xltm': XLSXTableSet}
+              'xltm': XLSXTableSet,
+              'ods': ODSTableSet}
     if ext in lookup:
         return lookup.get(ext, None)
 

@@ -8,4 +8,4 @@ nose
 requests>=1.0
 json-table-schema
 lxml
-
+odfpy==0.9.6

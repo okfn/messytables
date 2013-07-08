@@ -10,6 +10,7 @@ from messytables.core import Cell, TableSet, RowSet, seekable_stream
 from messytables.commas import CSVTableSet, CSVRowSet
 from messytables.excel import XLSTableSet, XLSRowSet
 from messytables.excelx import XLSXTableSet, XLSXRowSet
+from messytables.ods import ODSTableSet, ODSRowSet
 from messytables.zip import ZIPTableSet
 from messytables.html import HTMLTableSet, HTMLRowSet
 from messytables.any import any_tableset, AnyTableSet
