@@ -1,4 +1,5 @@
 0.11.0 (master, wip)
+* #65 Reworked any.py
 * #60 Basic HTML table parsing
 * #55 Fix `__repr__` and unicode issue
 * #55 Add `__getitem__` to TableSet
