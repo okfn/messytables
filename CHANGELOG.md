@@ -1,4 +1,6 @@
-0.11.0 (master, wip)
+0.12.0 (wip, master)
+
+0.11.0 (8 July 2013)
 * #65 Reworked any.py
 * #60 Basic HTML table parsing
 * #55 Fix `__repr__` and unicode issue
