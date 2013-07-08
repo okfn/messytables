@@ -24,7 +24,7 @@ def clean_ext(filename):
     >>> clean_ext("http://myserver.info/file.xlsx?download=True")
     'xlsx'
     """
-    dot_ext = '.'+filename
+    dot_ext = '.' + filename
     matches = re.findall('\.(\w*)', dot_ext)
     return matches[-1].lower()
 
@@ -74,8 +74,10 @@ def guess_ext(ext):
               'xlsx': XLSXTableSet,
               'htm': HTMLTableSet,
               'html': HTMLTableSet,
-              'xlt': XLSTableSet,  # obscure Excel extensions taken from
-              'xlm': XLSTableSet,  # http://en.wikipedia.org/wiki/List_of_Microsoft_Office_filename_extensions
+              'xlt': XLSTableSet,
+                # obscure Excel extensions taken from
+                # http://en.wikipedia.org/wiki/List_of_Microsoft_Office_filename_extensions
+              'xlm': XLSTableSet,
               'xlsm': XLSXTableSet,
               'xltx': XLSXTableSet,
               'xltm': XLSXTableSet}
@@ -108,14 +110,18 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
         if attempt:
             return attempt(fileobj)
         else:
-            error.append("Did not recognise MIME type given: {mimetype}.".format(mimetype=mimetype))
+            error.append(
+                "Did not recognise MIME type given: {mimetype}.".format(
+                    mimetype=mimetype))
 
     if short_ext is not '':
         attempt = guess_ext(short_ext)
         if attempt:
             return attempt(fileobj)
         else:
-            error.append("Did not recognise extension {ext} (given {full}.".format(ext=short_ext, full=extension))
+            error.append(
+                "Did not recognise extension {ext} (given {full}.".format(
+                    ext=short_ext, full=extension))
 
     if auto_detect:
         magic_mime = get_mime(fileobj)
@@ -123,13 +129,14 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
         if attempt:
             return attempt(fileobj)
         else:
-            error.append("Did not recognise detected MIME type: {mimetype}.".format(mimetype=magic_mime))
+            error.append(
+                "Did not recognise detected MIME type: {mimetype}.".format(
+                    mimetype=magic_mime))
 
     if error:
         raise ReadError('any: \n'.join(error))
     else:
         raise ReadError("any: Did not attempt any detection.")
-
 
 
 class AnyTableSet:
