@@ -4,30 +4,35 @@ import unittest
 from . import horror_fobj
 from nose.tools import assert_equal
 from messytables import (any_tableset, XLSTableSet, ZIPTableSet,
-                         CSVTableSet, XLSXTableSet)
+                         CSVTableSet, XLSXTableSet, ReadError)
+
+suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
+         {'filename': 'simple.xls', 'tableset': XLSTableSet},
+         {'filename': 'simple.xlsx', 'tableset': XLSXTableSet},
+         {'filename': 'simple.zip', 'tableset': ZIPTableSet},
+         {'filename': 'bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm', 'tableset': XLSXTableSet},
+         ]
+
+
+def test_simple():
+    for d in suite:
+        yield check_no_filename, d
+        yield check_filename, d
+
+
+def check_no_filename(d):
+    fh = horror_fobj(d['filename'])
+    table_set = any_tableset(fh)
+    assert isinstance(table_set, d['tableset']), type(table_set)
+
+
+def check_filename(d):
+    fh = horror_fobj(d['filename'])
+    table_set = any_tableset(fh, extension=d['filename'], auto_detect=False)
+    assert isinstance(table_set, d['tableset']), type(table_set)
 
 
 class TestAny(unittest.TestCase):
-    def test_simple_csv(self):
-        fh = horror_fobj('simple.csv')
-        table_set = any_tableset(fh, extension='csv')
-        assert isinstance(table_set, CSVTableSet)
-
-    def test_simple_xls(self):
-        fh = horror_fobj('simple.xls')
-        table_set = any_tableset(fh, extension='xls')
-        assert isinstance(table_set, XLSTableSet)
-
-    def test_simple_xlsx(self):
-        fh = horror_fobj('simple.xlsx')
-        table_set = any_tableset(fh, extension='xlsx')
-        assert isinstance(table_set, XLSXTableSet)
-
-    def test_simple_zip(self):
-        fh = horror_fobj('simple.zip')
-        table_set = any_tableset(fh, extension='zip')
-        assert isinstance(table_set, ZIPTableSet)
-
     def test_xlsm(self):
         fh = horror_fobj('bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm')
         table_set = any_tableset(fh, extension='xls')
@@ -37,6 +42,4 @@ class TestAny(unittest.TestCase):
 
     def test_unknown(self):
         fh = horror_fobj('simple.unknown')
-        self.assertRaises(ValueError, lambda: any_tableset(fh, extension='unknown'))
-
-
+        self.assertRaises(ReadError, lambda: any_tableset(fh, extension='unknown'))
