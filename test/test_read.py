@@ -6,7 +6,7 @@ from nose.tools import assert_equal
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet,
-                         headers_guess, headers_processor,
+                         ODSTableSet,  headers_guess, headers_processor,
                          offset_processor, DateType, FloatType,
                          IntegerType, rowset_as_jts,
                          types_processor, type_guess)
@@ -101,6 +101,21 @@ class ReadTest(unittest.TestCase):
 
         for row in list(row_set):
             assert 3 == len(row), row
+
+    def test_read_simple_ods(self):
+        fh = horror_fobj('simple_ods.ods')
+        table_set = ODSTableSet(fh)
+        assert_equal(1, len(table_set.tables))
+        row_set = table_set.tables[0]
+        row = list(row_set.sample)[0]
+        assert_equal(row[0].value, 'Name')
+        assert_equal(row[1].value, 'Age')
+
+        total = 4
+        for row in row_set:
+            total = total - 1
+            assert 2 == len(row), row
+        assert_equal( total, 0)
 
     def test_read_simple_xlsx(self):
         fh = horror_fobj('simple.xlsx')

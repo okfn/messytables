@@ -45,7 +45,8 @@ setup(
         'chardet==2.1.1',
         'python-dateutil>=1.5.0,<2.0.0',
         'json-table-schema',
-        'lxml'
+        'lxml',
+        'odfpy==0.9.6'
     ],
     tests_require=[],
     entry_points=\

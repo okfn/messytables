@@ -4,7 +4,7 @@ import unittest
 from . import horror_fobj
 from nose.tools import assert_equal
 from messytables import (any_tableset, XLSTableSet, ZIPTableSet,
-                         CSVTableSet, XLSXTableSet)
+                         CSVTableSet, XLSXTableSet, ODSTableSet)
 
 
 class TestAny(unittest.TestCase):
@@ -17,6 +17,12 @@ class TestAny(unittest.TestCase):
         fh = horror_fobj('simple.xls')
         table_set = any_tableset(fh, extension='xls')
         assert isinstance(table_set, XLSTableSet)
+
+    def test_simple_ods(self):
+        fh = horror_fobj('simple_ods.ods')
+        table_set = any_tableset(fh, extension='ods')
+        assert isinstance(table_set, ODSTableSet)
+
 
     def test_simple_xlsx(self):
         fh = horror_fobj('simple.xlsx')
