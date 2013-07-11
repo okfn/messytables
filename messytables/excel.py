@@ -82,5 +82,5 @@ class XLSRowSet(RowSet):
                         xlrd.xldate_as_tuple(value, self.sheet.book.datemode)
                     value = datetime(year, month, day, hour,
                                      minute, second)
-                row.append(Cell(value, type=type))
+                row.append(Cell(value, type=type, properties={'_xlrd':cell}))
             yield row

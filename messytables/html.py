@@ -110,7 +110,8 @@ class HTMLRowSet(RowSet):
                 output_column += 1
 
             cells = [Cell(cell.text_content(),
-                          properties={'html': lxml.html.tostring(cell)})
+                          properties={'html': lxml.html.tostring(cell),
+                                      '_lxml': html_cell})
                      for cell in html_cells]
             yield insert_blank_cells(cells, blank_cells[r])
             if sample and r == self.window:

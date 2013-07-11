@@ -73,5 +73,5 @@ class XLSXRowSet(RowSet):
                     type = IntegerType()
                 else:
                     type = StringType()
-                row.append(Cell(value, type=type))
+                row.append(Cell(value, type=type, properties={'_pyxl': cell}))
             yield row
