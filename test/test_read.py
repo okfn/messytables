@@ -5,7 +5,7 @@ from . import horror_fobj
 from nose.tools import assert_equal
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
-                         ZIPTableSet, XLSTableSet, XLSXTableSet,
+                         ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
                          ODSTableSet, headers_guess, headers_processor,
                          offset_processor, DateType, FloatType,
                          IntegerType, rowset_as_jts,
