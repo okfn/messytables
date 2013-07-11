@@ -93,8 +93,8 @@ class Cell(object):
     """ A cell is the basic value type. It always has a ``value`` (that
     may be ``None`` and may optionally also have a type and column name
     associated with it. If no ``type`` is set, the String type is set
-    but no type conversion is set. ``properties``` is a dictionary of
-    parser-specific information."""
+    but no type conversion is set. ``properties`` stores file specific
+    information (full HTML of the cell; colours of XLS cell, etc)"""
 
     def __init__(self, value, column=None, type=None, properties=None):
         if type is None:
