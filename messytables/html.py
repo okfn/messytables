@@ -1,11 +1,17 @@
 from messytables.core import RowSet, TableSet, Cell
-import lxml.html
 import json
 from collections import defaultdict
+try:
+    import lxml.html
+    lxml_ok=True
+except:
+    lxml_ok=False
 
 
 class HTMLTableSet(TableSet):
     def __init__(self, fileobj=None, filename=None, window=None):
+        if not lxml_ok:
+            raise ImportError("lxml not installed (lxml.html)")
 
         if filename:
             fh = open(filename, 'r')
@@ -54,6 +60,8 @@ def insert_blank_cells(row, blanks):
 
 class HTMLRowSet(RowSet):
     def __init__(self, name, sheet, window=None):
+        if not lxml_ok:
+            raise ImportError("lxml not installed (lxml.html)")
         self.name = name
         self.sheet = sheet
         self.window = window or 1000
