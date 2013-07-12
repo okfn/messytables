@@ -167,7 +167,6 @@ class ReadCsvTest(unittest.TestCase):
         assert 'Chirurgie' in data[12][0].value, data[12][0].value
 
 
-
 class ReadZipTest(unittest.TestCase):
     def test_read_simple_zip(self):
         fh = horror_fobj('simple.zip')
@@ -306,23 +305,23 @@ class ReadHtmlTest(unittest.TestCase):
     def test_read_nested_html(self):
         fh = horror_fobj('complex.html')
         table_set = HTMLTableSet(fh)
-        row_set={}
+        row_set = {}
         for table in table_set.tables:
-            row_set[table.name]=table
+            row_set[table.name] = table
 
         # contains_other_tables contains no meaningful data
         other = row_set['{"style": "contains_other_tables"}']
         rows = list(other)
-        assert_equal(len(rows),1)
-        assert_equal(len(rows[0]),1)
-        assert_equal(rows[0][0].value.strip(),'')
+        assert_equal(len(rows), 1)
+        assert_equal(len(rows[0]), 1)
+        assert_equal(rows[0][0].value.strip(), '')
 
     def test_read_anatomy_html(self):
         fh = horror_fobj('complex.html')
         table_set = HTMLTableSet(fh)
-        row_set={}
+        row_set = {}
         for table in table_set.tables:
-            row_set[table.name]=table
+            row_set[table.name] = table
 
         # but contains_thead_tfoot_tbody has things in the right order
         anatomy = row_set['{"style": "contains_thead_tfoot_tbody"}']
@@ -330,7 +329,7 @@ class ReadHtmlTest(unittest.TestCase):
         for row in anatomy:
             for cell in row:
                 builder.append(cell.value)
-        assert_equal(builder, ['head','body','foot'])
+        assert_equal(builder, ['head', 'body', 'foot'])
 
     def test_rowset_as_schema(self):
         from StringIO import StringIO as sio
