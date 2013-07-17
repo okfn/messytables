@@ -28,8 +28,8 @@ class HTMLTableSet(TableSet):
                     self.htmltables.append(t)
                     t.attrib['messytable'] = 'done'
                     dropped = True
-            assert dropped, "Didn't find any tables not containing " + \
-                "other tables. This is a bug."  # avoid infinite loops
+            assert dropped, "Found no tables not containing other tables.\
+                             This is a bug."  # avoid infinite loops
 
     @property
     def tables(self):
