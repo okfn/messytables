@@ -3,6 +3,7 @@ import datetime
 from collections import defaultdict
 from itertools import izip_longest
 import locale
+import sys
 
 import dateutil.parser as parser
 
@@ -80,7 +81,7 @@ class IntegerType(CellType):
 
 
 class DecimalType(CellType):
-    """ Decimal number, ``decimal.Decimal``. """
+    """ Decimal number, ``decimal.Decimal`` or float numbers. """
     guessing_weight = 4
     result_type = decimal.Decimal
 
@@ -90,11 +91,13 @@ class DecimalType(CellType):
         try:
             return decimal.Decimal(value)
         except:
-            return decimal.Decimal(locale.atof(value))
+            value = locale.atof(value)
+            if sys.version_info < (2, 7):
+                value = str(value)
+            return decimal.Decimal(value)
 
-
-# FloatType is deprecated
 class FloatType(DecimalType):
+    """ FloatType is deprecated """
     pass
 
 
@@ -149,7 +152,7 @@ class DateUtilType(CellType):
     result_type = datetime.datetime
 
     def cast(self, value):
-        if value in ['', None]:
+        if value in ('', None):
             return None
         return parser.parse(value)
 
