@@ -3,6 +3,7 @@ import datetime
 from collections import defaultdict
 from itertools import izip_longest
 import locale
+import sys
 
 import dateutil.parser as parser
 
@@ -79,29 +80,25 @@ class IntegerType(CellType):
             return locale.atoi(value)
 
 
-class FloatType(CellType):
-    """ Floating point number. """
-    guessing_weight = 4
-    result_type = float
-
-    def cast(self, value):
-        if value in ('', None):
-            return None
-        try:
-            return float(value)
-        except:
-            return locale.atof(value)
-
-
 class DecimalType(CellType):
-    """ Decimal number, ``decimal.Decimal``. """
-    guessing_weight = 5
+    """ Decimal number, ``decimal.Decimal`` or float numbers. """
+    guessing_weight = 4
     result_type = decimal.Decimal
 
     def cast(self, value):
         if value in ('', None):
             return None
-        return decimal.Decimal(value)
+        try:
+            return decimal.Decimal(value)
+        except:
+            value = locale.atof(value)
+            if sys.version_info < (2, 7):
+                value = str(value)
+            return decimal.Decimal(value)
+
+class FloatType(DecimalType):
+    """ FloatType is deprecated """
+    pass
 
 
 class DateType(CellType):
@@ -155,12 +152,12 @@ class DateUtilType(CellType):
     result_type = datetime.datetime
 
     def cast(self, value):
-        if value in ['', None]:
+        if value in ('', None):
             return None
         return parser.parse(value)
 
 
-TYPES = [StringType, IntegerType, FloatType, DecimalType, DateType]
+TYPES = [StringType, IntegerType, DecimalType, DateType]
 
 
 def type_guess(rows, types=TYPES, strict=False):
@@ -192,6 +189,7 @@ def type_guess(rows, types=TYPES, strict=False):
                     if not type.test(cell.value):
                         guesses[ci].pop(type)
         # no need to set guessing weights before this
+        # because we only accept a type if it never fails
         for i, guess in enumerate(guesses):
             for type in guess:
                 guesses[i][type] = type.guessing_weight
