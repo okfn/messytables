@@ -6,7 +6,7 @@ from nose.tools import assert_equal
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet,
-                         headers_guess, headers_processor,
+                         ODSTableSet,  headers_guess, headers_processor,
                          offset_processor, DateType, FloatType,
                          IntegerType, rowset_as_jts,
                          types_processor, type_guess)
@@ -210,6 +210,32 @@ class ReadSsvTest(unittest.TestCase):
         for row in list(row_set):
             assert_equal(3, len(row))
             assert_equal(row[0].type, StringType())
+
+class ReadODSTest(unittest.TestCase):
+    def test_read_simple_ods(self):
+        fh = horror_fobj('simple.ods')
+        table_set = ODSTableSet(fh)
+        assert_equal(1, len(table_set.tables))
+        row_set = table_set.tables[0]
+        row = list(row_set.sample)[0]
+        assert_equal(row[0].value, 'Name')
+        assert_equal(row[1].value, 'Age')
+        assert_equal(row[2].value, 'When')
+        total = 4
+        for row in row_set.sample:
+            total = total - 1
+            assert 3 == len(row), row
+        assert_equal( total, 0)
+
+    def test_read_large_ods(self):
+        fh = horror_fobj('large.ods')
+        table_set = ODSTableSet(fh)
+        assert_equal(6, len(table_set.tables))
+        row_set = table_set.tables[0]
+        row = row_set.raw().next()
+        assert len(row) == 5, len(row)
+        for row in row_set.sample:
+            assert len(row) == 5, len(row)
 
 
 class ReadXlsTest(unittest.TestCase):
