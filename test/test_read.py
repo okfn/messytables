@@ -12,23 +12,10 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          types_processor, type_guess)
 
 
-class ReadTest(unittest.TestCase):
+class ReadCsvTest(unittest.TestCase):
     def test_read_simple_csv(self):
         fh = horror_fobj('simple.csv')
         table_set = CSVTableSet(fh)
-        row_set = table_set.tables[0]
-        assert_equal(7, len(list(row_set)))
-        row = list(row_set.sample)[0]
-        assert_equal(row[0].value, 'date')
-        assert_equal(row[1].value, 'temperature')
-
-        for row in list(row_set):
-            assert_equal(3, len(row))
-            assert_equal(row[0].type, StringType())
-
-    def test_read_simple_zip(self):
-        fh = horror_fobj('simple.zip')
-        table_set = ZIPTableSet(fh)
         row_set = table_set.tables[0]
         assert_equal(7, len(list(row_set)))
         row = list(row_set.sample)[0]
@@ -54,32 +41,6 @@ class ReadTest(unittest.TestCase):
             assert_equal(4, len(row))
             assert_equal(row[0].type, StringType())
 
-    def test_read_simple_tsv(self):
-        fh = horror_fobj('example.tsv')
-        table_set = CSVTableSet(fh)
-        row_set = table_set.tables[0]
-        assert_equal(141, len(list(row_set)))
-        row = list(row_set.sample)[0]
-        assert_equal(row[0].value, 'hour')
-        assert_equal(row[1].value, 'expr1_0_imp')
-        for row in list(row_set):
-            assert_equal(17, len(row))
-            assert_equal(row[0].type, StringType())
-
-    def test_read_simple_ssv(self):
-        # semicolon separated values
-        fh = horror_fobj('simple.ssv')
-        table_set = CSVTableSet(fh)
-        row_set = table_set.tables[0]
-        assert_equal(7, len(list(row_set)))
-        row = list(row_set.sample)[0]
-        assert_equal(row[0].value, 'date')
-        assert_equal(row[1].value, 'temperature')
-
-        for row in list(row_set):
-            assert_equal(3, len(row))
-            assert_equal(row[0].type, StringType())
-
     def test_overriding_sniffed(self):
         # semicolon separated values
         fh = horror_fobj('simple.csv')
@@ -88,56 +49,6 @@ class ReadTest(unittest.TestCase):
         assert_equal(7, len(list(row_set)))
         row = list(row_set.sample)[0]
         assert_equal(len(row), 1)
-
-    def test_read_simple_xls(self):
-        fh = horror_fobj('simple.xls')
-        table_set = XLSTableSet(fh)
-        assert_equal(1, len(table_set.tables))
-        row_set = table_set.tables[0]
-        row = list(row_set.sample)[0]
-        assert_equal(row[0].value, 'date')
-        assert_equal(row[1].value, 'temperature')
-        assert_equal(row[2].value, 'place')
-
-        for row in list(row_set):
-            assert 3 == len(row), row
-
-    def test_read_simple_ods(self):
-        fh = horror_fobj('simple.ods')
-        table_set = ODSTableSet(fh)
-        assert_equal(1, len(table_set.tables))
-        row_set = table_set.tables[0]
-        row = list(row_set.sample)[0]
-        assert_equal(row[0].value, 'Name')
-        assert_equal(row[1].value, 'Age')
-        assert_equal(row[2].value, 'When')
-        total = 4
-        for row in row_set.sample:
-            total = total - 1
-            assert 3 == len(row), row
-        assert_equal( total, 0)
-
-    def test_read_large_ods(self):
-        fh = horror_fobj('large.ods')
-        table_set = ODSTableSet(fh)
-        assert_equal(6, len(table_set.tables))
-        row_set = table_set.tables[0]
-        row = row_set.raw().next()
-        assert len(row) == 5, len(row)
-        for row in row_set.sample:
-            assert len(row) == 5, len(row)
-
-    def test_read_simple_xlsx(self):
-        fh = horror_fobj('simple.xlsx')
-        table_set = XLSXTableSet(fh)
-        assert_equal(1, len(table_set.tables))
-        row_set = table_set.tables[0]
-        row = list(row_set.sample)[0]
-        assert_equal(row[0].value, 'date')
-        assert_equal(row[1].value, 'temperature')
-        assert_equal(row[2].value, 'place')
-        for row in list(row_set):
-            assert 3 == len(row), row
 
     def test_read_head_padding_csv(self):
         fh = horror_fobj('weird_head_padding.csv')
@@ -165,37 +76,6 @@ class ReadTest(unittest.TestCase):
         assert_equal(int(data[0][1].value), 1)
         data = list(row_set)
         assert_equal(int(data[0][1].value), 1)
-
-    def test_read_head_offset_excel(self):
-        fh = horror_fobj('simple.xls')
-        table_set = XLSTableSet(fh)
-        row_set = table_set.tables[0]
-        offset, headers = headers_guess(row_set.sample)
-        assert_equal(offset, 0)
-        row_set.register_processor(offset_processor(offset + 1))
-        data = list(row_set.sample)
-        assert_equal(int(data[0][1].value), 1)
-        data = list(row_set)
-        assert_equal(int(data[0][1].value), 1)
-
-
-    def test_guess_headers(self):
-        fh = horror_fobj('weird_head_padding.csv')
-        table_set = CSVTableSet(fh)
-        row_set = table_set.tables[0]
-        offset, headers = headers_guess(row_set.sample)
-        row_set.register_processor(headers_processor(headers))
-        row_set.register_processor(offset_processor(offset + 1))
-        data = list(row_set)
-        assert 'Frauenheilkunde' in data[9][0].value, data[9][0].value
-
-        fh = horror_fobj('weird_head_padding.csv')
-        table_set = CSVTableSet(fh)
-        row_set = table_set.tables[0]
-        row_set.register_processor(headers_processor(['foo', 'bar']))
-        data = list(row_set)
-        assert 'foo' in data[12][0].column, data[12][0]
-        assert 'Chirurgie' in data[12][0].value, data[12][0].value
 
     def test_read_type_guess_simple(self):
         fh = horror_fobj('simple.csv')
@@ -233,14 +113,6 @@ class ReadTest(unittest.TestCase):
         # we expect None for Integers and "" for empty strings in CSV
         assert [x.value for x in data[2]] == [3, "null", None, ""], data[2]
 
-    def test_read_type_know_simple(self):
-        fh = horror_fobj('simple.xls')
-        table_set = XLSTableSet(fh)
-        row_set = table_set.tables[0]
-        row = list(row_set.sample)[1]
-        types = [c.type for c in row]
-        assert_equal(types, [DateType(None), FloatType(), StringType()])
-
     def test_read_encoded_csv(self):
         fh = horror_fobj('utf-16le_encoded.csv')
         table_set = CSVTableSet(fh)
@@ -276,6 +148,145 @@ class ReadTest(unittest.TestCase):
         assert "goodbye" in map(second, rows(True))
         assert "    goodbye" in map(second, rows(False))
 
+    def test_guess_headers(self):
+        fh = horror_fobj('weird_head_padding.csv')
+        table_set = CSVTableSet(fh)
+        row_set = table_set.tables[0]
+        offset, headers = headers_guess(row_set.sample)
+        row_set.register_processor(headers_processor(headers))
+        row_set.register_processor(offset_processor(offset + 1))
+        data = list(row_set)
+        assert 'Frauenheilkunde' in data[9][0].value, data[9][0].value
+
+        fh = horror_fobj('weird_head_padding.csv')
+        table_set = CSVTableSet(fh)
+        row_set = table_set.tables[0]
+        row_set.register_processor(headers_processor(['foo', 'bar']))
+        data = list(row_set)
+        assert 'foo' in data[12][0].column, data[12][0]
+        assert 'Chirurgie' in data[12][0].value, data[12][0].value
+
+
+class ReadZipTest(unittest.TestCase):
+    def test_read_simple_zip(self):
+        fh = horror_fobj('simple.zip')
+        table_set = ZIPTableSet(fh)
+        row_set = table_set.tables[0]
+        assert_equal(7, len(list(row_set)))
+        row = list(row_set.sample)[0]
+        assert_equal(row[0].value, 'date')
+        assert_equal(row[1].value, 'temperature')
+
+        for row in list(row_set):
+            assert_equal(3, len(row))
+            assert_equal(row[0].type, StringType())
+
+
+class ReadTsvTest(unittest.TestCase):
+    def test_read_simple_tsv(self):
+        fh = horror_fobj('example.tsv')
+        table_set = CSVTableSet(fh)
+        row_set = table_set.tables[0]
+        assert_equal(141, len(list(row_set)))
+        row = list(row_set.sample)[0]
+        assert_equal(row[0].value, 'hour')
+        assert_equal(row[1].value, 'expr1_0_imp')
+        for row in list(row_set):
+            assert_equal(17, len(row))
+            assert_equal(row[0].type, StringType())
+
+
+class ReadSsvTest(unittest.TestCase):
+    def test_read_simple_ssv(self):
+        # semicolon separated values
+        fh = horror_fobj('simple.ssv')
+        table_set = CSVTableSet(fh)
+        row_set = table_set.tables[0]
+        assert_equal(7, len(list(row_set)))
+        row = list(row_set.sample)[0]
+        assert_equal(row[0].value, 'date')
+        assert_equal(row[1].value, 'temperature')
+
+        for row in list(row_set):
+            assert_equal(3, len(row))
+            assert_equal(row[0].type, StringType())
+
+class ReadODSTest(unittest.TestCase):
+    def test_read_simple_ods(self):
+        fh = horror_fobj('simple.ods')
+        table_set = ODSTableSet(fh)
+        assert_equal(1, len(table_set.tables))
+        row_set = table_set.tables[0]
+        row = list(row_set.sample)[0]
+        assert_equal(row[0].value, 'Name')
+        assert_equal(row[1].value, 'Age')
+        assert_equal(row[2].value, 'When')
+        total = 4
+        for row in row_set.sample:
+            total = total - 1
+            assert 3 == len(row), row
+        assert_equal( total, 0)
+
+    def test_read_large_ods(self):
+        fh = horror_fobj('large.ods')
+        table_set = ODSTableSet(fh)
+        assert_equal(6, len(table_set.tables))
+        row_set = table_set.tables[0]
+        row = row_set.raw().next()
+        assert len(row) == 5, len(row)
+        for row in row_set.sample:
+            assert len(row) == 5, len(row)
+
+
+class ReadXlsTest(unittest.TestCase):
+    def test_read_simple_xls(self):
+        fh = horror_fobj('simple.xls')
+        table_set = XLSTableSet(fh)
+        assert_equal(1, len(table_set.tables))
+        row_set = table_set.tables[0]
+        row = list(row_set.sample)[0]
+        assert_equal(row[0].value, 'date')
+        assert_equal(row[1].value, 'temperature')
+        assert_equal(row[2].value, 'place')
+
+        for row in list(row_set):
+            assert 3 == len(row), row
+
+    def test_read_head_offset_excel(self):
+        fh = horror_fobj('simple.xls')
+        table_set = XLSTableSet(fh)
+        row_set = table_set.tables[0]
+        offset, headers = headers_guess(row_set.sample)
+        assert_equal(offset, 0)
+        row_set.register_processor(offset_processor(offset + 1))
+        data = list(row_set.sample)
+        assert_equal(int(data[0][1].value), 1)
+        data = list(row_set)
+        assert_equal(int(data[0][1].value), 1)
+
+
+class ReadXlsxTest(unittest.TestCase):
+    def test_read_simple_xlsx(self):
+        fh = horror_fobj('simple.xlsx')
+        table_set = XLSXTableSet(fh)
+        assert_equal(1, len(table_set.tables))
+        row_set = table_set.tables[0]
+        row = list(row_set.sample)[0]
+        assert_equal(row[0].value, 'date')
+        assert_equal(row[1].value, 'temperature')
+        assert_equal(row[2].value, 'place')
+
+        for row in list(row_set):
+            assert 3 == len(row), row
+
+    def test_read_type_know_simple(self):
+        fh = horror_fobj('simple.xls')
+        table_set = XLSTableSet(fh)
+        row_set = table_set.tables[0]
+        row = list(row_set.sample)[1]
+        types = [c.type for c in row]
+        assert_equal(types, [DateType(None), FloatType(), StringType()])
+
     def test_bad_first_sheet(self):
         # First sheet appears to have no cells
         fh = horror_fobj('problematic_first_sheet.xls')
@@ -284,6 +295,8 @@ class ReadTest(unittest.TestCase):
         assert_equal(0, len(list(tables[0].sample)))
         assert_equal(1000, len(list(tables[1].sample)))
 
+
+class ReadHtmlTest(unittest.TestCase):
     def test_read_real_html(self):
         fh = horror_fobj('html.html')
         table_set = HTMLTableSet(fh)
@@ -318,23 +331,23 @@ class ReadTest(unittest.TestCase):
     def test_read_nested_html(self):
         fh = horror_fobj('complex.html')
         table_set = HTMLTableSet(fh)
-        row_set={}
+        row_set = {}
         for table in table_set.tables:
-            row_set[table.name]=table
+            row_set[table.name] = table
 
         # contains_other_tables contains no meaningful data
         other = row_set['{"style": "contains_other_tables"}']
         rows = list(other)
-        assert_equal(len(rows),1)
-        assert_equal(len(rows[0]),1)
-        assert_equal(rows[0][0].value.strip(),'')
+        assert_equal(len(rows), 1)
+        assert_equal(len(rows[0]), 1)
+        assert_equal(rows[0][0].value.strip(), '')
 
     def test_read_anatomy_html(self):
         fh = horror_fobj('complex.html')
         table_set = HTMLTableSet(fh)
-        row_set={}
+        row_set = {}
         for table in table_set.tables:
-            row_set[table.name]=table
+            row_set[table.name] = table
 
         # but contains_thead_tfoot_tbody has things in the right order
         anatomy = row_set['{"style": "contains_thead_tfoot_tbody"}']
@@ -342,7 +355,7 @@ class ReadTest(unittest.TestCase):
         for row in anatomy:
             for cell in row:
                 builder.append(cell.value)
-        assert_equal(builder, ['head','body','foot'])
+        assert_equal(builder, ['head', 'body', 'foot'])
 
     def test_rowset_as_schema(self):
         from StringIO import StringIO as sio
