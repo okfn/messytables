@@ -45,7 +45,7 @@ setup(
         'chardet==2.1.1',
         'python-dateutil>=1.5.0,<2.0.0',
         'json-table-schema',
-        'lxml'
+        'lxml>=3.2'
     ],
     tests_require=[],
     entry_points=\
