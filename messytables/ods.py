@@ -1,15 +1,12 @@
 import cStringIO
-import itertools
 import re
 import zipfile
 
-import dateutil.parser as parser
 from lxml import etree
 
 from messytables.core import RowSet, TableSet, Cell
-from messytables.error import ReadError
-from messytables.types import (StringType, IntegerType, FloatType,
-                               DecimalType, DateType, DateUtilType)
+from messytables.types import (StringType, DecimalType,
+                               DateType)
 
 
 ODS_TABLE_MATCH = re.compile(".*?(<table:table.*?<\/.*?:table>).*?", re.MULTILINE)
@@ -17,7 +14,7 @@ ODS_TABLE_NAME = re.compile('.*?table:name=\"(.*?)\".*?')
 ODS_ROW_MATCH = re.compile(".*?(<table:table-row.*?<\/.*?:table-row>).*?", re.MULTILINE)
 
 ODS_TYPES = {
-    'float': FloatType(),
+    'float': DecimalType(),
     'date': DateType(None),
 }
 
@@ -25,8 +22,8 @@ ODS_TEXT_NS = u"urn:oasis:names:tc:opendocument:xmlns:text:1.0"
 ODS_TABLE_NS = u"urn:oasis:names:tc:opendocument:xmlns:table:1.0"
 ODS_OFFICE_NS = u"urn:oasis:names:tc:opendocument:xmlns:office:1.0"
 
-# We must wrap the XML fragments in a valid header otherwise iterparse will explode
-# with certain (undefined) versions of libxml2.
+# We must wrap the XML fragments in a valid header otherwise iterparse will
+# explode with certain (undefined) versions of libxml2.
 ODS_HEADER = u"""<wrapper xmlns:table="{0}" xmlns:office="{1}" xmlns:text="{2}">""".format(ODS_TABLE_NS, ODS_OFFICE_NS, ODS_TEXT_NS)
 ODS_FOOTER = u"""</wrapper>"""
 
@@ -75,7 +72,8 @@ class ODSTableSet(TableSet):
             1. load large the entire file into memory, or
             2. SAX parse the file more than once
         """
-        sheets = [m.groups(0)[0] for m in ODS_TABLE_MATCH.finditer(self.content)]
+        sheets = [m.groups(0)[0]
+                  for m in ODS_TABLE_MATCH.finditer(self.content)]
         return [ODSRowSet(sheet, self.window) for sheet in sheets]
 
 
@@ -102,14 +100,15 @@ class ODSRowSet(RowSet):
             row_data = []
 
             block = "{0}{1}{2}".format(ODS_HEADER, row, ODS_FOOTER)
-            partial =  cStringIO.StringIO(block)
+            partial = cStringIO.StringIO(block)
 
             for action, elem in etree.iterparse(partial, ('end',)):
                 if elem.tag == '{urn:oasis:names:tc:opendocument:xmlns:table:1.0}table-cell':
                     cell_type = elem.attrib.get('urn:oasis:names:tc:opendocument:xmlns:office:1.0:value-type')
                     children = elem.getchildren()
                     if children:
-                        c = Cell(children[0].text, type=ODS_TYPES.get(cell_type, StringType()))
+                        c = Cell(children[0].text,
+                                 type=ODS_TYPES.get(cell_type, StringType()))
                         row_data.append(c)
 
             if not row_data:
