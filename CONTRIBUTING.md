@@ -15,11 +15,24 @@ You are very welcome to submit code features or doc changes for review and merge
 For small changes and doc changes, it is not necessary to file a pull request.
 
 
+## Commit messages
+
+Generally, follow the [commit guidelines from the Pro Git book](http://git-scm.com/book/en/Distributed-Git-Contributing-to-a-Project#Commit-Guidelines):
+
+* Try to make each commit a logically separate, digestible changeset.
+* The first line of the commit message should concisely summarise the changeset.
+* Optionally, follow with a blank line and then a more detailed explanation of the changeset.
+* Use the imperative present tense as if you were giving commands to the codebase to change its behaviour, e.g. Add tests for..., make xyzzy do frotz..., this helps to make the commit message easy to read.
+* If your commit has an issue in the [messytables issue tracker](https://github.com/okfn/messytables/issues) put the issue number at the start of the first line of the commit message like this: [#123].
+
+
 ## Running the tests
 
 ```bash
 source pyenv/messytables/bin/activate
+python setup.py develop
 pip install -r requirements-test.txt
+
 nosetests
 ```
 
