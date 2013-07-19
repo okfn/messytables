@@ -96,6 +96,7 @@ class DecimalType(CellType):
                 value = str(value)
             return decimal.Decimal(value)
 
+
 class FloatType(DecimalType):
     """ FloatType is deprecated """
     pass

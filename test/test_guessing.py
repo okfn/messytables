@@ -50,7 +50,8 @@ class TypeGuessTest(unittest.TestCase):
         rows = CSVTableSet(csv_file).tables[0]
         guessed_types = type_guess(rows.sample, strict=True)
         assert_equal(len(guessed_types), 3)
-        assert_equal(guessed_types, [StringType(), StringType(), DecimalType()])
+        assert_equal(guessed_types,
+                     [StringType(), StringType(), DecimalType()])
 
     def test_non_strict_guessing_handles_padding(self):
         csv_file = StringIO.StringIO('''
@@ -60,7 +61,8 @@ class TypeGuessTest(unittest.TestCase):
         rows = CSVTableSet(csv_file).tables[0]
         guessed_types = type_guess(rows.sample, strict=False)
         assert_equal(len(guessed_types), 3)
-        assert_equal(guessed_types, [IntegerType(), StringType(), DecimalType()])
+        assert_equal(guessed_types,
+                     [IntegerType(), StringType(), DecimalType()])
 
     def test_guessing_uses_first_in_case_of_tie(self):
         csv_file = StringIO.StringIO('''
