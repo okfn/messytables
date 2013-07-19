@@ -72,7 +72,8 @@ def headers_make_unique(headers, max_length=None):
         # column names to 62 characters.
         _headers = headers
         if max_length:
-            _headers = [h[0:max_length-new_digits_length].strip() for h in headers]
+            _headers = [h[0:max_length - new_digits_length].strip()
+                        for h in headers]
 
         # For headers that are not unique, add a number to the end.
         header_counter = {}
@@ -82,9 +83,9 @@ def headers_make_unique(headers, max_length=None):
                 header_counter[h] = header_counter.get(h, 0) + 1
                 new_headers[i] += "_%d" % header_counter[h]
 
-        # If there is a max_length but adding a counter made a header longer than
-        # max_length, we have to truncate more up front (which may change which
-        # headers are nonunique) and try again.
+        # If there is a max_length but adding a counter made a header longer
+        # than max_length, we have to truncate more up front (which may
+        # change which headers are nonunique) and try again.
         if max_length and (True in [len(h) > max_length for h in new_headers]):
             # Adding this counter made the new header longer than max_length.
             # We have to truncate the original headers more.
@@ -94,4 +95,5 @@ def headers_make_unique(headers, max_length=None):
         # Otherwise, the new headers are unique.
         return new_headers
 
-    raise ValueError("max_length is so small that the column names cannot be made unique.")
+    raise ValueError('''max_length is so small that the column names cannot
+        be made unique.''')

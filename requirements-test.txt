@@ -7,3 +7,5 @@ httpretty
 nose
 requests>=1.0
 json-table-schema
+lxml
+

@@ -1,10 +1,11 @@
 #Parsing for messy tables
 
 [![Build Status](https://travis-ci.org/okfn/messytables.png?branch=master)](https://travis-ci.org/okfn/messytables)
+[![Coverage Status](https://coveralls.io/repos/okfn/messytables/badge.png?branch=master)](https://coveralls.io/r/okfn/messytables?branch=master)
+[![Version](https://pypip.in/v/messytables/badge.png)](https://crate.io/packages/messytables/)
+[![Downloads](https://pypip.in/d/messytables/badge.png)](https://crate.io/packages/messytables/)
 
 A library for dealing with messy tabular data in several formats, guessing types and detecting headers.
-
-*UPGRADE TO 0.8*: The method `from_fileobj` is deprecated and will be removed in future releases. Please use the constructor directly. Also, `AnyTableSet` will be removed. Please use the function `any_tableset`.
 
 See the documentation at: https://messytables.readthedocs.org
 

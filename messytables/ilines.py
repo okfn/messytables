@@ -1,5 +1,7 @@
 # Created by Scott David Daniels on Wed, 23 Jun 2004, licensed under the PSF
-# http://code.activestate.com/recipes/286165-ilines-universal-newlines-from-any-data-source/
+# http://code.activestate.com/recipes/286165-ilines-universal
+#   -newlines-from-any-data-source/
+
 
 def ilines(source_iterable):
     '''yield lines as in universal-newlines from a stream of data blocks'''
@@ -16,29 +18,29 @@ def ilines(source_iterable):
         else:
             pos = 0
         try:
-            while True: # While we are finding LF.
+            while True:  # While we are finding LF.
                 npos = block.index('\012', pos) + 1
                 try:
                     rend = npos - 2
                     rpos = block.index('\015', pos, rend)
                     if pos:
-                        yield block[pos : rpos] + '\n'
+                        yield block[pos: rpos] + '\n'
                     else:
                         yield tail + block[:rpos] + '\n'
                     pos = rpos + 1
-                    while True: # While CRs 'inside' the LF
+                    while True:  # While CRs 'inside' the LF
                         rpos = block.index('\015', pos, rend)
-                        yield block[pos : rpos] + '\n'
+                        yield block[pos: rpos] + '\n'
                         pos = rpos + 1
                 except ValueError:
                     pass
                 if '\015' == block[rend]:
                     if pos:
-                        yield block[pos : rend] + '\n'
+                        yield block[pos: rend] + '\n'
                     else:
                         yield tail + block[:rend] + '\n'
                 elif pos:
-                    yield block[pos : npos]
+                    yield block[pos: npos]
                 else:
                     yield tail + block[:npos]
                 pos = npos
@@ -49,7 +51,7 @@ def ilines(source_iterable):
             while True:
                 rpos = block.index('\015', pos, -1)
                 if pos:
-                    yield block[pos : rpos] + '\n'
+                    yield block[pos: rpos] + '\n'
                 else:
                     yield tail + block[:rpos] + '\n'
                 pos = rpos + 1

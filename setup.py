@@ -19,7 +19,7 @@ See the full documentation at: http://messytables.readthedocs.org
 
 setup(
     name='messytables',
-    version='0.10.0',
+    version='0.11.0',
     description="Parse messy tabular data in various formats",
     long_description=long_desc,
     classifiers=[
@@ -28,7 +28,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        ],
+    ],
     keywords='',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
@@ -44,7 +44,8 @@ setup(
         'openpyxl==1.5.7',
         'chardet==2.1.1',
         'python-dateutil>=1.5.0,<2.0.0',
-        'json-table-schema'
+        'json-table-schema',
+        'lxml'
     ],
     tests_require=[],
     entry_points=\
