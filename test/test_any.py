@@ -10,7 +10,7 @@ suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
          {'filename': 'simple.xls', 'tableset': XLSTableSet},
          {'filename': 'simple.xlsx', 'tableset': XLSXTableSet},
          {'filename': 'simple.zip', 'tableset': ZIPTableSet},
-         {'filename': 'simple_ods.ods', 'tableset': ODSTableSet},
+         {'filename': 'simple.ods', 'tableset': ODSTableSet},
          {'filename': 'bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm', 'tableset': XLSXTableSet},
          ]
 

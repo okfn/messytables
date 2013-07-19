@@ -21,6 +21,16 @@ ODS_TYPES = {
     'date': DateType(None),
 }
 
+ODS_TEXT_NS = u"urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+ODS_TABLE_NS = u"urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+ODS_OFFICE_NS = u"urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+
+# We must wrap the XML fragments in a valid header otherwise iterparse will explode
+# with certain (undefined) versions of libxml2.
+ODS_HEADER = u"""<wrapper xmlns:table="{0}" xmlns:office="{1}" xmlns:text="{2}">""".format(ODS_TABLE_NS, ODS_OFFICE_NS, ODS_TEXT_NS)
+ODS_FOOTER = u"""</wrapper>"""
+
+
 class ODSTableSet(TableSet):
     """
     A wrapper around ODS files. Because they are zipped and the info we want
@@ -51,8 +61,9 @@ class ODSTableSet(TableSet):
 
         self.window = window
 
-        with zipfile.ZipFile(fileobj).open("content.xml") as fp:
-            self.content =  fp.read()
+        zf = zipfile.ZipFile(fileobj).open("content.xml")
+        self.content = zf.read()
+        zf.close()
 
     @property
     def tables(self):
@@ -90,12 +101,12 @@ class ODSRowSet(RowSet):
         for row in rows:
             row_data = []
 
-            partial = cStringIO.StringIO(row)
-            context = etree.iterparse(partial, ('end',))
+            block = "{0}{1}{2}".format(ODS_HEADER, row, ODS_FOOTER)
+            partial =  cStringIO.StringIO(block)
 
-            for action, elem in context:
-                if elem.tag == 'table-cell':
-                    cell_type = elem.attrib.get('value-type')
+            for action, elem in etree.iterparse(partial, ('end',)):
+                if elem.tag == '{urn:oasis:names:tc:opendocument:xmlns:table:1.0}table-cell':
+                    cell_type = elem.attrib.get('urn:oasis:names:tc:opendocument:xmlns:office:1.0:value-type')
                     children = elem.getchildren()
                     if children:
                         c = Cell(children[0].text, type=ODS_TYPES.get(cell_type, StringType()))
@@ -104,7 +115,6 @@ class ODSRowSet(RowSet):
             if not row_data:
                 raise StopIteration()
 
-            del context
             del partial
             yield row_data
         del rows
