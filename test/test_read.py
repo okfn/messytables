@@ -103,19 +103,29 @@ class ReadTest(unittest.TestCase):
             assert 3 == len(row), row
 
     def test_read_simple_ods(self):
-        fh = horror_fobj('simple_ods.ods')
+        fh = horror_fobj('simple.ods')
         table_set = ODSTableSet(fh)
         assert_equal(1, len(table_set.tables))
         row_set = table_set.tables[0]
         row = list(row_set.sample)[0]
         assert_equal(row[0].value, 'Name')
         assert_equal(row[1].value, 'Age')
-
+        assert_equal(row[2].value, 'When')
         total = 4
-        for row in row_set:
+        for row in row_set.sample:
             total = total - 1
-            assert 2 == len(row), row
+            assert 3 == len(row), row
         assert_equal( total, 0)
+
+    def test_read_large_ods(self):
+        fh = horror_fobj('large.ods')
+        table_set = ODSTableSet(fh)
+        assert_equal(6, len(table_set.tables))
+        row_set = table_set.tables[0]
+        row = row_set.raw().next()
+        assert len(row) == 5, len(row)
+        for row in row_set.sample:
+            assert len(row) == 5, len(row)
 
     def test_read_simple_xlsx(self):
         fh = horror_fobj('simple.xlsx')
@@ -126,7 +136,6 @@ class ReadTest(unittest.TestCase):
         assert_equal(row[0].value, 'date')
         assert_equal(row[1].value, 'temperature')
         assert_equal(row[2].value, 'place')
-
         for row in list(row_set):
             assert 3 == len(row), row
 
@@ -168,6 +177,7 @@ class ReadTest(unittest.TestCase):
         assert_equal(int(data[0][1].value), 1)
         data = list(row_set)
         assert_equal(int(data[0][1].value), 1)
+
 
     def test_guess_headers(self):
         fh = horror_fobj('weird_head_padding.csv')

@@ -1,20 +1,32 @@
 import cStringIO
+import itertools
+import re
+import zipfile
+
+import dateutil.parser as parser
+from lxml import etree
 
 from messytables.core import RowSet, TableSet, Cell
-from messytables.types import (StringType, IntegerType,
-                               DateType)
 from messytables.error import ReadError
+from messytables.types import (StringType, IntegerType, FloatType,
+                               DecimalType, DateType, DateUtilType)
 
-import odf.opendocument
-from odf.table import Table, TableRow, TableCell
-from odf.text import P
+
+ODS_TABLE_MATCH = re.compile(".*?(<table:table.*?<\/.*?:table>).*?", re.MULTILINE)
+ODS_TABLE_NAME = re.compile('.*?table:name=\"(.*?)\".*?')
+ODS_ROW_MATCH = re.compile(".*?(<table:table-row.*?<\/.*?:table-row>).*?", re.MULTILINE)
+
+ODS_TYPES = {
+    'float': FloatType(),
+    'date': DateType(None),
+}
 
 class ODSTableSet(TableSet):
     """
-    A wrapper around ODS files. As the underlying library is based on reading
-    from a file name (as opposed to a file object), a local, temporary copy
-    is created and passed into the library. This has significant performance
-    implication for large excel sheets.
+    A wrapper around ODS files. Because they are zipped and the info we want
+    is in the zipped file as content.xml we must ensure that we either have
+    a seekable object (local file) or that we retrieve all of the content from
+    the remote URL.
     """
 
     def __init__(self, fileobj, window=None):
@@ -38,16 +50,22 @@ class ODSTableSet(TableSet):
             fileobj = cStringIO.StringIO(fileobj.read())
 
         self.window = window
-        try:
-            self.workbook = odf.opendocument.load(fileobj)
-        except Exception, e:
-            raise ReadError('Could not open ODS file: %s', e)
+
+        with zipfile.ZipFile(fileobj).open("content.xml") as fp:
+            self.content =  fp.read()
 
     @property
     def tables(self):
-        """ Return the sheets in the workbook. """
-        return [ODSRowSet(sheet, self.window)
-                for sheet in self.workbook.spreadsheet.getElementsByType(Table)]
+        """
+            Return the sheets in the workbook.
+
+            A regex is used for this to avoid having to:
+
+            1. load large the entire file into memory, or
+            2. SAX parse the file more than once
+        """
+        sheets = [m.groups(0)[0] for m in ODS_TABLE_MATCH.finditer(self.content)]
+        return [ODSRowSet(sheet, self.window) for sheet in sheets]
 
 
 class ODSRowSet(RowSet):
@@ -56,41 +74,38 @@ class ODSRowSet(RowSet):
 
     def __init__(self, sheet, window=None):
         self.sheet = sheet
+
+        self.name = "Unknown"
+        m = ODS_TABLE_NAME.match(self.sheet)
+        if m:
+            self.name = m.groups(0)[0]
+
         self.window = window or 1000
         super(ODSRowSet, self).__init__(typed=True)
 
     def raw(self, sample=False):
-        """ Iterate over all rows in this sheet. Types are not yet provided """
-        rows = self.sheet.getElementsByType(TableRow)
-        num_rows = len(rows)
-        max_rows = min(self.window, num_rows) if sample else num_rows
+        """ Iterate over all rows in this sheet. """
+        rows = ODS_ROW_MATCH.findall(self.sheet)
 
-        count = 0
         for row in rows:
-            if count == max_rows:
-                break
-            count += 1
+            row_data = []
 
-            data_row = []
-            cells = row.getElementsByType(TableCell)
-            for cell in cells:
-                repeat = cell.getAttribute("numbercolumnsrepeated")
-                if(not repeat):
-                    repeat = 1
+            partial = cStringIO.StringIO(row)
+            context = etree.iterparse(partial, ('end',))
 
-                paras = cell.getElementsByType(P)
-                content = ""
+            for action, elem in context:
+                if elem.tag == 'table-cell':
+                    cell_type = elem.attrib.get('value-type')
+                    children = elem.getchildren()
+                    if children:
+                        c = Cell(children[0].text, type=ODS_TYPES.get(cell_type, StringType()))
+                        row_data.append(c)
 
-                for p in paras:
-                    for node in p.childNodes:
-                        if (node.nodeType == 3):
-                            content = content + unicode(node.data)
+            if not row_data:
+                raise StopIteration()
 
-                if content and content[0] != "#": # ignore comments cells
-                    for rr in range(int(repeat)):
-
-                        data_row.append(Cell(content, type=type(content)))
-
-            if(len(data_row)):
-                yield data_row
+            del context
+            del partial
+            yield row_data
+        del rows
 
