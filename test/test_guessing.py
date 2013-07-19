@@ -62,6 +62,20 @@ class TypeGuessTest(unittest.TestCase):
         assert_equal(len(guessed_types), 3)
         assert_equal(guessed_types, [IntegerType(), StringType(), DecimalType()])
 
+    def test_guessing_uses_first_in_case_of_tie(self):
+        csv_file = StringIO.StringIO('''
+            2
+            1.1
+            1500''')
+        rows = CSVTableSet(csv_file).tables[0]
+        guessed_types = type_guess(
+            rows.sample, types=[DecimalType, IntegerType], strict=False)
+        assert_equal(guessed_types, [DecimalType()])
+
+        guessed_types = type_guess(
+            rows.sample, types=[IntegerType, DecimalType], strict=False)
+        assert_equal(guessed_types, [IntegerType()])
+
     def test_strict_type_guessing_with_large_file(self):
         fh = horror_fobj('211.csv')
         rows = CSVTableSet(fh).tables[0]

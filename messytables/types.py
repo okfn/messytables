@@ -213,8 +213,13 @@ def type_guess(rows, types=TYPES, strict=False):
                         guesses[i][type] += type.guessing_weight
         _columns = []
     _columns = []
-    for types in guesses:
-        _columns.append(max(types.iteritems(), key=lambda (t, n): n)[0])
+    for guess in guesses:
+        # this first creates an array of tuples because we want the types to be
+        # sorted. Even though it is not specified, python chooses the first
+        # element in case of a tie
+        # See: http://stackoverflow.com/a/6783101/214950
+        guesses_tuples = [(t, guess[t]) for t in type_instances if t in guess]
+        _columns.append(max(guesses_tuples, key=lambda (t, n): n)[0])
     return _columns
 
 
