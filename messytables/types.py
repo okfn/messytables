@@ -186,6 +186,7 @@ def type_guess(rows, types=TYPES, strict=False):
                     if not type.test(cell.value):
                         guesses[ci].pop(type)
         # no need to set guessing weights before this
+        # because we only accept a type if it never fails
         for i, guess in enumerate(guesses):
             for type in guess:
                 guesses[i][type] = type.guessing_weight

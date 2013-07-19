@@ -54,7 +54,7 @@ class TypeGuessTest(unittest.TestCase):
 
     def test_non_strict_guessing_handles_padding(self):
         csv_file = StringIO.StringIO('''
-            1,   , 2
+            1,   , 2.1
             2,   , 1.1
             foo, , 1500''')
         rows = CSVTableSet(csv_file).tables[0]
