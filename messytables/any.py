@@ -1,6 +1,6 @@
 from messytables import ZIPTableSet
-from messytables import CSVTableSet, XLSTableSet, XLSXTableSet, HTMLTableSet, ODSTableSet
-from messytables.error import ReadError
+from messytables import (CSVTableSet, XLSTableSet, XLSXTableSet,
+                         HTMLTableSet, ODSTableSet)
 import messytables
 import re
 
@@ -138,9 +138,9 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
                     mimetype=magic_mime))
 
     if error:
-        raise ReadError('any: \n'.join(error))
+        raise messytables.ReadError('any: \n'.join(error))
     else:
-        raise ReadError("any: Did not attempt any detection.")
+        raise messytables.ReadError("any: Did not attempt any detection.")
 
 
 class AnyTableSet:

@@ -3,8 +3,8 @@ import xlrd
 from xlrd.biffh import XLRDError
 
 from messytables.core import RowSet, TableSet, Cell
-from messytables.types import StringType, IntegerType, \
-        DateType, FloatType
+from messytables.types import (StringType, IntegerType,
+                               DateType, FloatType)
 from messytables.error import ReadError
 
 
