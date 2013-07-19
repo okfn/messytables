@@ -8,6 +8,7 @@ from messytables.error import ReadError
 
 from messytables.core import Cell, TableSet, RowSet, seekable_stream
 from messytables.commas import CSVTableSet, CSVRowSet
+from messytables.ods import ODSTableSet, ODSRowSet
 from messytables.excel import XLSTableSet, XLSRowSet
 from messytables.excelx import XLSXTableSet, XLSXRowSet
 from messytables.zip import ZIPTableSet
