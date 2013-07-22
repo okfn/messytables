@@ -158,7 +158,7 @@ class DateUtilType(CellType):
         return parser.parse(value)
 
 
-TYPES = [StringType, IntegerType, DecimalType, DateType]
+TYPES = [StringType, DecimalType, IntegerType, DateType]
 
 
 def type_guess(rows, types=TYPES, strict=False):
