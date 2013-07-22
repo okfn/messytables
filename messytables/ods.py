@@ -18,14 +18,23 @@ ODS_TYPES = {
     'date': DateType(None),
 }
 
-ODS_TEXT_NS = u"urn:oasis:names:tc:opendocument:xmlns:text:1.0"
-ODS_TABLE_NS = u"urn:oasis:names:tc:opendocument:xmlns:table:1.0"
-ODS_OFFICE_NS = u"urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+NAMESPACES = {
+    "dc": u"http://purl.org/dc/elements/1.1/",
+    "draw": u"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0",
+    "number": u"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0",
+    "office": u"urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+    "svg": u"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0",
+    "table": u"urn:oasis:names:tc:opendocument:xmlns:table:1.0",
+    "text": u"urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+}
 
 # We must wrap the XML fragments in a valid header otherwise iterparse will
 # explode with certain (undefined) versions of libxml2.
-ODS_HEADER = u"""<wrapper xmlns:table="{0}" xmlns:office="{1}" xmlns:text="{2}">""".format(ODS_TABLE_NS, ODS_OFFICE_NS, ODS_TEXT_NS)
-ODS_FOOTER = u"""</wrapper>"""
+
+ODS_HEADER = u"<wrapper {0}>"\
+    .format(" ".join( 'xmlns:{0}="{1}"'.format(k,v)
+            for k,v in NAMESPACES.iteritems()))
+ODS_FOOTER = u"</wrapper>"
 
 
 class ODSTableSet(TableSet):

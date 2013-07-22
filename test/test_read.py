@@ -238,6 +238,18 @@ class ReadODSTest(unittest.TestCase):
         for row in row_set.sample:
             assert len(row) == 5, len(row)
 
+    def test_annotated_ods(self):
+        fh = horror_fobj('annotated.ods')
+        table_set = ODSTableSet(fh)
+        assert_equal(4, len(table_set.tables))
+        row_set = table_set.tables[0]
+        for row in row_set.sample:
+            assert len(row) == 1, len(row)
+
+        row_set = table_set.tables[1]
+        l = len(list(row_set.sample))
+        assert 87 == l, l
+
 
 class ReadXlsTest(unittest.TestCase):
     def test_read_simple_xls(self):
