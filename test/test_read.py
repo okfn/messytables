@@ -402,3 +402,9 @@ class ReadPdfTest(unittest.TestCase):
         assert_equal(1, len(list(tables.tables)))
         assert_equal(46, len(list(tables.tables[0])))
         assert_equal(10, len(list(list(tables.tables[0])[0])))
+
+    def test_pdf_names(self):
+        with horror_fobj('simple.pdf') as fh:
+            table_set = PDFTableSet(fh)
+        assert_equal('Table 1 of 1 on page 1 of 1',
+                     table_set.tables[0].name)

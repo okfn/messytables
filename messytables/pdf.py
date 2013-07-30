@@ -9,7 +9,6 @@ class PDFTableSet(TableSet):
     def __init__(self, fileobj=None, filename=None):
         if get_tables is None:
             raise ImportError("pdftables is not installed")
-        self.name = 'UnNamed Table'
         if filename is not None:
             self.fh = open(filename, 'r')
         elif fileobj is not None:
@@ -20,7 +19,14 @@ class PDFTableSet(TableSet):
 
     @property
     def tables(self):
-        return [PDFRowSet('NoName', table) for table in self.raw_tables]
+        def table_name(table):
+            return "Table {0} of {1} on page {2} of {3}".format(
+                table.table_index,  # TODO: + 1
+                table.table_index_total,
+                table.page,
+                table.page_total)
+        return [PDFRowSet(table_name(table), table)
+                for table in self.raw_tables]
 
 
 class PDFRowSet(RowSet):
