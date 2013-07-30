@@ -46,8 +46,8 @@ setup(
         'python-dateutil>=1.5.0,<2.0.0',
         'json-table-schema',
         'lxml>=3.2',
-        'pdftables',
     ],
+    extras_require={'pdf': ['pdftables']},
     tests_require=[],
     entry_points=\
     """
