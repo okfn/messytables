@@ -385,6 +385,16 @@ class ReadHtmlTest(unittest.TestCase):
         assert_equal('Table 2 of 3', table_set.tables[1].name)
         assert_equal('Table 3 of 3', table_set.tables[2].name)
 
+
+class ReadPdfTest(unittest.TestCase):
+    def setUp(self):
+        with horror_fobj('simple.pdf') as fh:
+            try:
+                PDFTableSet(fh)
+            except ImportError:
+                # Optional library isn't installed. Skip the tests.
+                self.skipTest("pdftables is not installed, skipping PDF tests")
+
     def test_read_simple_pdf(self):
         #TODO pdftables is failing to split a couple of cells
         with horror_fobj('simple.pdf') as fh:
