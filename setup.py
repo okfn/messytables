@@ -47,7 +47,7 @@ setup(
         'json-table-schema',
         'lxml>=3.2',
     ],
-    extras_require={'pdf': ['pdftables']},
+    extras_require={'pdf': ['pdftables>=0.0.2']},
     tests_require=[],
     entry_points=\
     """
