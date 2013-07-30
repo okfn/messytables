@@ -34,7 +34,8 @@ class HTMLTableSet(TableSet):
     @property
     def tables(self):
         def rowset_name(rowset, table_index):
-            return "Table {} of {}".format(table_index + 1, len(self.htmltables))
+            return "Table {0} of {1}".format(table_index + 1,
+                                             len(self.htmltables))
 
         return [HTMLRowSet(rowset_name(rowset, index), rowset)
                 for index, rowset in enumerate(self.htmltables)]
