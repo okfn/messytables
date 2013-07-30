@@ -396,7 +396,6 @@ class ReadPdfTest(unittest.TestCase):
                 self.skipTest("pdftables is not installed, skipping PDF tests")
 
     def test_read_simple_pdf(self):
-        #TODO pdftables is failing to split a couple of cells
         with horror_fobj('simple.pdf') as fh:
             table_set = PDFTableSet(fh)
         assert_equal(1, len(list(table_set.tables)))
