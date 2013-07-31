@@ -2,7 +2,7 @@
 import unittest
 
 from . import horror_fobj
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_in
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
@@ -10,6 +10,8 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          offset_processor, DateType, FloatType,
                          IntegerType, rowset_as_jts,
                          types_processor, type_guess)
+
+import lxml.html
 
 
 class ReadCsvTest(unittest.TestCase):
@@ -97,7 +99,8 @@ class ReadCsvTest(unittest.TestCase):
         table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         types = type_guess(row_set.sample, strict=True)
-        expected_types = [IntegerType(), StringType(), IntegerType(), StringType()]
+        expected_types = [IntegerType(), StringType(),
+                          IntegerType(), StringType()]
         assert_equal(types, expected_types)
 
         row_set.register_processor(types_processor(types))
@@ -319,6 +322,16 @@ class ReadHtmlTest(unittest.TestCase):
         assert_equal(row[0].value.strip(), 'HDI Rank')
         assert_equal(row[1].value.strip(), 'Country')
         assert_equal(row[4].value.strip(), '2010')
+
+    def test_read_html_property(self):
+        fh = horror_fobj('html.html')
+        table_set = HTMLTableSet(fh)
+        row_set = table_set.tables[0]
+        row = list(row_set.sample)[0]
+        assert_in('</th>', row[4].properties['html'])
+        for cell in row:
+            if 'span' not in cell.properties:
+                lxml.html.fromstring(cell.properties['html'])
 
     def test_read_span_html(self):
         fh = horror_fobj('rowcolspan.html')
