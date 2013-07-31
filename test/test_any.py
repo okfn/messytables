@@ -3,7 +3,7 @@ import unittest
 
 from . import horror_fobj
 from nose.tools import assert_equal
-from messytables import (any_tableset, XLSTableSet, ZIPTableSet,
+from messytables import (any_tableset, XLSTableSet, ZIPTableSet, PDFTableSet,
                          CSVTableSet, XLSXTableSet, ODSTableSet,
                          ReadError)
 
@@ -12,6 +12,7 @@ suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
          {'filename': 'simple.xlsx', 'tableset': XLSXTableSet},
          {'filename': 'simple.zip', 'tableset': ZIPTableSet},
          {'filename': 'simple.ods', 'tableset': ODSTableSet},
+         {'filename': 'simple.pdf', 'tableset': PDFTableSet},
          {'filename': 'bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm', 'tableset': XLSXTableSet},
          ]
 

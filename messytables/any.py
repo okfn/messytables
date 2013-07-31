@@ -1,6 +1,5 @@
-from messytables import ZIPTableSet
-from messytables import (CSVTableSet, XLSTableSet, XLSXTableSet,
-                         HTMLTableSet, ODSTableSet)
+from messytables import (ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet,
+                         XLSXTableSet, HTMLTableSet, ODSTableSet)
 import messytables
 import re
 
@@ -54,6 +53,7 @@ def guess_mime(mimetype):
               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': XLSXTableSet,
               'text/html': HTMLTableSet,
               'application/xml': XLSXTableSet,
+              'application/pdf': PDFTableSet,
               'text/plain': CSVTableSet,  # could be TAB.
               'application/CDFV2-corrupt': XLSTableSet,
               'application/vnd.oasis.opendocument.spreadsheet': ODSTableSet,
@@ -77,6 +77,7 @@ def guess_ext(ext):
               'xlsx': XLSXTableSet,
               'htm': HTMLTableSet,
               'html': HTMLTableSet,
+              'pdf': PDFTableSet,
               'xlt': XLSTableSet,
                 # obscure Excel extensions taken from
                 # http://en.wikipedia.org/wiki/List_of_Microsoft_Office_filename_extensions
