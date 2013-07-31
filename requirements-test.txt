@@ -1,4 +1,4 @@
 httpretty
 nose
 requests>=1.0
-pdftables>=0.0.2
+pdftables>=0.0.3
