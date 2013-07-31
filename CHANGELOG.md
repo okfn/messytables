@@ -1,3 +1,6 @@
+0.13.0 (31 July 2013)
+* Make HTML table name human-readable
+
 0.12.0 (wip, master)
 * #51 Removed FloatType, use DecimalType
 
