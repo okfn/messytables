@@ -33,12 +33,12 @@ class HTMLTableSet(TableSet):
 
     @property
     def tables(self):
-        def rowset_name(x):
-            attrs = dict(x.attrib)
-            del attrs['messytable']
-            return json.dumps(attrs)
+        def rowset_name(rowset, table_index):
+            return "Table {0} of {1}".format(table_index + 1,
+                                             len(self.htmltables))
 
-        return [HTMLRowSet(rowset_name(x), x) for x in self.htmltables]
+        return [HTMLRowSet(rowset_name(rowset, index), rowset)
+                for index, rowset in enumerate(self.htmltables)]
 
 
 def insert_blank_cells(row, blanks):

@@ -341,37 +341,33 @@ class ReadHtmlTest(unittest.TestCase):
         for test in tests:
             assert_equal(magic[test], tests[test])
 
-    def test_read_nested_html(self):
+    def test_that_outer_table_contains_nothing(self):
         fh = horror_fobj('complex.html')
-        table_set = HTMLTableSet(fh)
-        row_set = {}
-        for table in table_set.tables:
-            row_set[table.name] = table
+        tables = {}
+        for table in HTMLTableSet(fh).tables:
+            tables[table.name] = table
 
-        # contains_other_tables contains no meaningful data
-        other = row_set['{"style": "contains_other_tables"}']
-        rows = list(other)
-        assert_equal(len(rows), 1)
-        assert_equal(len(rows[0]), 1)
-        assert_equal(rows[0][0].value.
+        # outer_table should contain no meaningful data
+        outer_table = list(tables['Table 2 of 2'])
+        assert_equal(len(outer_table), 1)
+        assert_equal(len(outer_table[0]), 1)
+        assert_equal(outer_table[0][0].value.
                      replace(" ", "").
                      replace("\n", ""),
                      "headfootbody")
 
-    def test_read_anatomy_html(self):
+    def test_that_inner_table_contains_data(self):
         fh = horror_fobj('complex.html')
-        table_set = HTMLTableSet(fh)
-        row_set = {}
-        for table in table_set.tables:
-            row_set[table.name] = table
+        tables = {}
+        for table in HTMLTableSet(fh).tables:
+            tables[table.name] = table
 
-        # but contains_thead_tfoot_tbody has things in the right order
-        anatomy = row_set['{"style": "contains_thead_tfoot_tbody"}']
-        builder = []
-        for row in anatomy:
+        inner_table = tables['Table 1 of 2']
+        cell_values = []
+        for row in inner_table:
             for cell in row:
-                builder.append(cell.value)
-        assert_equal(builder, ['head', 'body', 'foot'])
+                cell_values.append(cell.value)
+        assert_equal(['head', 'body', 'foot'], cell_values)
 
     def test_rowset_as_schema(self):
         from StringIO import StringIO as sio
@@ -381,3 +377,10 @@ class ReadHtmlTest(unittest.TestCase):
         assert_equal(jts['fields'], [
             {'type': 'string', 'id': u'name', 'label': u'name'},
             {'type': 'date', 'id': u'dob', 'label': u'dob'}])
+
+    def test_html_table_name(self):
+        fh = horror_fobj('html.html')
+        table_set = HTMLTableSet(fh)
+        assert_equal('Table 1 of 3', table_set.tables[0].name)
+        assert_equal('Table 2 of 3', table_set.tables[1].name)
+        assert_equal('Table 3 of 3', table_set.tables[2].name)
