@@ -13,6 +13,7 @@ from messytables.excel import XLSTableSet, XLSRowSet
 from messytables.excelx import XLSXTableSet, XLSXRowSet
 from messytables.zip import ZIPTableSet
 from messytables.html import HTMLTableSet, HTMLRowSet
+from messytables.pdf import PDFTableSet, PDFRowSet
 from messytables.any import any_tableset, AnyTableSet
 
 from messytables.jts import rowset_as_jts, headers_and_typed_as_jts

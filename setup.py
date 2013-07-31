@@ -45,8 +45,9 @@ setup(
         'chardet==2.1.1',
         'python-dateutil>=1.5.0,<2.0.0',
         'json-table-schema',
-        'lxml>=3.2'
+        'lxml>=3.2',
     ],
+    extras_require={'pdf': ['pdftables>=0.0.3']},
     tests_require=[],
     entry_points=\
     """
