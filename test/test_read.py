@@ -2,7 +2,7 @@
 import unittest
 
 from . import horror_fobj
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_is, assert_is_instance
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
@@ -10,6 +10,7 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          offset_processor, DateType, FloatType,
                          IntegerType, rowset_as_jts,
                          types_processor, type_guess)
+import datetime
 
 
 class ReadCsvTest(unittest.TestCase):
@@ -284,10 +285,20 @@ class ReadXlsxTest(unittest.TestCase):
         table_set = XLSXTableSet(fh)
         assert_equal(1, len(table_set.tables))
         row_set = table_set.tables[0]
-        row = list(row_set.sample)[0]
-        assert_equal(row[0].value, 'date')
-        assert_equal(row[1].value, 'temperature')
-        assert_equal(row[2].value, 'place')
+        first_row = list(row_set.sample)[0]
+        third_row = list(row_set.sample)[2]
+
+        assert_is_instance(first_row[0].value, unicode)
+        assert_is_instance(first_row[1].value, unicode)
+        assert_is_instance(first_row[2].value, unicode)
+
+        assert_equal(first_row[0].value, 'date')
+        assert_equal(first_row[1].value, 'temperature')
+        assert_equal(first_row[2].value, 'place')
+
+        assert_equal(third_row[0].value, datetime.datetime(2011, 1, 2, 0, 0))
+        assert_is(third_row[1].value, -1)
+        assert_equal(third_row[2].value, u'Galway')
 
         for row in list(row_set):
             assert 3 == len(row), row
