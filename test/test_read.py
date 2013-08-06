@@ -280,6 +280,11 @@ class ReadXlsTest(unittest.TestCase):
 
 
 class ReadXlsxTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.large_table_set = XLSXTableSet(   # TODO
+            horror_fobj('large.xlsx'))
+
     def test_read_simple_xlsx(self):
         fh = horror_fobj('simple.xlsx')
         table_set = XLSXTableSet(fh)
@@ -302,6 +307,37 @@ class ReadXlsxTest(unittest.TestCase):
 
         for row in list(row_set):
             assert 3 == len(row), row
+
+    def test_large_file_report_sheet_has_11_cols_52_rows(self):
+        table = self.large_table_set['Report']
+        num_rows = len(list(table))
+        num_cols = len(list(table)[0])
+
+        assert_equal(52, num_rows)
+        assert_equal(11, num_cols)
+        num_cells = sum(len(row) for row in table)
+        assert_equal(num_rows * num_cols, num_cells)
+
+    def test_large_file_data_sheet_has_11_cols_8547_rows(self):
+        table = self.large_table_set['data']
+        num_rows = len(list(table))
+        num_cols = len(list(table)[0])
+
+        assert_equal(8547, num_rows)
+        assert_equal(11, num_cols)
+        num_cells = sum(len(row) for row in table)
+        assert_equal(num_rows * num_cols, num_cells)
+
+
+    def test_large_file_criteria_sheet_has_5_cols_12_rows(self):
+        table = self.large_table_set['criteria']
+        num_rows = len(list(table))
+        num_cols = len(list(table)[0])
+
+        assert_equal(5, num_cols)
+        assert_equal(12, num_rows)
+        num_cells = sum(len(row) for row in table)
+        assert_equal(num_rows * num_cols, num_cells)
 
     def test_read_type_know_simple(self):
         fh = horror_fobj('simple.xls')
