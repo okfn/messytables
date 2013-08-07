@@ -47,6 +47,7 @@ def guess_mime(mimetype):
     lookup = {'application/x-zip-compressed': ZIPTableSet,
               'application/zip': ZIPTableSet,
               'text/comma-separated-values': CSVTableSet,
+              'application/csv': CSVTableSet,
               'text/tab-separated-values': TABTableSet,
               'application/ms-excel': XLSTableSet,
               'application/vnd.ms-excel': XLSTableSet,
@@ -59,8 +60,9 @@ def guess_mime(mimetype):
               'application/vnd.oasis.opendocument.spreadsheet': ODSTableSet,
               'application/x-vnd.oasis.opendocument.spreadsheet': ODSTableSet,
               }
-    if mimetype in lookup:
-        return lookup.get(mimetype, None)
+    found = lookup.get(mimetype)
+    if found:
+        return found
 
     # But some aren't mimetyped due to being buggy but load fine!
     fuzzy_lookup = {'Composite Document File V2 Document': XLSTableSet}
@@ -116,7 +118,7 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
             return attempt(fileobj)
         else:
             error.append(
-                "Did not recognise MIME type given: {mimetype}.".format(
+                'Did not recognise MIME type given: "{mimetype}".'.format(
                     mimetype=mimetype))
 
     if short_ext is not '':
@@ -125,7 +127,7 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
             return attempt(fileobj)
         else:
             error.append(
-                "Did not recognise extension {ext} (given {full}.".format(
+                'Did not recognise extension "{ext}" (given "{full}".'.format(
                     ext=short_ext, full=extension))
 
     if auto_detect:
@@ -135,7 +137,7 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
             return attempt(fileobj)
         else:
             error.append(
-                "Did not recognise detected MIME type: {mimetype}.".format(
+                'Did not recognise detected MIME type: "{mimetype}".'.format(
                     mimetype=magic_mime))
 
     if error:
