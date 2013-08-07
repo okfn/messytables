@@ -17,7 +17,6 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          IntegerType, rowset_as_jts,
                          types_processor, type_guess)
 import datetime
-import warnings
 
 
 class ReadCsvTest(unittest.TestCase):
@@ -261,18 +260,12 @@ class ReadODSTest(unittest.TestCase):
 
 
 class XlsxBackwardsCompatibilityTest(unittest.TestCase):
-    def test_read_simple_xls(self):
+    def test_that_xlsx_is_handled_by_xls_table_set(self):
         """
         Should emit a DeprecationWarning.
         """
         fh = horror_fobj('simple.xlsx')
-        with warnings.catch_warnings(record=True) as w:
-            # Cause all warnings to always be triggered.
-            warnings.simplefilter("always")
-            XLSXTableSet(fh)
-            print(w[-1].category)
-
-            assert_true(issubclass(w[-1].category, DeprecationWarning))
+        assert_is_instance(XLSXTableSet(fh), XLSTableSet)
 
 
 class ReadXlsTest(unittest.TestCase):
