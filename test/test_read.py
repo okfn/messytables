@@ -2,7 +2,7 @@
 import unittest
 
 from . import horror_fobj
-from nose.tools import assert_equal, assert_is_instance, assert_true
+from nose.tools import assert_equal, assert_true
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
@@ -283,13 +283,13 @@ class ReadXlsTest(unittest.TestCase):
         first_row = list(row_set.sample)[0]
         third_row = list(row_set.sample)[2]
 
-        assert_is_instance(first_row[0].value, unicode)
-        assert_is_instance(first_row[1].value, unicode)
-        assert_is_instance(first_row[2].value, unicode)
+        assert_true(isinstance(first_row[0].value, unicode))
+        assert_true(isinstance(first_row[1].value, unicode))
+        assert_true(isinstance(first_row[2].value, unicode))
 
-        assert_is_instance(third_row[0].value, datetime.datetime)
-        assert_is_instance(third_row[1].value, float)
-        assert_is_instance(third_row[2].value, unicode)
+        assert_true(isinstance(third_row[0].value, datetime.datetime))
+        assert_true(isinstance(third_row[1].value, float))
+        assert_true(isinstance(third_row[2].value, unicode))
 
         assert_equal(first_row[0].value, 'date')
         assert_equal(first_row[1].value, 'temperature')
@@ -322,13 +322,13 @@ class ReadXlsTest(unittest.TestCase):
         first_row = list(row_set.sample)[0]
         third_row = list(row_set.sample)[2]
 
-        assert_is_instance(first_row[0].value, unicode)
-        assert_is_instance(first_row[1].value, unicode)
-        assert_is_instance(first_row[2].value, unicode)
+        assert_true(isinstance(first_row[0].value, unicode))
+        assert_true(isinstance(first_row[1].value, unicode))
+        assert_true(isinstance(first_row[2].value, unicode))
 
-        assert_is_instance(third_row[0].value, datetime.datetime)
-        assert_is_instance(third_row[1].value, float)
-        assert_is_instance(third_row[2].value, unicode)
+        assert_true(isinstance(third_row[0].value, datetime.datetime))
+        assert_true(isinstance(third_row[1].value, float))
+        assert_true(isinstance(third_row[2].value, unicode))
 
         assert_equal(first_row[0].value, 'date')
         assert_equal(first_row[1].value, 'temperature')
