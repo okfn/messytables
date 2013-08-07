@@ -2,7 +2,7 @@
 import unittest
 
 from . import horror_fobj
-from nose.tools import assert_equal, assert_is_instance
+from nose.tools import assert_equal, assert_is_instance, assert_true
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
@@ -11,6 +11,7 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          IntegerType, rowset_as_jts,
                          types_processor, type_guess)
 import datetime
+import warnings
 
 
 class ReadCsvTest(unittest.TestCase):
@@ -98,7 +99,8 @@ class ReadCsvTest(unittest.TestCase):
         table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         types = type_guess(row_set.sample, strict=True)
-        expected_types = [IntegerType(), StringType(), IntegerType(), StringType()]
+        expected_types = [IntegerType(), StringType(), IntegerType(),
+                          StringType()]
         assert_equal(types, expected_types)
 
         row_set.register_processor(types_processor(types))
@@ -227,7 +229,7 @@ class ReadODSTest(unittest.TestCase):
         for row in row_set.sample:
             total = total - 1
             assert 3 == len(row), row
-        assert_equal( total, 0)
+        assert_equal(total, 0)
 
     def test_read_large_ods(self):
         fh = horror_fobj('large.ods')
@@ -252,7 +254,27 @@ class ReadODSTest(unittest.TestCase):
         assert 87 == l, l
 
 
+class XlsxBackwardsCompatibilityTest(unittest.TestCase):
+    def test_read_simple_xls(self):
+        """
+        Should emit a DeprecationWarning.
+        """
+        fh = horror_fobj('simple.xlsx')
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            XLSXTableSet(fh)
+            print(w[-1].category)
+
+            assert_true(issubclass(w[-1].category, DeprecationWarning))
+
+
 class ReadXlsTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.large_xlsx_table_set = XLSTableSet(   # TODO
+            horror_fobj('large.xlsx'))
+
     def test_read_simple_xls(self):
         fh = horror_fobj('simple.xls')
         table_set = XLSTableSet(fh)
@@ -292,16 +314,9 @@ class ReadXlsTest(unittest.TestCase):
         data = list(row_set)
         assert_equal(int(data[0][1].value), 1)
 
-
-class ReadXlsxTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.large_table_set = XLSXTableSet(   # TODO
-            horror_fobj('large.xlsx'))
-
     def test_read_simple_xlsx(self):
         fh = horror_fobj('simple.xlsx')
-        table_set = XLSXTableSet(fh)
+        table_set = XLSTableSet(fh)
         assert_equal(1, len(table_set.tables))
         row_set = table_set.tables[0]
         first_row = list(row_set.sample)[0]
@@ -327,7 +342,7 @@ class ReadXlsxTest(unittest.TestCase):
             assert 3 == len(row), row
 
     def test_large_file_report_sheet_has_11_cols_52_rows(self):
-        table = self.large_table_set['Report']
+        table = self.large_xlsx_table_set['Report']
         num_rows = len(list(table))
         num_cols = len(list(table)[0])
 
@@ -336,8 +351,8 @@ class ReadXlsxTest(unittest.TestCase):
         num_cells = sum(len(row) for row in table)
         assert_equal(num_rows * num_cols, num_cells)
 
-    def _test_large_file_data_sheet_has_11_cols_8547_rows(self):
-        table = self.large_table_set['data']
+    def test_large_file_data_sheet_has_11_cols_8547_rows(self):
+        table = self.large_xlsx_table_set['data']
         num_rows = len(list(table))
         num_cols = len(list(table)[0])
 
@@ -346,9 +361,8 @@ class ReadXlsxTest(unittest.TestCase):
         num_cells = sum(len(row) for row in table)
         assert_equal(num_rows * num_cols, num_cells)
 
-
     def test_large_file_criteria_sheet_has_5_cols_12_rows(self):
-        table = self.large_table_set['criteria']
+        table = self.large_xlsx_table_set['criteria']
         num_rows = len(list(table))
         num_cols = len(list(table)[0])
 

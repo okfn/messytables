@@ -1,3 +1,11 @@
+#
+# WARNING!
+#
+# THIS CODE IS DEPRECATED AND WILL BE REMOVED!
+#
+# Use the XLSTableReader instead
+#
+
 from openpyxl.reader.excel import load_workbook
 import cStringIO
 
@@ -5,6 +13,7 @@ from messytables.core import RowSet, TableSet, Cell
 from messytables.types import (StringType, IntegerType,
                                DateType)
 from messytables.error import ReadError
+import warnings
 
 
 class XLSXTableSet(TableSet):
@@ -28,6 +37,10 @@ class XLSXTableSet(TableSet):
         messytables.core.seekable_stream as it does not support the full seek
         functionality.
         '''
+        warnings.warn('XLSXTableSet has been deprecated - its functionality '
+                      'Ideally you should use any_tableset() and allow '
+                      'auto-detection of type. Failing that, use XLSTableSet',
+                      DeprecationWarning)
         if hasattr(fileobj, 'read'):
             # wrap in a StringIO so we do not have hassle with seeks and
             # binary etc (see notes to __init__ above)
