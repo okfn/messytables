@@ -2,6 +2,7 @@
 * #51 Removed FloatType, use DecimalType
 * #81 Make HTML table name human-readable
 * #82 Add preliminary PDF support
+* #83 Use XLSTableSet also for xlsx files
 
 0.11.0 (8 July 2013)
 * #65 Reworked any.py
