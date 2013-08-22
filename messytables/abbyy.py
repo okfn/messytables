@@ -13,7 +13,7 @@ class ABBYYTableSet(TableSet):
         if not fh:
             raise TypeError('You must provide one of filename or fileobj')
 
-        xml = get_abbyy.OCR(fh).get_ocr_content()
+        xml = get_abbyy.OCRFile(fh).get_ocr_content()
         root = lxml.etree.fromstring(xml)
         self.xmltables = root.xpath("//*[local-name()='block' and @blockType='Table']")
 

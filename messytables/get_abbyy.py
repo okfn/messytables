@@ -63,6 +63,19 @@ def get_task_status(task):
     resp = requests.get(url, auth=user, data={'taskId': task})
     return handle_response(resp)
 
+def wait_for_response(status=None):
+    if not status:
+        status = {}
+    while "resultUrl" not in status:
+        logging.info(status)
+        wait = int(status.get("estimatedProcessingTime", "0"))
+        logging.info("sleeping for %r seconds" % wait)
+        time.sleep(wait)
+        logging.info("get task status")
+        status = get_task_status(status['id'])
+    logging.info(status)
+    return status['resultUrl']
+
 
 class OCRFile(object):
     def __init__(self, fh):
@@ -74,7 +87,7 @@ class OCRFile(object):
             self.fh.seek(0)
         except:  # TODO appropriate error!
             return None
-        _hash = hashlib.md5(fh.read()).hexdigest()
+        _hash = hashlib.md5(self.fh.read()).hexdigest()
         self.fh.seek(0)
         return _hash
 
@@ -95,17 +108,12 @@ class OCRFile(object):
         previous_result = is_task(self.md5)
         if previous_result:
             logging.info("cache hit")
-            return previous_result['resultUrl']
+            if 'resultUrl' in previous_result:  # handle race condition, more testing definately required
+                return previous_result['resultUrl']
+            else:
+                return wait_for_response(previous_result)
         status = self.process_image()
-        while "resultUrl" not in status:
-            logging.info(status)
-            wait = int(status.get("estimatedProcessingTime", "0"))
-            logging.info("sleeping for %r seconds" % wait)
-            time.sleep(wait)
-            logging.info("get task status")
-            status = get_task_status(status['id'])
-        logging.info(status)
-        return status['resultUrl']
+        return wait_for_response(status)
 
     def get_ocr_content(self, cache=True):
         url = self.get_ocr_url()
@@ -113,8 +121,13 @@ class OCRFile(object):
         return ocr_data
 
 if __name__ == "__main__":
+    import sys
     logging.basicConfig(level=logging.INFO)
     list_tasks()
-    with open("../horror/t1.TIF", "rb") as fh:
+    with open(sys.argv[1], "rb") as fh:
         ocr = OCRFile(fh)
-        print ocr.get_ocr_content(fh)[:4000]
+        content = ocr.get_ocr_content(fh)
+        with open("output", "wb") as outfile:
+            outfile.write(content)
+        print "see output"
+
