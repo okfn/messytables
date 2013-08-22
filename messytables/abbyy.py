@@ -1,7 +1,7 @@
 from messytables.core import RowSet, TableSet, Cell
 import lxml.etree
 import get_abbyy
-
+from collections import defaultdict
 
 class ABBYYTableSet(TableSet):
     def __init__(self, fileobj=None, filename=None, window=None):
@@ -35,9 +35,44 @@ class ABBYYRowSet(RowSet):
         super(ABBYYRowSet, self).__init__()
 
     def raw(self, sample=False):
-        # yields rows
+        def insert_blank_cells(row, blanks):
+            """
+            Given a list of values, insert blank cells at the indexes given by blanks
+            The letters in these examples should really be cells.
+            >>> insert_blank_cells(["a","e","f"],[1,2,3])
+            ['a', <Cell(String:>, <Cell(String:>, <Cell(String:>, 'e', 'f']
+            """
+            # DISCUSS: option to repeat top-left of col/rowspan.
+            # or to identify that areas are a single cell, originally.
+            for i in blanks:
+                row.insert(i, Cell("", properties={'span': True}))
+            return row
+
         def makecell(xmlcell):
             return Cell(''.join(xmlcell.xpath(".//*[local-name()='charParams']/text()")))
 
-        for row in self.sheet.xpath(".//*[local-name()='row']"):
-            yield [makecell(xmlcell) for xmlcell in row.xpath(".//*[local-name()='cell']")]
+        blank_cells = defaultdict(list)  # ie row 2, cols 3,4,6: {2: [3,4,6]}
+        for r, row in enumerate(self.sheet.xpath(".//*[local-name()='row']")):
+            xml_cells = row.xpath(".//*[local-name()='cell']")
+
+            # at the end of this chunk, you will have accurate blank_cells
+            output_column = 0
+            for xml_cell in xml_cells:
+                while output_column in blank_cells[r]:
+                    output_column += 1  # pass over col, not in source table
+                rowspan = int(xml_cell.attrib.get('rowSpan', "1"))
+                colspan = int(xml_cell.attrib.get('colSpan', "1"))
+                x_range = range(output_column, output_column + colspan)
+                y_range = range(r, r + rowspan)
+                for x in x_range:
+                    for y in y_range:
+                        if (output_column, r) != (x, y):
+                            # don't skip current cell
+                            blank_cells[y].append(x)
+                output_column += 1
+
+            cells = [makecell(xmlcell) for xmlcell in xml_cells]
+            yield insert_blank_cells(cells, blank_cells[r])
+            if sample and r == self.window:
+                return
+            del blank_cells[r]
