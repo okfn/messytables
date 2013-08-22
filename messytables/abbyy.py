@@ -1,18 +1,20 @@
 from messytables.core import RowSet, TableSet, Cell
 import lxml.etree
+import get_abbyy
 
 
 class ABBYYTableSet(TableSet):
     def __init__(self, fileobj=None, filename=None, window=None):
 
         if filename:
-            fh = open(filename, 'r')
+            fh = open(filename, 'rb')
         else:
             fh = fileobj
         if not fh:
             raise TypeError('You must provide one of filename or fileobj')
 
-        root = lxml.etree.fromstring(fh.read())
+        xml = get_abbyy.get_ocr_content(fh)
+        root = lxml.etree.fromstring(xml)
         self.xmltables = root.xpath("//*[local-name()='block' and @blockType='Table']")
 
     @property
