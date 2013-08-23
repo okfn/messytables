@@ -12,10 +12,9 @@ import time
 import logging
 import hashlib
 try:
-    from abbyy_secret import user
-except:
-    raise RuntimeError("""abbyy_secret.py needs to contain
-user=(abbyy_application, abbyy_secret_key)""")
+    import abbyy_secret
+except ImportError:
+    pass
 
 baseurl = "http://cloud.ocrsdk.com/%s"
 
@@ -28,6 +27,14 @@ IMAGE_PARAMS = {'exportFormat': 'xml',
 
 class ABBYYError(Exception):
     pass
+
+def user():
+    try:
+        return abbyy_secret.user
+    except:
+        raise RuntimeError("""abbyy_secret.py needs to contain
+user=(abbyy_application, abbyy_secret_key)""")
+
 
 
 def handle_response(response, as_list=False):
@@ -50,7 +57,7 @@ def handle_response(response, as_list=False):
 
 
 def list_tasks():
-    return handle_response(requests.get(baseurl % 'listTasks', auth=user),
+    return handle_response(requests.get(baseurl % 'listTasks', auth=user()),
                            as_list=True)
 
 
@@ -66,7 +73,7 @@ def is_task(descr):
 
 def get_task_status(task):
     url = baseurl % "getTaskStatus"
-    resp = requests.get(url, auth=user, data={'taskId': task})
+    resp = requests.get(url, auth=user(), data={'taskId': task})
     return handle_response(resp)
 
 
@@ -88,6 +95,7 @@ class OCRFile(object):
     def __init__(self, fh):
         self.fh = fh
         self.md5 = self.md5hash()
+        user()  # fail early
 
     def md5hash(self):
         try:
@@ -105,7 +113,7 @@ class OCRFile(object):
         payload = {'upload': self.fh}
         params = dict(IMAGE_PARAMS)
         params['description'] = self.md5
-        resp = requests.post(url, auth=user, files=payload, params=params)
+        resp = requests.post(url, auth=user(), files=payload, params=params)
         return handle_response(resp)
 
     def get_ocr_url(self):
