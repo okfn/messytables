@@ -49,7 +49,10 @@ class ABBYYRowSet(RowSet):
             return row
 
         def makecell(xmlcell):
-            return Cell(''.join(xmlcell.xpath(".//*[local-name()='charParams']/text()")))
+            linebuilder=[]
+            for line in xmlcell.xpath(".//*local-name()='line']"):
+                linebuilder.append(''.join(xmlcell.xpath(".//*[local-name()='charParams']/text()")))
+            return Cell('\n'.join(linebuilder))
 
         blank_cells = defaultdict(list)  # ie row 2, cols 3,4,6: {2: [3,4,6]}
         for r, row in enumerate(self.sheet.xpath(".//*[local-name()='row']")):
