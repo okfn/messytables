@@ -19,6 +19,12 @@ user=(abbyy_application, abbyy_secret_key)""")
 
 baseurl = "http://cloud.ocrsdk.com/%s"
 
+IMAGE_PARAMS = {'exportFormat': 'xml',
+                'language': 'English',
+                'correctOrientation': 'false',
+                'correctSkew': 'false'
+                }
+
 
 class ABBYYError(Exception):
     pass
@@ -63,6 +69,7 @@ def get_task_status(task):
     resp = requests.get(url, auth=user, data={'taskId': task})
     return handle_response(resp)
 
+
 def wait_for_response(status=None):
     if not status:
         status = {}
@@ -80,26 +87,24 @@ def wait_for_response(status=None):
 class OCRFile(object):
     def __init__(self, fh):
         self.fh = fh
-        self.md5 = self.md5hash() or ''
+        self.md5 = self.md5hash()
 
     def md5hash(self):
         try:
             self.fh.seek(0)
         except:  # TODO appropriate error!
             return None
-        _hash = hashlib.md5(self.fh.read()).hexdigest()
+        _hash = hashlib.md5(self.fh.read())
+        _hash.update(repr(IMAGE_PARAMS))
+        hd = _hash.hexdigest()
         self.fh.seek(0)
-        return _hash
+        return hd
 
     def process_image(self):
-        params = {'exportFormat': 'xml',
-                  'language': 'English',
-                  'description': self.md5
-                  }
-
         url = baseurl % "processImage"
-
         payload = {'upload': self.fh}
+        params = dict(IMAGE_PARAMS)
+        params['description'] = self.md5
         resp = requests.post(url, auth=user, files=payload, params=params)
         return handle_response(resp)
 
@@ -130,4 +135,3 @@ if __name__ == "__main__":
         with open("output", "wb") as outfile:
             outfile.write(content)
         print "see output"
-
