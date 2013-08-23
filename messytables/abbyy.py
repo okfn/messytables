@@ -50,8 +50,8 @@ class ABBYYRowSet(RowSet):
 
         def makecell(xmlcell):
             linebuilder=[]
-            for line in xmlcell.xpath(".//*local-name()='line']"):
-                linebuilder.append(''.join(xmlcell.xpath(".//*[local-name()='charParams']/text()")))
+            for line in xmlcell.xpath(".//*[local-name()='line']"):
+                linebuilder.append(''.join(line.xpath(".//*[local-name()='charParams']/text()")))
             return Cell('\n'.join(linebuilder))
 
         blank_cells = defaultdict(list)  # ie row 2, cols 3,4,6: {2: [3,4,6]}
