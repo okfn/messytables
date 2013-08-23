@@ -4,8 +4,9 @@ import unittest
 from . import horror_fobj
 from nose.tools import assert_equal
 from messytables import (any_tableset, XLSTableSet, ZIPTableSet, PDFTableSet,
-                         CSVTableSet, ODSTableSet,
+                         CSVTableSet, ODSTableSet, ABBYYTableSet,
                          ReadError)
+import messytables.any
 
 suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
          {'filename': 'simple.xls', 'tableset': XLSTableSet},
@@ -33,6 +34,14 @@ def check_filename(d):
     fh = horror_fobj(d['filename'])
     table_set = any_tableset(fh, extension=d['filename'], auto_detect=False)
     assert isinstance(table_set, d['tableset']), type(table_set)
+
+
+def test_override():
+    fh = horror_fobj('simple.pdf')
+    old_parse = messytables.any.parsers
+    messytables.any.parsers['PDF'] = messytables.abbyy.ABBYYTableSet
+    table_set = any_tableset(fh)
+    assert isinstance(table_set, messytables.abbyy.ABBYYTableSet)
 
 
 class TestAny(unittest.TestCase):
