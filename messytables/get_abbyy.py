@@ -28,11 +28,14 @@ IMAGE_PARAMS = {'exportFormat': 'xml',
 class ABBYYError(Exception):
     pass
 
+class ABBYYAuthError(Exception):
+    pass
+
 def user():
     try:
         return abbyy_secret.user
     except:
-        raise RuntimeError("""abbyy_secret.py needs to contain
+        raise ABBYYAuthError("""abbyy_secret.py needs to contain
 user=(abbyy_application, abbyy_secret_key)""")
 
 

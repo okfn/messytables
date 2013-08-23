@@ -40,7 +40,10 @@ def test_override():
     fh = horror_fobj('simple.pdf')
     old_parse = messytables.any.parsers
     messytables.any.parsers['PDF'] = messytables.abbyy.ABBYYTableSet
-    table_set = any_tableset(fh)
+    try:
+        table_set = any_tableset(fh)
+    except ABBYYTableSet.ABBYYAuthError:
+        return  # Failed due to authentication; means right function was called!
     assert isinstance(table_set, messytables.abbyy.ABBYYTableSet)
 
 
