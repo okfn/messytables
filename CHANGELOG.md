@@ -1,7 +1,10 @@
-0.12.0 (wip, master)
+0.13.0 (wip, master)
+
+0.12.0 (7 August 2013)
 * #51 Removed FloatType, use DecimalType
 * #81 Make HTML table name human-readable
 * #82 Add preliminary PDF support
+* #83 Use XLSTableSet also for xlsx files
 
 0.11.0 (8 July 2013)
 * #65 Reworked any.py

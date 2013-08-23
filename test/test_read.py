@@ -3,6 +3,13 @@ import unittest
 
 from . import horror_fobj
 from nose.tools import assert_equal, assert_in
+from nose.tools import assert_equal, assert_true
+try:
+    # Python 2.6 doesn't provide assert_is_instance
+    from nose.tools import assert_is_instance
+except ImportError:
+    def assert_is_instance(obj, cls, msg=None):
+        assert_true(isinstance(obj, cls))
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
@@ -10,6 +17,7 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          offset_processor, DateType, FloatType,
                          IntegerType, rowset_as_jts,
                          types_processor, type_guess)
+import datetime
 
 import lxml.html
 
@@ -99,8 +107,8 @@ class ReadCsvTest(unittest.TestCase):
         table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         types = type_guess(row_set.sample, strict=True)
-        expected_types = [IntegerType(), StringType(),
-                          IntegerType(), StringType()]
+        expected_types = [IntegerType(), StringType(), IntegerType(),
+                          StringType()]
         assert_equal(types, expected_types)
 
         row_set.register_processor(types_processor(types))
@@ -229,7 +237,7 @@ class ReadODSTest(unittest.TestCase):
         for row in row_set.sample:
             total = total - 1
             assert 3 == len(row), row
-        assert_equal( total, 0)
+        assert_equal(total, 0)
 
     def test_read_large_ods(self):
         fh = horror_fobj('large.ods')
@@ -254,16 +262,44 @@ class ReadODSTest(unittest.TestCase):
         assert 87 == l, l
 
 
+class XlsxBackwardsCompatibilityTest(unittest.TestCase):
+    def test_that_xlsx_is_handled_by_xls_table_set(self):
+        """
+        Should emit a DeprecationWarning.
+        """
+        fh = horror_fobj('simple.xlsx')
+        assert_is_instance(XLSXTableSet(fh), XLSTableSet)
+
+
 class ReadXlsTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.large_xlsx_table_set = XLSTableSet(   # TODO
+            horror_fobj('large.xlsx'))
+
     def test_read_simple_xls(self):
         fh = horror_fobj('simple.xls')
         table_set = XLSTableSet(fh)
         assert_equal(1, len(table_set.tables))
         row_set = table_set.tables[0]
-        row = list(row_set.sample)[0]
-        assert_equal(row[0].value, 'date')
-        assert_equal(row[1].value, 'temperature')
-        assert_equal(row[2].value, 'place')
+        first_row = list(row_set.sample)[0]
+        third_row = list(row_set.sample)[2]
+
+        assert_is_instance(first_row[0].value, unicode)
+        assert_is_instance(first_row[1].value, unicode)
+        assert_is_instance(first_row[2].value, unicode)
+
+        assert_is_instance(third_row[0].value, datetime.datetime)
+        assert_is_instance(third_row[1].value, float)
+        assert_is_instance(third_row[2].value, unicode)
+
+        assert_equal(first_row[0].value, 'date')
+        assert_equal(first_row[1].value, 'temperature')
+        assert_equal(first_row[2].value, 'place')
+
+        assert_equal(third_row[0].value, datetime.datetime(2011, 1, 2, 0, 0))
+        assert_equal(third_row[1].value, -1)
+        assert_equal(third_row[2].value, u'Galway')
 
         for row in list(row_set):
             assert 3 == len(row), row
@@ -280,20 +316,62 @@ class ReadXlsTest(unittest.TestCase):
         data = list(row_set)
         assert_equal(int(data[0][1].value), 1)
 
-
-class ReadXlsxTest(unittest.TestCase):
     def test_read_simple_xlsx(self):
         fh = horror_fobj('simple.xlsx')
-        table_set = XLSXTableSet(fh)
+        table_set = XLSTableSet(fh)
         assert_equal(1, len(table_set.tables))
         row_set = table_set.tables[0]
-        row = list(row_set.sample)[0]
-        assert_equal(row[0].value, 'date')
-        assert_equal(row[1].value, 'temperature')
-        assert_equal(row[2].value, 'place')
+        first_row = list(row_set.sample)[0]
+        third_row = list(row_set.sample)[2]
+
+        assert_is_instance(first_row[0].value, unicode)
+        assert_is_instance(first_row[1].value, unicode)
+        assert_is_instance(first_row[2].value, unicode)
+
+        assert_is_instance(third_row[0].value, datetime.datetime)
+        assert_is_instance(third_row[1].value, float)
+        assert_is_instance(third_row[2].value, unicode)
+
+        assert_equal(first_row[0].value, 'date')
+        assert_equal(first_row[1].value, 'temperature')
+        assert_equal(first_row[2].value, 'place')
+
+        assert_equal(third_row[0].value, datetime.datetime(2011, 1, 2, 0, 0))
+        assert_equal(third_row[1].value, -1.0)
+        assert_equal(third_row[2].value, u'Galway')
 
         for row in list(row_set):
             assert 3 == len(row), row
+
+    def test_large_file_report_sheet_has_11_cols_52_rows(self):
+        table = self.large_xlsx_table_set['Report']
+        num_rows = len(list(table))
+        num_cols = len(list(table)[0])
+
+        assert_equal(52, num_rows)
+        assert_equal(11, num_cols)
+        num_cells = sum(len(row) for row in table)
+        assert_equal(num_rows * num_cols, num_cells)
+
+    def test_large_file_data_sheet_has_11_cols_8547_rows(self):
+        table = self.large_xlsx_table_set['data']
+        num_rows = len(list(table))
+        num_cols = len(list(table)[0])
+
+        assert_equal(8547, num_rows)
+        assert_equal(11, num_cols)
+        num_cells = sum(len(row) for row in table)
+        assert_equal(num_rows * num_cols, num_cells)
+
+    def test_large_file_criteria_sheet_has_5_cols_12_rows(self):
+        table = self.large_xlsx_table_set['criteria']
+        num_rows = len(list(table))
+        num_cols = len(list(table)[0])
+
+        assert_equal(5, num_cols)
+        assert_equal(12, num_rows)
+        num_cells = sum(len(row) for row in table)
+        assert_equal(num_rows * num_cols, num_cells)
 
     def test_read_type_know_simple(self):
         fh = horror_fobj('simple.xls')

@@ -19,7 +19,7 @@ See the full documentation at: http://messytables.readthedocs.org
 
 setup(
     name='messytables',
-    version='0.13.0',
+    version='0.12.0',
     description="Parse messy tabular data in various formats",
     long_description=long_desc,
     classifiers=[
@@ -41,7 +41,6 @@ setup(
     install_requires=[
         'xlrd>=0.8.0',
         'python-magic==0.4.3',  # used for type guessing
-        'openpyxl==1.5.7',
         'chardet==2.1.1',
         'python-dateutil>=1.5.0,<2.0.0',
         'json-table-schema',
