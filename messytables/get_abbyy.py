@@ -11,6 +11,9 @@ import lxml.etree
 import time
 import logging
 import hashlib
+import os
+from os.path import join, isfile
+
 try:
     import abbyy_secret
 except ImportError:
@@ -23,6 +26,8 @@ IMAGE_PARAMS = {'exportFormat': 'xml',
                 'correctOrientation': 'false',
                 'correctSkew': 'false'
                 }
+
+CACHE_DIR = '/tmp'
 
 
 class ABBYYError(Exception):
@@ -132,9 +137,17 @@ class OCRFile(object):
         return wait_for_response(status)
 
     def get_ocr_content(self, cache=True):
-        url = self.get_ocr_url()
-        ocr_data = requests.get(url).content
-        return ocr_data
+        cache_fn = join(CACHE_DIR, 'abbyy_{}.xml'.format(self.md5))
+        if cache and isfile(cache_fn):
+            with open(cache_fn, 'rb') as f:
+                return f.read()
+
+        response = requests.get(self.get_ocr_url())
+        response.raise_for_status()
+        with open(cache_fn, 'wb') as f:
+            f.write(response.content)
+
+        return response.content
 
 if __name__ == "__main__":
     import sys
