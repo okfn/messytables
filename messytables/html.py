@@ -1,6 +1,6 @@
-from messytables.core import RowSet, TableSet, Cell
+from messytables.core import RowSet, TableSet, Cell, CoreProperties
 import lxml.html
-from collections import defaultdict, Mapping
+from collections import defaultdict
 
 
 class HTMLTableSet(TableSet):
@@ -144,22 +144,6 @@ class HTMLCell(Cell):
     @property
     def properties(self):
         return HTMLProperties(self._lxml)
-
-
-class CoreProperties(Mapping):
-    KEYS = []
-
-    def __getitem__(self, key):
-        if key in self.KEYS:
-            return getattr(self, 'get_' + key)()
-        else:
-            raise KeyError("%r" % key)
-
-    def __iter__(self):
-        return self.KEYS.__iter__()
-
-    def __len__(self):
-        return len(self.KEYS)
 
 
 class HTMLProperties(CoreProperties):

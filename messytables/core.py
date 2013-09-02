@@ -1,4 +1,5 @@
 from messytables.util import OrderedDict
+from collections import Mapping
 import cStringIO
 
 
@@ -89,6 +90,22 @@ class BufferedFile(object):
             self.data.seek(offset)
 
 
+class CoreProperties(Mapping):
+    KEYS = []
+
+    def __getitem__(self, key):
+        if key in self.KEYS:
+            return getattr(self, 'get_' + key)()
+        else:
+            raise KeyError("%r" % key)
+
+    def __iter__(self):
+        return self.KEYS.__iter__()
+
+    def __len__(self):
+        return len(self.KEYS)
+
+
 class Cell(object):
     """ A cell is the basic value type. It always has a ``value`` (that
     may be ``None`` and may optionally also have a type and column name
@@ -125,9 +142,7 @@ class Cell(object):
     @property
     def properties(self):
         """ Source-specific information. Only a placeholder here. """
-        return {}
-
-    
+        return CoreProperties()
 
 
 class TableSet(object):
