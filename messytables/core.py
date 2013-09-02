@@ -122,6 +122,13 @@ class Cell(object):
             return False
         return True
 
+    @property
+    def properties(self):
+        """ Source-specific information. Only a placeholder here. """
+        return {}
+
+    
+
 
 class TableSet(object):
     """ A table set is used for data formats in which multiple tabular
