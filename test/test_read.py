@@ -2,7 +2,6 @@
 import unittest
 
 from . import horror_fobj
-from nose.tools import assert_equal, assert_in
 from nose.tools import assert_equal, assert_true
 try:
     # Python 2.6 doesn't provide assert_is_instance
@@ -18,8 +17,6 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          IntegerType, rowset_as_jts,
                          types_processor, type_guess)
 import datetime
-
-import lxml.html
 
 
 class ReadCsvTest(unittest.TestCase):
@@ -400,16 +397,6 @@ class ReadHtmlTest(unittest.TestCase):
         assert_equal(row[0].value.strip(), 'HDI Rank')
         assert_equal(row[1].value.strip(), 'Country')
         assert_equal(row[4].value.strip(), '2010')
-
-    def test_read_html_property(self):
-        fh = horror_fobj('html.html')
-        table_set = HTMLTableSet(fh)
-        row_set = table_set.tables[0]
-        row = list(row_set.sample)[0]
-        assert_in('</th>', row[4].properties['html'])
-        for cell in row:
-            if 'span' not in cell.properties:
-                lxml.html.fromstring(cell.properties['html'])
 
     def test_read_span_html(self):
         fh = horror_fobj('rowcolspan.html')
