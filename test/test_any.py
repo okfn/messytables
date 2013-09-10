@@ -3,7 +3,7 @@ import unittest
 
 from . import horror_fobj
 from nose.tools import assert_equal
-from messytables import (any_tableset, XLSTableSet, ZIPTableSet, PDFTableSet,
+from messytables import (any_tableset, XLSTableSet, ZIPTableSet,
                          CSVTableSet, ODSTableSet,
                          ReadError)
 
@@ -12,10 +12,19 @@ suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
          {'filename': 'simple.xlsx', 'tableset': XLSTableSet},
          {'filename': 'simple.zip', 'tableset': ZIPTableSet},
          {'filename': 'simple.ods', 'tableset': ODSTableSet},
-         {'filename': 'simple.pdf', 'tableset': PDFTableSet},
          {'filename': 'bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm', 'tableset': XLSTableSet},
          ]
 
+# Special handling for PDFTables - skip if not installed
+try:
+    import pdftables
+except ImportError:
+    got_pdftables = False
+    suite.append({"filename": "simple.pdf", "tableset": False})
+else:
+    from messytables import PDFTableSet
+    got_pdftables = True
+    suite.append({"filename": "simple.pdf", "tableset": PDFTableSet})
 
 def test_simple():
     for d in suite:
@@ -24,12 +33,16 @@ def test_simple():
 
 
 def check_no_filename(d):
+    if not d['tableset']:
+        raise unittest.SkipTest("Optional library not installed. Skipping")
     fh = horror_fobj(d['filename'])
     table_set = any_tableset(fh)
     assert isinstance(table_set, d['tableset']), type(table_set)
 
 
 def check_filename(d):
+    if not d['tableset']:
+        raise unittest.SkipTest("Optional library not installed. Skipping")
     fh = horror_fobj(d['filename'])
     table_set = any_tableset(fh, extension=d['filename'], auto_detect=False)
     assert isinstance(table_set, d['tableset']), type(table_set)
