@@ -1,7 +1,7 @@
 .. messytables documentation master file, created by
    sphinx-quickstart on Sun Aug 14 17:09:50 2011.
 
-messytables: all your rows are belong to us
+messytables: all your rows belong to us
 ===========================================
 
 Tabular data as published on the web is often not well formatted
