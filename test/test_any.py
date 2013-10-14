@@ -5,6 +5,7 @@ from . import horror_fobj
 from nose.tools import assert_equal
 from messytables import (any_tableset, XLSTableSet, ZIPTableSet,
                          CSVTableSet, ODSTableSet, ABBYYTableSet,
+                         CSVTableSet, ODSTableSet,
                          ReadError)
 import messytables.any
 
@@ -17,6 +18,7 @@ suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
           'tableset': XLSTableSet},
          ]
 
+# Special handling for PDFTables - skip if not installed
 try:
     import pdftables
 except ImportError:
@@ -26,7 +28,6 @@ else:
     from messytables import PDFTableSet
     got_pdftables = True
     suite.append({"filename": "simple.pdf", "tableset": PDFTableSet})
-
 
 def test_simple():
     for d in suite:
