@@ -21,9 +21,9 @@ class PDFTableSet(TableSet):
     def tables(self):
         def table_name(table):
             return "Table {0} of {1} on page {2} of {3}".format(
-                table.table_number_on_page,
+                table.table_number_on_page + 1,
                 table.total_tables_on_page,
-                table.page_number,
+                table.page_number + 1,
                 table.total_pages)
         return [PDFRowSet(table_name(table), table)
                 for table in self.raw_tables]
