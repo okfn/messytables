@@ -48,9 +48,9 @@ setup(
         'requests',
     ],
     dependency_links=[
-        'git+ssh://git@github.com/scraperwiki/pdftables@1.0.3#egg=pdftables-1.0.3'
+        'git+ssh://git@github.com/scraperwiki/pdftables@1.0.5#egg=pdftables-1.0.5'
     ],
-    extras_require={'pdf': ['pdftables>=1.0.3']},
+    extras_require={'pdf': ['pdftables>=1.0.5']},
     tests_require=[],
     entry_points=\
     """
