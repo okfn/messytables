@@ -4,3 +4,4 @@
 */_build/*
 *.py~
 *.~lock.*#
+abbyy_secret.py

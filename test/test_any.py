@@ -4,15 +4,18 @@ import unittest
 from . import horror_fobj
 from nose.tools import assert_equal
 from messytables import (any_tableset, XLSTableSet, ZIPTableSet,
+                         CSVTableSet, ODSTableSet, ABBYYTableSet,
                          CSVTableSet, ODSTableSet,
                          ReadError)
+import messytables.any
 
 suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
          {'filename': 'simple.xls', 'tableset': XLSTableSet},
          {'filename': 'simple.xlsx', 'tableset': XLSTableSet},
          {'filename': 'simple.zip', 'tableset': ZIPTableSet},
          {'filename': 'simple.ods', 'tableset': ODSTableSet},
-         {'filename': 'bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm', 'tableset': XLSTableSet},
+         {'filename': 'bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm',
+          'tableset': XLSTableSet},
          ]
 
 # Special handling for PDFTables - skip if not installed
@@ -48,6 +51,19 @@ def check_filename(d):
     assert isinstance(table_set, d['tableset']), type(table_set)
 
 
+def test_override():
+    fh = horror_fobj('simple.pdf')
+    old_parse = messytables.any.parsers
+    messytables.any.parsers['PDF'] = messytables.abbyy.ABBYYTableSet
+    try:
+        table_set = any_tableset(fh)
+    except messytables.abbyy.ABBYYAuthError:
+        # Failed due to authentication; means right function was called.
+        return
+    assert isinstance(table_set, messytables.abbyy.ABBYYTableSet)
+    messytables.any.parsers = old_parse
+
+
 class TestAny(unittest.TestCase):
     def test_xlsm(self):
         fh = horror_fobj('bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm')
@@ -58,4 +74,5 @@ class TestAny(unittest.TestCase):
 
     def test_unknown(self):
         fh = horror_fobj('simple.unknown')
-        self.assertRaises(ReadError, lambda: any_tableset(fh, extension='unknown'))
+        self.assertRaises(ReadError,
+                          lambda: any_tableset(fh, extension='unknown'))
