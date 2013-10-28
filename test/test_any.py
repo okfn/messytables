@@ -57,8 +57,9 @@ def test_override():
     messytables.any.parsers['PDF'] = messytables.abbyy.ABBYYTableSet
     try:
         table_set = any_tableset(fh)
-    except ABBYYTableSet.ABBYYAuthError:
-        return  # Failed due to authentication; means right function was called
+    except messytables.abbyy.ABBYYAuthError:
+        # Failed due to authentication; means right function was called.
+        return
     assert isinstance(table_set, messytables.abbyy.ABBYYTableSet)
     messytables.any.parsers = old_parse
 

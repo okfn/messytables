@@ -1,7 +1,9 @@
-from messytables.core import RowSet, TableSet, Cell
 import lxml.etree
-import get_abbyy
 from collections import defaultdict
+
+import get_abbyy
+from messytables.core import RowSet, TableSet, Cell
+from get_abbyy import ABBYYAuthError
 
 class ABBYYTableSet(TableSet):
     def __init__(self, fileobj=None, filename=None, window=None):
