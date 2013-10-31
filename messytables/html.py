@@ -6,7 +6,7 @@ from collections import defaultdict
 class HTMLTableSet(TableSet):
     def __init__(self, fileobj=None, filename=None, window=None):
 
-        if filename:
+        if filename is not None:
             fh = open(filename, 'r')
         else:
             fh = fileobj
