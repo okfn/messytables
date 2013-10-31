@@ -51,18 +51,6 @@ def check_filename(d):
     assert isinstance(table_set, d['tableset']), type(table_set)
 
 
-def test_override():
-    fh = horror_fobj('simple.pdf')
-    old_parse = messytables.any.parsers
-    messytables.any.parsers['PDF'] = messytables.abbyy.ABBYYTableSet
-    try:
-        table_set = any_tableset(fh)
-    except ABBYYTableSet.ABBYYAuthError:
-        return  # Failed due to authentication; means right function was called
-    assert isinstance(table_set, messytables.abbyy.ABBYYTableSet)
-    messytables.any.parsers = old_parse
-
-
 class TestAny(unittest.TestCase):
     def test_xlsm(self):
         fh = horror_fobj('bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm')
