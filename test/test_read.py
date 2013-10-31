@@ -2,6 +2,7 @@
 import unittest
 
 from . import horror_fobj
+from nose.plugins.attrib import attr
 from nose.tools import assert_equal, assert_true, assert_raises
 try:
     # Python 2.6 doesn't provide assert_is_instance
@@ -84,6 +85,7 @@ class ReadCsvTest(unittest.TestCase):
         data = list(row_set)
         assert_equal(int(data[0][1].value), 1)
 
+    @attr("slow")
     def test_read_type_guess_simple(self):
         fh = horror_fobj('simple.csv')
         table_set = CSVTableSet(fh)
@@ -236,6 +238,7 @@ class ReadODSTest(unittest.TestCase):
             assert 3 == len(row), row
         assert_equal(total, 0)
 
+    @attr("slow")
     def test_read_large_ods(self):
         fh = horror_fobj('large.ods')
         table_set = ODSTableSet(fh)
