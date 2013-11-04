@@ -3,7 +3,8 @@ import unittest
 
 from . import horror_fobj
 from nose.plugins.attrib import attr
-from nose.tools import assert_equal, assert_true, assert_raises
+from nose.tools import (assert_equal, assert_greater_equal, assert_true,
+                        assert_raises)
 try:
     # Python 2.6 doesn't provide assert_is_instance
     from nose.tools import assert_is_instance
@@ -488,7 +489,13 @@ class ReadPdfTest(unittest.TestCase):
     def test_read_simple_pdf(self):
         with horror_fobj('simple.pdf') as fh:
             table_set = PDFTableSet(fh)
+
         assert_equal(1, len(list(table_set.tables)))
+
+        (table,) = table_set.tables
+        rows = list(table)
+
+        assert_greater_equal(len(rows), 1)
 
     def test_pdf_names(self):
         with horror_fobj('simple.pdf') as fh:
