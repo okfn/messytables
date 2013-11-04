@@ -3,7 +3,12 @@
 import unittest
 from . import horror_fobj
 from messytables.any import any_tableset
-from nose.tools import assert_true, assert_equal, assert_false, assert_raises
+from nose.tools import (
+    assert_equal,
+    assert_false,
+    assert_greater_equal,
+    assert_raises,
+    assert_true)
 import lxml.html
 
 try:
@@ -40,7 +45,7 @@ class TestCoreProperties(unittest.TestCase):
         assert_false('invalid' in self.real_cell.properties)
 
     def test_properties_implements_keys(self):
-        assert_equal(['_lxml', 'html'], self.real_cell.properties.keys())
+        assert_equal(list, type(self.real_cell.properties.keys()))
 
     def test_properties_implements_items(self):
         self.real_cell.properties.items()
@@ -62,15 +67,19 @@ class TestHtmlProperties(unittest.TestCase):
         cls.fake_cell = cls.first_row[2]
 
     def test_real_cells_have_properties(self):
-        assert_equal(
-            set(['_lxml', 'html']),
-            set(self.real_cell.properties.keys()))
+        assert_greater_equal(
+            set(self.real_cell.properties.keys()),
+            set(['_lxml', 'html'])
+            )
 
     def test_real_cells_have_lxml_property(self):
         lxml_element = self.real_cell.properties['_lxml']
         assert_is_instance(lxml_element, lxml.html.HtmlElement)
         assert_equal('<td colspan="2">06</td>',
                      lxml.html.tostring(lxml_element))
+
+    def test_real_cell_has_a_colspan(self):
+        assert_equal(self.real_cell.properties['colspan'], 2)
 
     def test_fake_cells_have_no_lxml_property(self):
         assert_raises(KeyError, lambda: self.fake_cell.properties['_lxml'])

@@ -6,7 +6,7 @@ from collections import defaultdict
 class HTMLTableSet(TableSet):
     def __init__(self, fileobj=None, filename=None, window=None):
 
-        if filename:
+        if filename is not None:
             fh = open(filename, 'r')
         else:
             fh = fileobj
@@ -147,7 +147,7 @@ class HTMLCell(Cell):
 
 
 class HTMLProperties(CoreProperties):
-    KEYS = ['_lxml', 'html']
+    KEYS = ['_lxml', 'html', 'colspan', 'rowspan']
 
     def __init__(self, lxml_element):
         if not isinstance(lxml_element, lxml.html.HtmlElement):
@@ -160,3 +160,9 @@ class HTMLProperties(CoreProperties):
 
     def get__lxml(self):
         return self.lxml_element
+
+    def get_colspan(self):
+        return int(self.lxml_element.attrib.get('colspan', 1))
+
+    def get_rowspan(self):
+        return int(self.lxml_element.attrib.get('rowspan', 1))
