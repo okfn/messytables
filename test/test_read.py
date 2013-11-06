@@ -174,6 +174,18 @@ class ReadCsvTest(unittest.TestCase):
         assert 'foo' in data[12][0].column, data[12][0]
         assert 'Chirurgie' in data[12][0].value, data[12][0].value
 
+    def test_read_encoded_characters_csv(self):
+        fh = horror_fobj('characters.csv')
+        table_set = CSVTableSet(fh)
+        row_set = table_set.tables[0]
+        offset, headers = headers_guess(row_set.sample)
+        row_set.register_processor(headers_processor(headers))
+        row_set.register_processor(offset_processor(offset + 1))
+        data = list(row_set)
+        assert_equal(382, len(data))
+        assert_equal(data[0][2].value, u'雲嘉南濱海國家風景區管理處')
+        assert_equal(data[-1][2].value, u'沈光文紀念廳')
+
 
 class ReadZipTest(unittest.TestCase):
     def test_read_simple_zip(self):
