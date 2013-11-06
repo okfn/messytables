@@ -69,6 +69,10 @@ class PDFRowSet(RowSet):
         super(PDFRowSet, self).__init__()
         self.name = name
         self.table = table
+        self.meta = dict(
+            page_number=table.page_number + 1,
+        )
+
 
     def raw(self, sample=False):
         """
