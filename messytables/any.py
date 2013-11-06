@@ -62,7 +62,7 @@ def guess_mime(mimetype):
               'application/vnd.ms-excel': 'XLS',
               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLS',
               'text/html': 'HTML',
-              'application/xml': 'XLS',
+              'application/xml': 'HTML', # XHTML is often served as application-xml
               'application/pdf': 'PDF',
               'text/plain': 'CSV',  # could be TAB.
               'application/CDFV2-corrupt': 'XLS',
