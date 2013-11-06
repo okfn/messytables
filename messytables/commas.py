@@ -78,8 +78,7 @@ class CSVTableSet(TableSet):
         self.lineterminator = lineterminator
         self.skipinitialspace = skipinitialspace
 
-    @property
-    def tables(self):
+    def make_tables(self):
         """ Return the actual CSV table. """
         return [CSVRowSet(self.name, self.fileobj,
                           delimiter=self.delimiter,

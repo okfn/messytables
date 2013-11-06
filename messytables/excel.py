@@ -49,8 +49,7 @@ class XLSTableSet(TableSet):
             _, value, traceback = sys.exc_info()
             raise ReadError, "Can't read Excel file: %r" % value, traceback
 
-    @property
-    def tables(self):
+    def make_tables(self):
         """ Return the sheets in the workbook. """
         return [XLSRowSet(name, self.workbook.sheet_by_name(name), self.window)
                 for name in self.workbook.sheet_names()]

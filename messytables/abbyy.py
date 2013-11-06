@@ -17,8 +17,7 @@ class ABBYYTableSet(TableSet):
         root = lxml.etree.fromstring(xml)
         self.xmltables = root.xpath("//*[local-name()='block' and @blockType='Table']")
 
-    @property
-    def tables(self):
+    def make_tables(self):
         def rowset_name(rowset, table_index):
             return "Table {0} of {1}".format(table_index + 1,
                                              len(self.xmltables))

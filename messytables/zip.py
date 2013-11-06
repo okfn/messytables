@@ -33,11 +33,5 @@ class ZIPTableSet(messytables.TableSet):
                     tables (%s).''' % ', '.join(found))
         finally:
             z.close()
+        
         self._tables = tables
-
-    @property
-    def tables(self):
-        """ Return the tables contained in any loadable
-        files within the ZIP file.
-        """
-        return self._tables

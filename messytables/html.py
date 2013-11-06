@@ -30,8 +30,7 @@ class HTMLTableSet(TableSet):
             assert dropped, "Didn't find any tables not containing " + \
                 "other tables. This is a bug."  # avoid infinite loops
 
-    @property
-    def tables(self):
+    def make_tables(self):
         def rowset_name(rowset, table_index):
             return "Table {0} of {1}".format(table_index + 1,
                                              len(self.htmltables))
