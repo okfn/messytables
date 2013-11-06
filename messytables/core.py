@@ -165,8 +165,13 @@ class TableSet(object):
     def tables(self):
         """ Return a listing of tables (i.e. RowSets) in the ``TableSet``.
         Each table has a name. """
-        pass
+        if getattr(self, "_tables", None) is None:
+            self._tables = self.make_tables()
+        return self._tables
 
+    def make_tables(self):
+        raise NotImplementedError("make_tables() not implemented on {0}"
+                                  .format(type(self)))
     def __getitem__(self, name):
         """ Return a RowSet based on the name given """
         matching = [table for table in self.tables if table.name == name]

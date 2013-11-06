@@ -50,8 +50,7 @@ class PDFTableSet(TableSet):
             raise TypeError('You must provide one of filename or fileobj')
         self.raw_tables = get_tables(self.fh)
 
-    @property
-    def tables(self):
+    def make_tables(self):
         def table_name(table):
             return "Table {0} of {1} on page {2} of {3}".format(
                 table.table_number_on_page + 1,
