@@ -190,6 +190,8 @@ Most processors are implemented as closures called with some arguments:
 
 .. automethod:: messytables.util.offset_processor
 
+.. automethod:: messytables.util.null_processor
+
 .. automethod:: messytables.headers.headers_processor
 
 
