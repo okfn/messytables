@@ -33,6 +33,10 @@ class PDFCell(Cell):
         self.type = StringType()
 
     @property
+    def topleft(self):
+        return self._cell.topleft
+
+    @property
     def properties(self):
         return self._properties
 
