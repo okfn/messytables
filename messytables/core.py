@@ -144,6 +144,18 @@ class Cell(object):
         """ Source-specific information. Only a placeholder here. """
         return CoreProperties()
 
+    @property
+    def topleft(self):
+        """
+        Is the cell the top-left of a span? Non-spanning cells are the top left.
+
+        This is used for example in HTML generation where the top left cell
+        is the only one which is written into the output representation.
+
+        In absense of other knowledge, we assume that all cells are top left.
+        """
+        return True
+
 
 class TableSet(object):
     """ A table set is used for data formats in which multiple tabular
