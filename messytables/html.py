@@ -87,8 +87,9 @@ class HTMLRowSet(RowSet):
 
         for r, row in enumerate(allrows):
             # TODO: handle header nicer - preserve the fact it's a header!
-            html_cells = self.in_table(
+            html_elements = self.in_table(
                 row.xpath('.//*[name()="td" or name()="th"]'))
+            html_cells = [HTMLCell(source=cell) for cell in html_elements]
 
             """ at the end of this chunk, you have accurate blank_cells."""
             output_column = 0
@@ -96,8 +97,10 @@ class HTMLRowSet(RowSet):
                 assert type(r) == int
                 while output_column in blank_cells[r]:
                     output_column += 1  # pass over col, doesn't exist in src
-                rowspan = int(html_cell.attrib.get('rowspan', "1"))
-                colspan = int(html_cell.attrib.get('colspan', "1"))
+
+                rowspan = html_cell.properties['rowspan']
+                colspan = html_cell.properties['colspan']
+
                 x_range = range(output_column, output_column + colspan)
                 y_range = range(r, r + rowspan)
                 for x in x_range:
@@ -107,8 +110,7 @@ class HTMLRowSet(RowSet):
                             blank_cells[y].append(x)
                 output_column += 1
 
-            cells = [HTMLCell(source=cell) for cell in html_cells]
-            yield insert_blank_cells(cells, blank_cells[r])
+            yield insert_blank_cells(html_cells, blank_cells[r])
             if sample and r == self.window:
                 return
             del blank_cells[r]
@@ -181,7 +183,13 @@ class HTMLProperties(CoreProperties):
         return self.lxml_element
 
     def get_colspan(self):
-        return int(self.lxml_element.attrib.get('colspan', 1))
+        try:
+            return int(self.lxml_element.attrib.get('colspan', 1))
+        except ValueError:
+            return 1
 
     def get_rowspan(self):
-        return int(self.lxml_element.attrib.get('rowspan', 1))
+        try:
+            return int(self.lxml_element.attrib.get('rowspan', 1))
+        except ValueError:
+            return 1
