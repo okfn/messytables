@@ -91,3 +91,27 @@ class TestHtmlProperties(unittest.TestCase):
 
     def test_fake_cells_have_no_html_property(self):
         assert_raises(KeyError, lambda: self.fake_cell.properties['html'])
+
+class TestBrokenColspans(unittest.TestCase):
+    def setUp(self):
+        self.html = any_tableset(horror_fobj("badcolspan.html"),
+                                 extension="html")
+    def test_first_row(self):
+        first_row = list(list(self.html.tables)[0])[0]
+        self.assertEqual([cell.properties['colspan'] for cell in first_row],
+                         [1, 1, 1, 1])
+
+    def test_second_row(self):
+        second_row = list(list(self.html.tables)[0])[1]
+        self.assertEqual([cell.properties['colspan'] for cell in second_row],
+                         [1, 1, 1, 1])
+
+    def test_third_row(self):
+        third_row = list(list(self.html.tables)[0])[2]
+        self.assertEqual([cell.properties['colspan'] for cell in third_row],
+                         [1, 1, 1, 1])
+
+    def test_fourth_row(self):
+        fourth_row = list(list(self.html.tables)[0])[3]
+        self.assertEqual([cell.properties['colspan'] for cell in fourth_row],
+                         [1, 1, 1, 1])
