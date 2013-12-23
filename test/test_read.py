@@ -2,7 +2,7 @@
 import unittest
 
 from . import horror_fobj
-from nose.tools import assert_equal, assert_true
+from nose.tools import assert_equal, assert_true, assert_raises
 try:
     # Python 2.6 doesn't provide assert_is_instance
     from nose.tools import assert_is_instance
@@ -15,7 +15,7 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ODSTableSet, headers_guess, headers_processor,
                          offset_processor, DateType, FloatType,
                          IntegerType, rowset_as_jts,
-                         types_processor, type_guess)
+                         types_processor, type_guess, ReadError)
 import datetime
 
 
@@ -312,6 +312,15 @@ class ReadXlsTest(unittest.TestCase):
 
         for row in list(row_set):
             assert 3 == len(row), row
+
+    # Right now we can't read even passwordless encrypted files - in future
+    # would be good to be able to.
+    def test_attempt_read_encrypted_no_password_xls(self):
+        fh = horror_fobj('encrypted_no_password.xls')
+        with assert_raises(ReadError) as cm:
+            XLSTableSet(fh)
+        errmsg = "Can't read Excel file: XLRDError('Workbook is encrypted',)"
+        self.assertEqual(errmsg, str(cm.exception))
 
     def test_read_head_offset_excel(self):
         fh = horror_fobj('simple.xls')
