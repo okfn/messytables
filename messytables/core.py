@@ -1,5 +1,6 @@
 from messytables.util import OrderedDict
 from collections import Mapping
+from messytables.error import TableError
 import cStringIO
 
 
@@ -188,9 +189,9 @@ class TableSet(object):
         """ Return a RowSet based on the name given """
         matching = [table for table in self.tables if table.name == name]
         if not matching:
-            raise KeyError("No RowSet called '%s'" % name)
+            raise TableError("No table called %r" % name)
         elif len(matching) > 1:
-            raise LookupError("Multiple RowSets match '%s'" % name)
+            raise TableError("Multiple tables match %r" % name)
         return matching[0]
 
     @classmethod
