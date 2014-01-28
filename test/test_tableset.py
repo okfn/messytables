@@ -9,12 +9,16 @@ from messytables.error import TableError
 
 
 class TestTableSet(unittest.TestCase):
-    def test_get_item(self):
+    def setUp(self):
         fh = horror_fobj('simple.xls')
-        table_set = any_tableset(fh, extension='xls')
+        self.table_set = any_tableset(fh, extension='xls')
 
-        self.assertTrue(isinstance(table_set['simple.csv'], RowSet))
-        self.assertRaises(TableError, lambda: table_set['non-existent'])
+    def test_get_item(self):
+
+        self.assertIsInstance(self.table_set['simple.csv'], RowSet)
+
+    def test_missing_sheet(self):
+        self.assertRaises(TableError, lambda: self.table_set['non-existent'])
 
         # TODO: It would be good if we could manipulate a tableset to have
         # multiple row sets of the same name, then enable the following test.
