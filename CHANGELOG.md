@@ -1,4 +1,6 @@
-0.13.0 (wip, master)
+0.13.0 (15 October 2013)
+* #86 Provide more information about the original table (properties)
+* #89 Skip PDF tests if PDFTables not installed
 
 0.12.0 (7 August 2013)
 * #51 Removed FloatType, use DecimalType
