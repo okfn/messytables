@@ -37,7 +37,7 @@ def get_mime(fileobj):
     header = fileobj.read(4096)
     mimetype = magic.from_buffer(header, mime=True)
     fileobj.seek(0)
-    # There's an issue with vnd.ms-excel being returned fro XLSX files, too.
+    # There's an issue with vnd.ms-excel being returned from XLSX files, too.
     if mimetype == 'application/vnd.ms-excel' and header[:2] == 'PK':
         return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     return mimetype
@@ -46,6 +46,7 @@ def get_mime(fileobj):
 def guess_mime(mimetype):
     lookup = {'application/x-zip-compressed': ZIPTableSet,
               'application/zip': ZIPTableSet,
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/zip': XLSTableSet,
               'text/comma-separated-values': CSVTableSet,
               'application/csv': CSVTableSet,
               'text/csv': CSVTableSet,
