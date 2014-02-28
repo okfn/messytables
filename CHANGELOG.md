@@ -1,3 +1,7 @@
+0.14.0 (wip, master)
+* Add null processor
+* Update magic library
+
 0.13.0 (15 October 2013)
 * #86 Provide more information about the original table (properties)
 * #89 Skip PDF tests if PDFTables not installed
