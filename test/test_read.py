@@ -15,7 +15,7 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ODSTableSet, headers_guess, headers_processor,
                          offset_processor, DateType, FloatType,
                          IntegerType, rowset_as_jts,
-                         types_processor, type_guess)
+                         types_processor, type_guess, null_processor)
 import datetime
 
 
@@ -120,6 +120,32 @@ class ReadCsvTest(unittest.TestCase):
 
         # we expect None for Integers and "" for empty strings in CSV
         assert [x.value for x in data[2]] == [3, "null", None, ""], data[2]
+
+    def test_null_process(self):
+        fh = horror_fobj('null.csv')
+        table_set = CSVTableSet(fh)
+        row_set = table_set.tables[0]
+        row_set.register_processor(null_processor(['null']))
+        data = list(row_set)
+
+        nones = [[x.value is None for x in row] for row in data]
+        assert_equal(nones[0], [False, True, False, False])
+        assert_equal(nones[1], [False, False, False, True])
+        assert_equal(nones[2], [False, True, False, False])
+
+        types = type_guess(row_set.sample, strict=True)
+        expected_types = [IntegerType(), IntegerType(), IntegerType(),
+                          IntegerType()]
+        assert_equal(types, expected_types)
+
+        row_set.register_processor(types_processor(types))
+
+        # after applying the types, '' should become None for int columns
+        data = list(row_set)
+        nones = [[x.value is None for x in row] for row in data]
+        assert_equal(nones[0], [False, True, False, False])
+        assert_equal(nones[1], [False, False, False, True])
+        assert_equal(nones[2], [False, True, True, True])
 
     def test_read_encoded_csv(self):
         fh = horror_fobj('utf-16le_encoded.csv')
