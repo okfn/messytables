@@ -3,6 +3,7 @@ import unittest
 
 from . import horror_fobj
 from nose.tools import assert_equal, assert_true
+from nose.plugins.skip import SkipTest
 try:
     # Python 2.6 doesn't provide assert_is_instance
     from nose.tools import assert_is_instance
@@ -509,7 +510,7 @@ class ReadPdfTest(unittest.TestCase):
                 PDFTableSet(fh)
             except ImportError:
                 # Optional library isn't installed. Skip the tests.
-                self.skipTest("pdftables is not installed, skipping PDF tests")
+                raise SkipTest("pdftables is not installed, skipping PDF tests")
 
     def test_read_simple_pdf(self):
         with horror_fobj('simple.pdf') as fh:
