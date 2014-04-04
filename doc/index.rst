@@ -141,6 +141,17 @@ parser.
 
 .. autoclass:: messytables.html.HTMLRowSet
 
+PDF file support
+----------------
+
+The library supports PDF documents, using
+`pdftables <https://pdftables.readthedocs.org>`_ to extract tables.
+
+.. autoclass:: messytables.pdf.PDFTableSet
+  :members: tables
+
+.. autoclass:: messytables.pdf.PDFRowSet
+
 ZIP file support
 ----------------
 
