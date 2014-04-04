@@ -130,6 +130,17 @@ The newer, XML-based Excel format is also supported but uses a different class.
 .. autoclass:: messytables.excelx.XLSXRowSet
   :members: raw
 
+HTML file support
+-----------------
+
+The library supports HTML documents, using `lxml <http://www.lxml.de>`_ as a
+parser.
+
+.. autoclass:: messytables.html.HTMLTableSet
+  :members: tables
+
+.. autoclass:: messytables.html.HTMLRowSet
+
 ZIP file support
 ----------------
 

@@ -4,6 +4,9 @@ from collections import defaultdict
 
 
 class HTMLTableSet(TableSet):
+    """
+    A TableSet from a HTML document.
+    """
     def __init__(self, fileobj=None, filename=None, window=None):
 
         if filename:
@@ -32,6 +35,9 @@ class HTMLTableSet(TableSet):
 
     @property
     def tables(self):
+        """
+        Return a listing of tables (as HTMLRowSets) in the table set.
+        """
         def rowset_name(rowset, table_index):
             return "Table {0} of {1}".format(table_index + 1,
                                              len(self.htmltables))
@@ -55,6 +61,9 @@ def insert_blank_cells(row, blanks):
 
 
 class HTMLRowSet(RowSet):
+    """
+    A RowSet representing a HTML table.
+    """
     def __init__(self, name, sheet, window=None):
         self.name = name
         self.sheet = sheet
