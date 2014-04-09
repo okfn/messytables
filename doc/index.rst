@@ -136,6 +136,9 @@ HTML file support
 The library supports HTML documents, using `lxml <http://www.lxml.de>`_ as a
 parser.
 
+Removes the content of nested tables from the parent table. The order of the
+tables is ill-defined.
+
 .. autoclass:: messytables.html.HTMLTableSet
   :members: tables
 
@@ -146,6 +149,8 @@ PDF file support
 
 The library supports PDF documents, using
 `pdftables <https://pdftables.readthedocs.org>`_ to extract tables.
+
+Works only for PDFs which contain text information: somewhat erratic in quality.
 
 .. autoclass:: messytables.pdf.PDFTableSet
   :members: tables
