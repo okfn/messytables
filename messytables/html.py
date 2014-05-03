@@ -160,8 +160,7 @@ class HTMLCell(Cell):
 
     @property
     def value(self):
-        return self._lxml.text_content()  # TODO improve?
-        #return text_from_element(self._lxml)
+        return text_from_element(self._lxml)
 
     @property
     def properties(self):
