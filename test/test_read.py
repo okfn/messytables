@@ -411,6 +411,14 @@ class ReadHtmlTest(unittest.TestCase):
         assert_equal(row[1].value.strip(), 'Country')
         assert_equal(row[4].value.strip(), '2010')
 
+    def test_invisible_text_html(self):
+        fh = horror_fobj('invisible_text.html')
+        table_set = HTMLTableSet(fh)
+        row_set = table_set.tables[0]
+        assert_equal(4, len(list(row_set)))
+        row = list(row_set.sample)[1]
+        assert_equal(row[5].value.strip(), '1 July 1879')
+
     def test_read_span_html(self):
         fh = horror_fobj('rowcolspan.html')
         table_set = HTMLTableSet(fh)
