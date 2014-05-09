@@ -1,4 +1,5 @@
-0.13.0 (wip, master)
+0.13.0 (wip, master) (3 May 2014)
+* #25 Ignore invisible text in HTML cells
 
 0.12.0 (7 August 2013)
 * #51 Removed FloatType, use DecimalType

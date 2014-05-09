@@ -160,12 +160,43 @@ class HTMLCell(Cell):
 
     @property
     def value(self):
-        return self._lxml.text_content()  # TODO improve?
+        return text_from_element(self._lxml)
 
     @property
     def properties(self):
         return HTMLProperties(self._lxml)
 
+def text_from_element(elem):
+    r"""
+    >>> x = lxml.html.fromstring('''<td><center><span style="display:none; speak:none" class="sortkey">01879-07-01-0000</span>
+    ...                             <span style="white-space:nowrap;">1 July 1879</span></center></td>''')
+    >>> text_from_element(x)
+    '1 July 1879'
+    >>> y = lxml.html.fromstring('''<td>a<br>b<br>c<br></td>''')
+    >>> text_from_element(y)
+    'a\nb\nc'
+    """
+    builder = []
+    for x in elem.iter():
+        #print x.tag, x.attrib, x.text, x.tail
+        if is_invisible_text(x):
+            cell_str = x.tail or ''  # handle None values.
+        else:
+            cell_str = (x.text or '') + (x.tail or '')
+        cell_str = cell_str.replace('\n', ' ').strip()
+        if x.tag =='br' or x.tag == 'p':
+            cell_str = '\n' + cell_str
+        builder.append(cell_str)
+    return ''.join(builder).strip()
+
+def is_invisible_text(elem):
+    flag = False
+    if elem.tag == "span":
+        if 'style' in elem.attrib:
+            if 'display:none' in elem.attrib['style']:
+                flag = True
+
+    return flag
 
 class HTMLProperties(CoreProperties):
     KEYS = ['_lxml', 'html', 'colspan', 'rowspan']
