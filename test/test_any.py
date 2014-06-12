@@ -3,6 +3,7 @@ import unittest
 
 from . import horror_fobj
 from nose.tools import assert_equal
+from nose.plugins.skip import SkipTest
 from messytables import (any_tableset, XLSTableSet, ZIPTableSet, PDFTableSet,
                          CSVTableSet, ODSTableSet,
                          ReadError)
@@ -35,7 +36,7 @@ def test_simple():
 
 def check_no_filename(d):
     if not d['tableset']:
-        raise unittest.SkipTest("Optional library not installed. Skipping")
+        raise SkipTest("Optional library not installed. Skipping")
     fh = horror_fobj(d['filename'])
     table_set = any_tableset(fh)
     assert isinstance(table_set, d['tableset']), type(table_set)
@@ -43,7 +44,7 @@ def check_no_filename(d):
 
 def check_filename(d):
     if not d['tableset']:
-        raise unittest.SkipTest("Optional library not installed. Skipping")
+        raise SkipTest("Optional library not installed. Skipping")
     fh = horror_fobj(d['filename'])
     table_set = any_tableset(fh, extension=d['filename'], auto_detect=False)
     assert isinstance(table_set, d['tableset']), type(table_set)

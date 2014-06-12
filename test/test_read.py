@@ -5,6 +5,7 @@ from . import horror_fobj
 from nose.plugins.attrib import attr
 from nose.tools import (assert_equal, assert_greater_equal, assert_true,
                         assert_raises)
+from nose.plugins.skip import SkipTest
 try:
     # Python 2.6 doesn't provide assert_is_instance
     from nose.tools import assert_is_instance
@@ -17,7 +18,7 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ODSTableSet, headers_guess, headers_processor,
                          offset_processor, DateType, FloatType,
                          IntegerType, rowset_as_jts,
-                         types_processor, type_guess, ReadError)
+                         types_processor, type_guess, ReadError, null_processor)
 import datetime
 
 
@@ -124,6 +125,32 @@ class ReadCsvTest(unittest.TestCase):
         # we expect None for Integers and "" for empty strings in CSV
         assert [x.value for x in data[2]] == [3, "null", None, ""], data[2]
 
+    def test_null_process(self):
+        fh = horror_fobj('null.csv')
+        table_set = CSVTableSet(fh)
+        row_set = table_set.tables[0]
+        row_set.register_processor(null_processor(['null']))
+        data = list(row_set)
+
+        nones = [[x.value is None for x in row] for row in data]
+        assert_equal(nones[0], [False, True, False, False])
+        assert_equal(nones[1], [False, False, False, True])
+        assert_equal(nones[2], [False, True, False, False])
+
+        types = type_guess(row_set.sample, strict=True)
+        expected_types = [IntegerType(), IntegerType(), IntegerType(),
+                          IntegerType()]
+        assert_equal(types, expected_types)
+
+        row_set.register_processor(types_processor(types))
+
+        # after applying the types, '' should become None for int columns
+        data = list(row_set)
+        nones = [[x.value is None for x in row] for row in data]
+        assert_equal(nones[0], [False, True, False, False])
+        assert_equal(nones[1], [False, False, False, True])
+        assert_equal(nones[2], [False, True, True, True])
+
     def test_read_encoded_csv(self):
         fh = horror_fobj('utf-16le_encoded.csv')
         table_set = CSVTableSet(fh)
@@ -176,6 +203,18 @@ class ReadCsvTest(unittest.TestCase):
         data = list(row_set)
         assert 'foo' in data[12][0].column, data[12][0]
         assert 'Chirurgie' in data[12][0].value, data[12][0].value
+
+    def test_read_encoded_characters_csv(self):
+        fh = horror_fobj('characters.csv')
+        table_set = CSVTableSet(fh)
+        row_set = table_set.tables[0]
+        offset, headers = headers_guess(row_set.sample)
+        row_set.register_processor(headers_processor(headers))
+        row_set.register_processor(offset_processor(offset + 1))
+        data = list(row_set)
+        assert_equal(382, len(data))
+        assert_equal(data[0][2].value, u'雲嘉南濱海國家風景區管理處')
+        assert_equal(data[-1][2].value, u'沈光文紀念廳')
 
 
 class ReadZipTest(unittest.TestCase):
@@ -492,7 +531,7 @@ class ReadPdfTest(unittest.TestCase):
                 PDFTableSet(fh)
             except ImportError:
                 # Optional library isn't installed. Skip the tests.
-                self.skipTest("pdftables is not installed, skipping PDF tests")
+                raise SkipTest("pdftables is not installed, skipping PDF tests")
 
     def test_read_simple_pdf(self):
         with horror_fobj('simple.pdf') as fh:
