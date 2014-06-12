@@ -3,11 +3,9 @@ import unittest
 
 from . import horror_fobj
 from nose.tools import assert_equal
-from messytables import (any_tableset, XLSTableSet, ZIPTableSet,
-                         CSVTableSet, ODSTableSet, ABBYYTableSet,
+from messytables import (any_tableset, XLSTableSet, ZIPTableSet, PDFTableSet,
                          CSVTableSet, ODSTableSet,
                          ReadError)
-import messytables.any
 
 suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
          {'filename': 'simple.xls', 'tableset': XLSTableSet},

@@ -1,5 +1,5 @@
 from messytables import (ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet,
-                         HTMLTableSet, ODSTableSet, ABBYYTableSet)
+                         HTMLTableSet, ODSTableSet)
 import messytables
 import re
 
