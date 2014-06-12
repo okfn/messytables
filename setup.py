@@ -47,10 +47,7 @@ setup(
         'lxml>=3.2',
         'requests',
     ],
-    dependency_links=[
-        'git+ssh://git@github.com/scraperwiki/pdftables@1.0.5#egg=pdftables-1.0.5'
-    ],
-    extras_require={'pdf': ['pdftables>=1.0.5']},
+    extras_require={'pdf': ['pdftables>=0.0.3']},
     tests_require=[],
     entry_points=\
     """
