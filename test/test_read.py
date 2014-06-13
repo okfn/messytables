@@ -3,8 +3,7 @@ import unittest
 
 from . import horror_fobj
 from nose.plugins.attrib import attr
-from nose.tools import (assert_equal, assert_greater_equal, assert_true,
-                        assert_raises)
+from nose.tools import (assert_equal, assert_true, assert_raises)
 from nose.plugins.skip import SkipTest
 
 try:
