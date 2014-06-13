@@ -1,5 +1,7 @@
 0.14.1 (wip, master) (3 May 2014)
-* #25 Ignore invisible text in HTML cells
+* SW #25 Ignore invisible text in HTML cells
+* Misc Scraperwiki Changes
+* Update pdftables version, it in turn requires specific pdfminer version
 
 0.14.0 (wip, master)
 * Add null processor

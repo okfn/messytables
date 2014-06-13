@@ -19,7 +19,7 @@ See the full documentation at: http://messytables.readthedocs.org
 
 setup(
     name='messytables',
-    version='0.13.0',
+    version='0.14.1',
     description="Parse messy tabular data in various formats",
     long_description=long_desc,
     classifiers=[
@@ -47,7 +47,7 @@ setup(
         'lxml>=3.2',
         'requests',
     ],
-    extras_require={'pdf': ['pdftables>=0.0.3']},
+    extras_require={'pdf': ['pdftables>=0.0.4']},
     tests_require=[],
     entry_points=\
     """
