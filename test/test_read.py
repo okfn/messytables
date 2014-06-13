@@ -347,10 +347,13 @@ class ReadXlsTest(unittest.TestCase):
     # would be good to be able to.
     def test_attempt_read_encrypted_no_password_xls(self):
         fh = horror_fobj('encrypted_no_password.xls')
-        with assert_raises(ReadError) as cm:
-            XLSTableSet(fh)
         errmsg = "Can't read Excel file: XLRDError('Workbook is encrypted',)"
-        self.assertEqual(errmsg, str(cm.exception))
+        try:
+            XLSTableSet(fh)
+        except ReadError as e:
+            assert e.message == errmsg
+        else:
+            assert False, "Did not raise Read Error"
 
     def test_read_head_offset_excel(self):
         fh = horror_fobj('simple.xls')
