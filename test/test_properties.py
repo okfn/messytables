@@ -6,21 +6,15 @@ from messytables.any import any_tableset
 from nose.tools import (
     assert_equal,
     assert_false,
-    assert_greater_equal,
     assert_raises,
     assert_true)
 import lxml.html
 
 try:
     # Python 2.6 doesn't provide assert_is_instance
-    # TODO move out into separate module, used by test/test_read.py too
-    from nose.tools import assert_is_instance
+    from nose.tools import assert_is_instance, assert_greater_equal
 except ImportError:
-    def assert_is_instance(obj, cls, msg=None):
-        if not isinstance(obj, cls):
-            raise AssertionError('Expected an instance of %r, got a %r' % (
-                                 cls, obj.__class__))
-
+    from shim26 import assert_is_instance, assert_greater_equal
 
 class TestCellProperties(unittest.TestCase):
     def test_core_properties(self):

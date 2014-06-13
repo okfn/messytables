@@ -6,12 +6,12 @@ from nose.plugins.attrib import attr
 from nose.tools import (assert_equal, assert_greater_equal, assert_true,
                         assert_raises)
 from nose.plugins.skip import SkipTest
+
 try:
-    # Python 2.6 doesn't provide assert_is_instance
-    from nose.tools import assert_is_instance
+    # Python 2.6 doesn't provide these functions
+    from nose.tools import assert_is_instance, assert_greater_equal
 except ImportError:
-    def assert_is_instance(obj, cls, msg=None):
-        assert_true(isinstance(obj, cls))
+    from shim26 import assert_is_instance, assert_greater_equal
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
