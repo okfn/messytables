@@ -15,6 +15,8 @@ MIMELOOKUP = {'application/x-zip-compressed': 'ZIP',
               'application/ms-excel': 'XLS',
               'application/xls': 'XLS',
               'application/vnd.ms-excel': 'XLS',
+              'application/octet-stream': 'XLS', # libmagic detects sw_gen as this on mac
+                                                 # with text "Microsoft OOXML"
               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLS',
               'text/html': 'HTML',
               'application/xml': 'HTML', # XHTML is often served as application-xml
