@@ -63,3 +63,17 @@ class TestAny(unittest.TestCase):
         fh = horror_fobj('simple.unknown')
         self.assertRaises(ReadError,
                           lambda: any_tableset(fh, extension='unknown'))
+
+    def test_scraperwiki_xlsx(self):
+        fh = horror_fobj('sw_gen.xlsx')
+        table_set = any_tableset(fh)
+        row_set = table_set.tables[0]
+        data = list(row_set)
+        assert_equal(16, len(data))
+
+    def test_libreoffice_xlsx(self):
+        fh = horror_fobj('libreoffice.xlsx')
+        table_set = any_tableset(fh)
+        row_set = table_set.tables[0]
+        data = list(row_set)
+        assert_equal(0, len(data))
