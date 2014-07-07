@@ -2,8 +2,6 @@ language: python
 python:
   - "2.6"
   - "2.7"
-before_install:
-- export PIP_USE_MIRRORS=true
 install:
   - pip install -e .
   - pip install -r requirements-test.txt
