@@ -28,6 +28,7 @@ else:
     got_pdftables = True
     suite.append({"filename": "simple.pdf", "tableset": PDFTableSet})
 
+
 def test_simple():
     for d in suite:
         yield check_no_filename, d

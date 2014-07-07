@@ -3,7 +3,7 @@ import unittest
 
 from . import horror_fobj
 from nose.plugins.attrib import attr
-from nose.tools import (assert_equal, assert_true, assert_raises)
+from nose.tools import assert_equal
 from nose.plugins.skip import SkipTest
 
 try:
@@ -17,7 +17,8 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ODSTableSet, headers_guess, headers_processor,
                          offset_processor, DateType, FloatType,
                          IntegerType, rowset_as_jts,
-                         types_processor, type_guess, ReadError, null_processor)
+                         types_processor, type_guess, ReadError,
+                         null_processor)
 import datetime
 
 
@@ -534,6 +535,7 @@ class ReadPdfTest(unittest.TestCase):
             except ImportError:
                 # Optional library isn't installed. Skip the tests.
                 raise SkipTest("pdftables is not installed, skipping PDF tests")
+
 
     def test_read_simple_pdf(self):
         with horror_fobj('simple.pdf') as fh:

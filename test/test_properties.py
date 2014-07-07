@@ -16,6 +16,7 @@ try:
 except ImportError:
     from shim26 import assert_is_instance, assert_greater_equal
 
+
 class TestCellProperties(unittest.TestCase):
     def test_core_properties(self):
         csv = any_tableset(horror_fobj('simple.csv'), extension="csv")
