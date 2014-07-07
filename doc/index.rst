@@ -188,6 +188,7 @@ The supported types include:
 .. autoclass:: messytables.types.IntegerType
 .. autoclass:: messytables.types.FloatType
 .. autoclass:: messytables.types.DecimalType
+.. autoclass:: messytables.types.BoolType
 .. autoclass:: messytables.types.DateType
 .. autoclass:: messytables.types.DateUtilType
 
