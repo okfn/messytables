@@ -2,6 +2,7 @@
 * SW #25 Ignore invisible text in HTML cells
 * Misc Scraperwiki Changes
 * Update pdftables version, it in turn requires specific pdfminer version
+* Add support for Boolean Type guessing
 
 0.14.0 (wip, master)
 * Add null processor
