@@ -3,6 +3,7 @@ import unittest
 import StringIO
 
 from . import horror_fobj
+from nose.plugins.attrib import attr
 from nose.tools import assert_equal
 from messytables import (CSVTableSet, type_guess, headers_guess,
                          offset_processor, DateType, StringType,
@@ -11,6 +12,7 @@ from messytables import (CSVTableSet, type_guess, headers_guess,
 
 
 class TypeGuessTest(unittest.TestCase):
+    @attr("slow")
     def test_type_guess(self):
         csv_file = StringIO.StringIO('''
             1,   2012/2/12, 2,   02 October 2011,  yes
@@ -78,6 +80,7 @@ class TypeGuessTest(unittest.TestCase):
             rows.sample, types=[IntegerType, DecimalType], strict=False)
         assert_equal(guessed_types, [IntegerType()])
 
+    @attr("slow")
     def test_strict_type_guessing_with_large_file(self):
         fh = horror_fobj('211.csv')
         rows = CSVTableSet(fh).tables[0]

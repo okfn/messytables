@@ -7,9 +7,13 @@ import re
 def TABTableSet(fileobj):
     return CSVTableSet(fileobj, delimiter='\t')
 
-priorities = [ZIPTableSet, XLSTableSet,
-              HTMLTableSet, TABTableSet, CSVTableSet,
-              ODSTableSet]
+parsers = {'TAB': TABTableSet,
+           'ZIP': ZIPTableSet,
+           'XLS': XLSTableSet,
+           'HTML': HTMLTableSet,
+           'CSV': CSVTableSet,
+           'ODS': ODSTableSet,
+           'PDF': PDFTableSet}
 
 
 def clean_ext(filename):
@@ -44,55 +48,57 @@ def get_mime(fileobj):
 
 
 def guess_mime(mimetype):
-    lookup = {'application/x-zip-compressed': ZIPTableSet,
-              'application/zip': ZIPTableSet,
-              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/zip': XLSTableSet,
-              'text/comma-separated-values': CSVTableSet,
-              'application/csv': CSVTableSet,
-              'text/csv': CSVTableSet,
-              'text/tab-separated-values': TABTableSet,
-              'application/tsv': TABTableSet,
-              'text/tsv': TABTableSet,
-              'application/ms-excel': XLSTableSet,
-              'application/xls': XLSTableSet,
-              'application/vnd.ms-excel': XLSTableSet,
-              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': XLSTableSet,
-              'text/html': HTMLTableSet,
-              'application/xml': XLSTableSet,
-              'application/pdf': PDFTableSet,
-              'text/plain': CSVTableSet,  # could be TAB.
-              'application/CDFV2-corrupt': XLSTableSet,
-              'application/vnd.oasis.opendocument.spreadsheet': ODSTableSet,
-              'application/x-vnd.oasis.opendocument.spreadsheet': ODSTableSet,
+    # now returns a clean 'extension' as a string, not a function to call.
+    lookup = {'application/x-zip-compressed': 'ZIP',
+              'application/zip': 'ZIP',
+              'text/comma-separated-values': 'CSV',
+              'application/csv': 'CSV',
+              'text/csv': 'CSV',
+              'text/tab-separated-values': 'TAB',
+              'application/tsv': 'TAB',
+              'text/tsv': 'TAB',
+              'application/ms-excel': 'XLS',
+              'application/xls': 'XLS',
+              'application/vnd.ms-excel': 'XLS',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLS',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/zip': 'XLS',
+              'text/html': 'HTML',
+              'application/xml': 'HTML', # XHTML is often served as application-xml
+              'application/pdf': 'PDF',
+              'text/plain': 'CSV',  # could be TAB.
+              'application/CDFV2-corrupt': 'XLS',
+              'application/vnd.oasis.opendocument.spreadsheet': 'ODS',
+              'application/x-vnd.oasis.opendocument.spreadsheet': 'ODS',
               }
     found = lookup.get(mimetype)
     if found:
         return found
 
     # But some aren't mimetyped due to being buggy but load fine!
-    fuzzy_lookup = {'Composite Document File V2 Document': XLSTableSet}
+    fuzzy_lookup = {'Composite Document File V2 Document': 'XLS'}
     for candidate in fuzzy_lookup:
         if candidate in mimetype:
             return fuzzy_lookup[candidate]
 
 
 def guess_ext(ext):
-    lookup = {'zip': ZIPTableSet,
-              'csv': CSVTableSet,
-              'tsv': TABTableSet,
-              'xls': XLSTableSet,
-              'xlsx': XLSTableSet,
-              'htm': HTMLTableSet,
-              'html': HTMLTableSet,
-              'pdf': PDFTableSet,
-              'xlt': XLSTableSet,
+    # returns a clean extension as a string, not a function to call.
+    lookup = {'zip': 'ZIP',
+              'csv': 'CSV',
+              'tsv': 'TAB',
+              'xls': 'XLS',
+              'xlsx': 'XLS',
+              'htm': 'HTML',
+              'html': 'HTML',
+              'pdf': 'PDF',
+              'xlt': 'XLS',
                 # obscure Excel extensions taken from
                 # http://en.wikipedia.org/wiki/List_of_Microsoft_Office_filename_extensions
-              'xlm': XLSTableSet,
-              'xlsm': XLSTableSet,
-              'xltx': XLSTableSet,
-              'xltm': XLSTableSet,
-              'ods': ODSTableSet}
+              'xlm': 'XLS',
+              'xlsm': 'XLS',
+              'xltx': 'XLS',
+              'xltm': 'XLS',
+              'ods': 'ODS'}
     if ext in lookup:
         return lookup.get(ext, None)
 
@@ -120,7 +126,7 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
     if mimetype is not None:
         attempt = guess_mime(mimetype)
         if attempt:
-            return attempt(fileobj)
+            return parsers[attempt](fileobj)
         else:
             error.append(
                 'Did not recognise MIME type given: "{mimetype}".'.format(
@@ -129,7 +135,7 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
     if short_ext is not '':
         attempt = guess_ext(short_ext)
         if attempt:
-            return attempt(fileobj)
+            return parsers[attempt](fileobj)
         else:
             error.append(
                 'Did not recognise extension "{ext}" (given "{full}".'.format(
@@ -139,7 +145,7 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
         magic_mime = get_mime(fileobj)
         attempt = guess_mime(magic_mime)
         if attempt:
-            return attempt(fileobj)
+            return parsers[attempt](fileobj)
         else:
             error.append(
                 'Did not recognise detected MIME type: "{mimetype}".'.format(

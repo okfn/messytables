@@ -2,21 +2,23 @@
 import unittest
 
 from . import horror_fobj
-from nose.tools import assert_equal, assert_true
+from nose.plugins.attrib import attr
+from nose.tools import assert_equal
 from nose.plugins.skip import SkipTest
+
 try:
-    # Python 2.6 doesn't provide assert_is_instance
-    from nose.tools import assert_is_instance
+    # Python 2.6 doesn't provide these functions
+    from nose.tools import assert_is_instance, assert_greater_equal
 except ImportError:
-    def assert_is_instance(obj, cls, msg=None):
-        assert_true(isinstance(obj, cls))
+    from shim26 import assert_is_instance, assert_greater_equal
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
                          ODSTableSet, headers_guess, headers_processor,
                          offset_processor, DateType, FloatType,
                          IntegerType, rowset_as_jts,
-                         types_processor, type_guess, null_processor)
+                         types_processor, type_guess, ReadError,
+                         null_processor)
 import datetime
 
 
@@ -85,6 +87,7 @@ class ReadCsvTest(unittest.TestCase):
         data = list(row_set)
         assert_equal(int(data[0][1].value), 1)
 
+    @attr("slow")
     def test_read_type_guess_simple(self):
         fh = horror_fobj('simple.csv')
         table_set = CSVTableSet(fh)
@@ -275,6 +278,7 @@ class ReadODSTest(unittest.TestCase):
             assert 3 == len(row), row
         assert_equal(total, 0)
 
+    @attr("slow")
     def test_read_large_ods(self):
         fh = horror_fobj('large.ods')
         table_set = ODSTableSet(fh)
@@ -339,6 +343,18 @@ class ReadXlsTest(unittest.TestCase):
 
         for row in list(row_set):
             assert 3 == len(row), row
+
+    # Right now we can't read even passwordless encrypted files - in future
+    # would be good to be able to.
+    def test_attempt_read_encrypted_no_password_xls(self):
+        fh = horror_fobj('encrypted_no_password.xls')
+        errmsg = "Can't read Excel file: XLRDError('Workbook is encrypted',)"
+        try:
+            XLSTableSet(fh)
+        except ReadError as e:
+            assert e.message == errmsg
+        else:
+            assert False, "Did not raise Read Error"
 
     def test_read_head_offset_excel(self):
         fh = horror_fobj('simple.xls')
@@ -437,6 +453,14 @@ class ReadHtmlTest(unittest.TestCase):
         assert_equal(row[1].value.strip(), 'Country')
         assert_equal(row[4].value.strip(), '2010')
 
+    def test_invisible_text_html(self):
+        fh = horror_fobj('invisible_text.html')
+        table_set = HTMLTableSet(fh)
+        row_set = table_set.tables[0]
+        assert_equal(4, len(list(row_set)))
+        row = list(row_set.sample)[1]
+        assert_equal(row[5].value.strip(), '1 July 1879')
+
     def test_read_span_html(self):
         fh = horror_fobj('rowcolspan.html')
         table_set = HTMLTableSet(fh)
@@ -512,10 +536,17 @@ class ReadPdfTest(unittest.TestCase):
                 # Optional library isn't installed. Skip the tests.
                 raise SkipTest("pdftables is not installed, skipping PDF tests")
 
+
     def test_read_simple_pdf(self):
         with horror_fobj('simple.pdf') as fh:
             table_set = PDFTableSet(fh)
+
         assert_equal(1, len(list(table_set.tables)))
+
+        (table,) = table_set.tables
+        rows = list(table)
+
+        assert_greater_equal(len(rows), 1)
 
     def test_pdf_names(self):
         with horror_fobj('simple.pdf') as fh:

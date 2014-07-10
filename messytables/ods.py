@@ -71,8 +71,7 @@ class ODSTableSet(TableSet):
         self.content = zf.read()
         zf.close()
 
-    @property
-    def tables(self):
+    def make_tables(self):
         """
             Return the sheets in the workbook.
 

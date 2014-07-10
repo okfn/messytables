@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 import xlrd
 from xlrd.biffh import XLRDError
@@ -44,11 +45,11 @@ class XLSTableSet(TableSet):
                     encoding_override=encoding)
             else:
                 raise Exception('You must provide one of filename or fileobj')
-        except XLRDError:
-            raise ReadError("Unsupported Excel format, or corrupt file")
+        except XLRDError as e:
+            _, value, traceback = sys.exc_info()
+            raise ReadError, "Can't read Excel file: %r" % value, traceback
 
-    @property
-    def tables(self):
+    def make_tables(self):
         """ Return the sheets in the workbook. """
         return [XLSRowSet(name, self.workbook.sheet_by_name(name), self.window)
                 for name in self.workbook.sheet_names()]

@@ -1,5 +1,6 @@
 from messytables.util import OrderedDict
 from collections import Mapping
+from messytables.error import TableError
 import cStringIO
 
 
@@ -144,6 +145,18 @@ class Cell(object):
         """ Source-specific information. Only a placeholder here. """
         return CoreProperties()
 
+    @property
+    def topleft(self):
+        """
+        Is the cell the top-left of a span? Non-spanning cells are the top left.
+
+        This is used for example in HTML generation where the top left cell
+        is the only one which is written into the output representation.
+
+        In absense of other knowledge, we assume that all cells are top left.
+        """
+        return True
+
 
 class TableSet(object):
     """ A table set is used for data formats in which multiple tabular
@@ -165,15 +178,20 @@ class TableSet(object):
     def tables(self):
         """ Return a listing of tables (i.e. RowSets) in the ``TableSet``.
         Each table has a name. """
-        pass
+        if getattr(self, "_tables", None) is None:
+            self._tables = self.make_tables()
+        return self._tables
 
+    def make_tables(self):
+        raise NotImplementedError("make_tables() not implemented on {0}"
+                                  .format(type(self)))
     def __getitem__(self, name):
         """ Return a RowSet based on the name given """
         matching = [table for table in self.tables if table.name == name]
         if not matching:
-            raise KeyError("No RowSet called '%s'" % name)
+            raise TableError("No table called %r" % name)
         elif len(matching) > 1:
-            raise LookupError("Multiple RowSets match '%s'" % name)
+            raise TableError("Multiple tables match %r" % name)
         return matching[0]
 
     @classmethod

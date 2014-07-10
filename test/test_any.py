@@ -4,7 +4,7 @@ import unittest
 from . import horror_fobj
 from nose.tools import assert_equal
 from nose.plugins.skip import SkipTest
-from messytables import (any_tableset, XLSTableSet, ZIPTableSet,
+from messytables import (any_tableset, XLSTableSet, ZIPTableSet, PDFTableSet,
                          CSVTableSet, ODSTableSet,
                          ReadError)
 
@@ -13,7 +13,8 @@ suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
          {'filename': 'simple.xlsx', 'tableset': XLSTableSet},
          {'filename': 'simple.zip', 'tableset': ZIPTableSet},
          {'filename': 'simple.ods', 'tableset': ODSTableSet},
-         {'filename': 'bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm', 'tableset': XLSTableSet},
+         {'filename': 'bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm',
+          'tableset': XLSTableSet},
          ]
 
 # Special handling for PDFTables - skip if not installed
@@ -26,6 +27,7 @@ else:
     from messytables import PDFTableSet
     got_pdftables = True
     suite.append({"filename": "simple.pdf", "tableset": PDFTableSet})
+
 
 def test_simple():
     for d in suite:
@@ -59,4 +61,5 @@ class TestAny(unittest.TestCase):
 
     def test_unknown(self):
         fh = horror_fobj('simple.unknown')
-        self.assertRaises(ReadError, lambda: any_tableset(fh, extension='unknown'))
+        self.assertRaises(ReadError,
+                          lambda: any_tableset(fh, extension='unknown'))
