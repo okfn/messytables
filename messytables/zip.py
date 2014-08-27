@@ -16,6 +16,11 @@ class ZIPTableSet(messytables.TableSet):
         try:
             for f in z.infolist():
                 ext = None
+
+                #ignore metadata folders added by Mac OS X
+                if '__MACOSX' in f.filename:
+                    continue
+
                 if "." in f.filename:
                     ext = f.filename[f.filename.rindex(".") + 1:]
 
