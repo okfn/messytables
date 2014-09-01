@@ -103,7 +103,7 @@ class FloatType(DecimalType):
 
 
 class BoolType(CellType):
-    """ A boolean field. Matches true/false and yes/no by default,
+    """ A boolean field. Matches true/false, yes/no and 0/1 by default,
     but a custom set of values can be optionally provided.
     """
     guessing_weight = 7
