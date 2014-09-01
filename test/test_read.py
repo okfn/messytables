@@ -16,7 +16,7 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
                          ODSTableSet, headers_guess, headers_processor,
                          offset_processor, DateType, FloatType,
-                         IntegerType, rowset_as_jts,
+                         IntegerType, BoolType, rowset_as_jts,
                          types_processor, type_guess, ReadError,
                          null_processor)
 import datetime
@@ -108,7 +108,7 @@ class ReadCsvTest(unittest.TestCase):
         table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         types = type_guess(row_set.sample, strict=True)
-        expected_types = [IntegerType(), StringType(), IntegerType(),
+        expected_types = [IntegerType(), StringType(), BoolType(),
                           StringType()]
         assert_equal(types, expected_types)
 
@@ -138,8 +138,8 @@ class ReadCsvTest(unittest.TestCase):
         assert_equal(nones[2], [False, True, False, False])
 
         types = type_guess(row_set.sample, strict=True)
-        expected_types = [IntegerType(), IntegerType(), IntegerType(),
-                          IntegerType()]
+        expected_types = [IntegerType(), BoolType(), BoolType(),
+                          BoolType()]
         assert_equal(types, expected_types)
 
         row_set.register_processor(types_processor(types))

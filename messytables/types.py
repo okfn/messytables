@@ -106,10 +106,10 @@ class BoolType(CellType):
     """ A boolean field. Matches true/false and yes/no by default,
     but a custom set of values can be optionally provided.
     """
-    guessing_weight = 2
+    guessing_weight = 7
     result_type = bool
-    true_values = ('yes', 'true')
-    false_values = ('no', 'false')
+    true_values = ('yes', 'true', '0')
+    false_values = ('no', 'false', '1')
 
     def __init__(self, true_values=None, false_values=None):
         if true_values is not None:
@@ -118,7 +118,7 @@ class BoolType(CellType):
             self.false_values = false_values
 
     def cast(self, value):
-        s = value.replace(' ', '').lower()
+        s = value.strip().lower()
         if value in ('', None):
             return None
         if s in self.true_values:
