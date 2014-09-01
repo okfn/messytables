@@ -1,10 +1,12 @@
 0.15 (wip, master)
 
-0.14 (1 September 2014)
+0.14.1 (1 September 2014)
+* Add support for Boolean Type guessing
 * SW #25 Ignore invisible text in HTML cells
 * Misc Scraperwiki Changes
 * Update pdftables version, it in turn requires specific pdfminer version
-* Add support for Boolean Type guessing
+
+0.14.0
 * Add null processor
 * Update magic library
 
