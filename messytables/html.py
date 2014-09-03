@@ -1,7 +1,13 @@
 from messytables.core import RowSet, TableSet, Cell, CoreProperties
 import lxml.html
 from collections import defaultdict
+import html5lib
+import xml.etree.ElementTree as etree
 
+def fromstring(s):
+    tb = html5lib.getTreeBuilder("lxml", implementation=etree)
+    p = html5lib.HTMLParser(tb, namespaceHTMLElements=False)
+    return p.parse(s)
 
 class HTMLTableSet(TableSet):
     """
@@ -17,7 +23,7 @@ class HTMLTableSet(TableSet):
             raise TypeError('You must provide one of filename or fileobj')
 
         self.htmltables = []
-        root = lxml.html.fromstring(fh.read())
+        root = fromstring(fh.read())
 
         # Grab tables that don't contain tables, remove from root, repeat.
         while True:
@@ -148,7 +154,7 @@ class HTMLCell(Cell):
 
     def __init__(self, value=None, column=None, type=None, source=None):
         assert value is None
-        assert isinstance(source, lxml.html.HtmlElement)
+        assert isinstance(source, lxml.etree._Element)
         self._lxml = source
         if type is None:
             from messytables.types import StringType
@@ -214,7 +220,7 @@ class HTMLProperties(CoreProperties):
     KEYS = ['_lxml', 'html', 'colspan', 'rowspan']
 
     def __init__(self, lxml_element):
-        if not isinstance(lxml_element, lxml.html.HtmlElement):
+        if not isinstance(lxml_element, lxml.etree._Element):
             raise TypeError("%r" % lxml_element)
         super(HTMLProperties, self).__init__()
         self.lxml_element = lxml_element

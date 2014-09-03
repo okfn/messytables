@@ -69,7 +69,7 @@ class TestHtmlProperties(unittest.TestCase):
 
     def test_real_cells_have_lxml_property(self):
         lxml_element = self.real_cell.properties['_lxml']
-        assert_is_instance(lxml_element, lxml.html.HtmlElement)
+        assert_is_instance(lxml_element, lxml.etree._Element)
         assert_equal('<td colspan="2">06</td>',
                      lxml.html.tostring(lxml_element))
 
@@ -91,6 +91,7 @@ class TestBrokenColspans(unittest.TestCase):
     def setUp(self):
         self.html = any_tableset(horror_fobj("badcolspan.html"),
                                  extension="html")
+
     def test_first_row(self):
         first_row = list(list(self.html.tables)[0])[0]
         self.assertEqual([cell.properties['colspan'] for cell in first_row],
