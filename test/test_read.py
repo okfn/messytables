@@ -262,6 +262,22 @@ class ReadSsvTest(unittest.TestCase):
             assert_equal(row[0].type, StringType())
 
 
+class ReadPsvTest(unittest.TestCase):
+    def test_read_simple_psv(self):
+        # pipe/vertical bar ("|") separated values
+        fh = horror_fobj('simple.psv')
+        table_set = CSVTableSet(fh)
+        row_set = table_set.tables[0]
+        assert_equal(29, len(list(row_set)))
+        row = list(row_set.sample)[0]
+        assert_equal(row[0].value, 'Year')
+        assert_equal(row[1].value, 'New dwellings')
+
+        for row in list(row_set):
+            assert_equal(6, len(row))
+            assert_equal(row[0].type, StringType())
+
+
 class ReadODSTest(unittest.TestCase):
     def test_read_simple_ods(self):
         fh = horror_fobj('simple.ods')
