@@ -2,8 +2,11 @@
 
 [![Build Status](https://travis-ci.org/okfn/messytables.png?branch=master)](https://travis-ci.org/okfn/messytables)
 [![Coverage Status](https://coveralls.io/repos/okfn/messytables/badge.png?branch=master)](https://coveralls.io/r/okfn/messytables?branch=master)
-[![Version](https://pypip.in/v/messytables/badge.png)](https://crate.io/packages/messytables/)
-[![Downloads](https://pypip.in/d/messytables/badge.png)](https://crate.io/packages/messytables/)
+[![Latest Version](https://pypip.in/version/messytables/badge.svg)](https://pypi.python.org/pypi/ckanserviceprovider/)
+[![Downloads](https://pypip.in/download/messytables/badge.svg)](https://pypi.python.org/pypi/ckanserviceprovider/)
+[![Supported Python versions](https://pypip.in/py_versions/messytables/badge.svg)](https://pypi.python.org/pypi/ckanserviceprovider/)
+[![Development Status](https://pypip.in/status/messytables/badge.svg)](https://pypi.python.org/pypi/ckanserviceprovider/)
+[![License](https://pypip.in/license/messytables/badge.svg)](https://pypi.python.org/pypi/ckanserviceprovider/)
 
 A library for dealing with messy tabular data in several formats, guessing types and detecting headers.
 
@@ -13,4 +16,3 @@ Find the package at: https://pypi.python.org/pypi/messytables
 
 * **Contact**: Friedrich Lindenberg <friedrich.lindenberg@okfn.org>, David Raznick
   <david.raznick@okfn.org>, Dominik Moritz <dominik.moritz@okfn.org>
-* **License**: MIT
