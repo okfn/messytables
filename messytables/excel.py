@@ -3,7 +3,7 @@ from datetime import datetime
 import xlrd
 from xlrd.biffh import XLRDError
 
-from messytables.core import RowSet, TableSet, Cell
+from messytables.core import RowSet, TableSet, Cell, CoreProperties
 from messytables.types import (StringType, IntegerType,
                                DateType, FloatType)
 from messytables.error import ReadError
@@ -111,4 +111,24 @@ class XLSCell(Cell):
                              minute, second)
         messy_cell = XLSCell(value, type=cell_type)
         messy_cell.sheet = sheet
+        messy_cell.xlrd_cell = xlrd_cell
         return messy_cell
+
+    @property
+    def topleft(self):
+        # TODO
+        return True
+
+    @property
+    def properties(self):
+        return XLSProperties(self)
+
+class XLSProperties(CoreProperties):
+    KEYS = ['bold']
+    def __init__(self, cell):
+        self.cell = cell
+
+    def get_bold(self):
+        return True
+
+
