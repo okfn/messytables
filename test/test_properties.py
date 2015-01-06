@@ -55,11 +55,14 @@ class TestExcelProperties(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.xls = any_tableset(horror_fobj('excel_properties.xls'), extension='xls')
-        cls.first_row = list(list(cls.xls.tables)[0])[0]
-        cls.real_cell = cls.first_row[0]
+        rows = list(cls.xls.tables)[0]
+        first_cells = [list(row)[0] for row in rows]
+        cls.properties = [x.properties for x in first_cells]
 
     def test_cell_has_bold(self):
-        assert_true('bold' in self.real_cell.properties)
+        assert_true('bold' in self.properties[0])
+        assert_true(self.properties[0]['bold'])
+        assert_false(self.properties[1]['bold'])
 
 class TestHtmlProperties(unittest.TestCase):
     # <td colspan='2'> would create one 'real' and one 'fake' cell
