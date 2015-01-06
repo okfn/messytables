@@ -51,6 +51,16 @@ class TestCoreProperties(unittest.TestCase):
         assert_equal(None, self.real_cell.properties.get('not_in_properties'))
 
 
+class TestExcelProperties(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.xls = any_tableset(horror_fobj('excel_properties.xls'), extension='xls')
+        cls.first_row = list(list(cls.xls.tables)[0])[0]
+        cls.real_cell = cls.first_row[0]
+
+    def test_cell_has_bold(self):
+        assert_true('bold' in self.real_cell.properties)
+
 class TestHtmlProperties(unittest.TestCase):
     # <td colspan='2'> would create one 'real' and one 'fake' cell
     @classmethod

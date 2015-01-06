@@ -8,6 +8,8 @@ from messytables.types import (StringType, IntegerType,
                                DateType, FloatType)
 from messytables.error import ReadError
 
+class InvalidDateError(Exception):
+    pass
 
 XLS_TYPES = {
     1: StringType(),
@@ -22,32 +24,47 @@ XLS_TYPES = {
     4: IntegerType()
 }
 
-
 class XLSTableSet(TableSet):
     """An excel workbook wrapper object.
     """
 
     def __init__(self, fileobj=None, filename=None,
-                 window=None, encoding=None):
+                 window=None, encoding=None, with_formatting_info=True):
+        def get_workbook():
+            print filename, len(read_obj)
+            try:
+                return xlrd.open_workbook(
+                    filename=filename,
+                    file_contents=read_obj,
+                    encoding_override=encoding,
+                    formatting_info=with_formatting_info)
+            except XLRDError as e:
+                _, value, traceback = sys.exc_info()
+                raise ReadError, "Can't read Excel file: %r" % value, traceback
         '''Initilize the tableset.
 
         :param encoding: passed on to xlrd.open_workbook function
             as encoding_override
         '''
         self.window = window
+
+        if not filename and not fileobj:
+            raise Exception('You must provide one of filename or fileobj')
+
+        if fileobj:
+            read_obj = fileobj.read()
+        else:
+            read_obj = None
+
         try:
-            if filename:
-                self.workbook = xlrd.open_workbook(filename,
-                                                   encoding_override=encoding)
-            elif fileobj:
-                self.workbook = xlrd.open_workbook(
-                    file_contents=fileobj.read(),
-                    encoding_override=encoding)
+            self.workbook = get_workbook()
+        except NotImplementedError as e:
+            if not with_formatting_info:
+                raise
             else:
-                raise Exception('You must provide one of filename or fileobj')
-        except XLRDError as e:
-            _, value, traceback = sys.exc_info()
-            raise ReadError, "Can't read Excel file: %r" % value, traceback
+                with_formatting_info=False
+                self.workbook = get_workbook()
+
 
     def make_tables(self):
         """ Return the sheets in the workbook. """
@@ -73,15 +90,25 @@ class XLSRowSet(RowSet):
         for i in xrange(min(self.window, num_rows) if sample else num_rows):
             row = []
             for j, cell in enumerate(self.sheet.row(i)):
-                value = cell.value
-                type = XLS_TYPES.get(cell.ctype, StringType())
-                if type == DateType(None):
-                    if value == 0:
-                        raise ValueError('Invalid date at "%s":%d,%d' % (
-                            self.sheet.name, j + 1, i + 1))
-                    year, month, day, hour, minute, second = \
-                        xlrd.xldate_as_tuple(value, self.sheet.book.datemode)
-                    value = datetime(year, month, day, hour,
-                                     minute, second)
-                row.append(Cell(value, type=type))
+                try:
+                    row.append(XLSCell.from_xlrdcell(cell, self.sheet))
+                except InvalidDateError:
+                    raise ValueError("Invalid date at '%s':%d,%d" % (
+                        self.sheet.name, j+1, i+1))
             yield row
+
+class XLSCell(Cell):
+    @staticmethod
+    def from_xlrdcell(xlrd_cell, sheet):
+        value = xlrd_cell.value
+        cell_type = XLS_TYPES.get(xlrd_cell.ctype, StringType())
+        if cell_type == DateType(None):
+            if value == 0:
+                raise InvalidDateError
+            year, month, day, hour, minute, second = \
+                xlrd.xldate_as_tuple(value, sheet.book.datemode)
+            value = datetime(year, month, day, hour,
+                             minute, second)
+        messy_cell = XLSCell(value, type=cell_type)
+        messy_cell.sheet = sheet
+        return messy_cell
