@@ -77,6 +77,14 @@ class TestExcelProperties(unittest.TestCase):
         assert_true(self.properties[10]['size'] < 8)
         assert_true(self.properties[0]['size'] == 10)
 
+    def test_cell_has_borders(self):
+        assert_false(self.properties[0]['any_border'])
+        assert_false(self.properties[0]['all_border'])
+        assert_true(self.properties[7]['any_border'])
+        assert_false(self.properties[7]['all_border'])
+        assert_true(self.properties[8]['any_border'])
+        assert_true(self.properties[8]['all_border'])
+
 
 class TestHtmlProperties(unittest.TestCase):
     # <td colspan='2'> would create one 'real' and one 'fake' cell
