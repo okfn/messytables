@@ -64,6 +64,20 @@ class TestExcelProperties(unittest.TestCase):
         assert_true(self.properties[0]['bold'])
         assert_false(self.properties[1]['bold'])
 
+    def test_cell_has_italic(self):
+        assert_true(self.properties[1]['italic'])
+        assert_false(self.properties[0]['italic'])
+
+    def test_cell_has_underline(self):
+        assert_true(self.properties[2]['underline'])
+        assert_false(self.properties[1]['underline'])
+
+    def test_cell_size(self):
+        assert_true(self.properties[9]['size'] > 20)
+        assert_true(self.properties[10]['size'] < 8)
+        assert_true(self.properties[0]['size'] == 10)
+
+
 class TestHtmlProperties(unittest.TestCase):
     # <td colspan='2'> would create one 'real' and one 'fake' cell
     @classmethod

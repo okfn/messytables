@@ -124,7 +124,8 @@ class XLSCell(Cell):
         return XLSProperties(self)
 
 class XLSProperties(CoreProperties):
-    KEYS = ['bold']
+    KEYS = ['bold', 'size', 'italic', 'font_name', 'strikeout', 'underline',
+            'font_colour', 'background_colour', 'any_border', 'all_border']
     def __init__(self, cell):
         self.xf = cell.sheet.book.xf_list[cell.xlrd_cell.xf_index]
         self.font = cell.sheet.book.font_list[self.xf.font_index]
@@ -132,7 +133,7 @@ class XLSProperties(CoreProperties):
     def get_bold(self):
         return self.font.weight > 500
 
-    def get_height(self):
+    def get_size(self):
         """in pixels"""
         return self.font.height / 20
 
