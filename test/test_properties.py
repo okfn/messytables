@@ -85,6 +85,14 @@ class TestExcelProperties(unittest.TestCase):
         assert_true(self.properties[8]['any_border'])
         assert_true(self.properties[8]['all_border'])
 
+    def test_cell_has_fontname(self):
+        assert_true(self.properties[0]['font_name'] == 'Arial')
+
+    def test_cell_has_strikeout(self):
+        assert_true(self.properties[11]['strikeout'])
+        assert_false(self.properties[0]['strikeout'])
+
+
 
 class TestHtmlProperties(unittest.TestCase):
     # <td colspan='2'> would create one 'real' and one 'fake' cell
