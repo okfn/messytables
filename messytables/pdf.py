@@ -42,7 +42,9 @@ class PDFCell(Cell):
 
 
 class PDFTableSet(TableSet):
-
+    """
+    A TableSet from a PDF document.
+    """
     def __init__(self, fileobj=None, filename=None):
         if get_tables is None:
             raise ImportError("pdftables is not installed")
@@ -55,18 +57,23 @@ class PDFTableSet(TableSet):
         self.raw_tables = get_tables(self.fh)
 
     def make_tables(self):
+        """
+        Return a listing of tables (as PDFRowSets) in the table set.
+        """
         def table_name(table):
             return "Table {0} of {1} on page {2} of {3}".format(
-                table.table_number_on_page + 1,
+                table.table_number_on_page,
                 table.total_tables_on_page,
-                table.page_number + 1,
+                table.page_number,
                 table.total_pages)
         return [PDFRowSet(table_name(table), table)
                 for table in self.raw_tables]
 
 
 class PDFRowSet(RowSet):
-
+    """
+    A RowSet representing a PDF table.
+    """
     def __init__(self, name, table):
         if get_tables is None:
             raise ImportError("pdftables is not installed")
@@ -76,7 +83,6 @@ class PDFRowSet(RowSet):
         self.meta = dict(
             page_number=table.page_number + 1,
         )
-
 
     def raw(self, sample=False):
         """

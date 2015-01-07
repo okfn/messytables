@@ -1,5 +1,18 @@
-0.13.0 (wip, master) (3 May 2014)
-* #25 Ignore invisible text in HTML cells
+0.15 (wip, master)
+
+0.14.1 (1 September 2014)
+* Add support for Boolean Type guessing
+* SW #25 Ignore invisible text in HTML cells
+* Misc Scraperwiki Changes
+* Update pdftables version, it in turn requires specific pdfminer version
+
+0.14.0
+* Add null processor
+* Update magic library
+
+0.13.0 (15 October 2013)
+* #86 Provide more information about the original table (properties)
+* #89 Skip PDF tests if PDFTables not installed
 
 0.12.0 (7 August 2013)
 * #51 Removed FloatType, use DecimalType

@@ -6,20 +6,15 @@ from messytables.any import any_tableset
 from nose.tools import (
     assert_equal,
     assert_false,
-    assert_greater_equal,
     assert_raises,
     assert_true)
 import lxml.html
 
 try:
     # Python 2.6 doesn't provide assert_is_instance
-    # TODO move out into separate module, used by test/test_read.py too
-    from nose.tools import assert_is_instance
+    from nose.tools import assert_is_instance, assert_greater_equal
 except ImportError:
-    def assert_is_instance(obj, cls, msg=None):
-        if not isinstance(obj, cls):
-            raise AssertionError('Expected an instance of %r, got a %r' % (
-                                 cls, obj.__class__))
+    from shim26 import assert_is_instance, assert_greater_equal
 
 
 class TestCellProperties(unittest.TestCase):
@@ -74,7 +69,7 @@ class TestHtmlProperties(unittest.TestCase):
 
     def test_real_cells_have_lxml_property(self):
         lxml_element = self.real_cell.properties['_lxml']
-        assert_is_instance(lxml_element, lxml.html.HtmlElement)
+        assert_is_instance(lxml_element, lxml.etree._Element)
         assert_equal('<td colspan="2">06</td>',
                      lxml.html.tostring(lxml_element))
 
@@ -96,6 +91,7 @@ class TestBrokenColspans(unittest.TestCase):
     def setUp(self):
         self.html = any_tableset(horror_fobj("badcolspan.html"),
                                  extension="html")
+
     def test_first_row(self):
         first_row = list(list(self.html.tables)[0])[0]
         self.assertEqual([cell.properties['colspan'] for cell in first_row],

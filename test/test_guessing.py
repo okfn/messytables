@@ -8,25 +8,25 @@ from nose.tools import assert_equal
 from messytables import (CSVTableSet, type_guess, headers_guess,
                          offset_processor, DateType, StringType,
                          DecimalType, IntegerType,
-                         DateUtilType)
+                         DateUtilType, BoolType)
 
 
 class TypeGuessTest(unittest.TestCase):
     @attr("slow")
     def test_type_guess(self):
         csv_file = StringIO.StringIO('''
-            1,   2012/2/12, 2,   02 October 2011
-            2,   2012/2/12, 2,   02 October 2011
-            2.4, 2012/2/12, 1,   1 May 2011
-            foo, bar,       1000,
-            4.3, ,          42,  24 October 2012
-             ,   2012/2/12, 21,  24 December 2013''')
+            1,   2012/2/12, 2,   02 October 2011,  yes,   1
+            2,   2012/2/12, 2,   02 October 2011,  true,  1
+            2.4, 2012/2/12, 1,   1 May 2011,       no,    0
+            foo, bar,       1000, ,                false, 0
+            4.3, ,          42,  24 October 2012,,
+             ,   2012/2/12, 21,  24 December 2013, true,  1''')
         rows = CSVTableSet(csv_file).tables[0]
         guessed_types = type_guess(rows.sample)
 
         assert_equal(guessed_types, [
-            DecimalType(), DateType('%Y/%m/%d'),
-            IntegerType(), DateType('%d %B %Y')])
+            DecimalType(), DateType('%Y/%m/%d'), IntegerType(),
+            DateType('%d %B %Y'), BoolType(), BoolType()])
 
     def test_type_guess_strict(self):
         import locale

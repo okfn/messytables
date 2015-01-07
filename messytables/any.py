@@ -1,5 +1,5 @@
 from messytables import (ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet,
-                         HTMLTableSet, ODSTableSet, ABBYYTableSet)
+                         HTMLTableSet, ODSTableSet)
 import messytables
 import re
 
@@ -68,7 +68,7 @@ def get_mime(fileobj):
         # consider whether it's an Microsoft Office document
         if "[Content_Types].xml" in header:
             return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    # There's an issue with vnd.ms-excel being returned fro XLSX files, too.
+    # There's an issue with vnd.ms-excel being returned from XLSX files, too.
     if mimetype == 'application/vnd.ms-excel' and header[:2] == 'PK':
         return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     return mimetype

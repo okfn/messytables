@@ -102,6 +102,32 @@ class FloatType(DecimalType):
     pass
 
 
+class BoolType(CellType):
+    """ A boolean field. Matches true/false, yes/no and 0/1 by default,
+    but a custom set of values can be optionally provided.
+    """
+    guessing_weight = 7
+    result_type = bool
+    true_values = ('yes', 'true', '0')
+    false_values = ('no', 'false', '1')
+
+    def __init__(self, true_values=None, false_values=None):
+        if true_values is not None:
+            self.true_values = true_values
+        if false_values is not None:
+            self.false_values = false_values
+
+    def cast(self, value):
+        s = value.strip().lower()
+        if value in ('', None):
+            return None
+        if s in self.true_values:
+            return True
+        if s in self.false_values:
+            return False
+        raise ValueError
+
+
 class DateType(CellType):
     """ The date type is special in that it also includes a specific
     date format that is used to parse the date, additionally to the
@@ -158,7 +184,7 @@ class DateUtilType(CellType):
         return parser.parse(value)
 
 
-TYPES = [StringType, DecimalType, IntegerType, DateType]
+TYPES = [StringType, DecimalType, IntegerType, DateType, BoolType]
 
 
 def type_guess(rows, types=TYPES, strict=False):

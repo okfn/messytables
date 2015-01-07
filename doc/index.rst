@@ -130,6 +130,33 @@ The newer, XML-based Excel format is also supported but uses a different class.
 .. autoclass:: messytables.excelx.XLSXRowSet
   :members: raw
 
+HTML file support
+-----------------
+
+The library supports HTML documents, using `lxml <http://www.lxml.de>`_ as a
+parser.
+
+Removes the content of nested tables from the parent table. The order of the
+tables is ill-defined.
+
+.. autoclass:: messytables.html.HTMLTableSet
+  :members: tables
+
+.. autoclass:: messytables.html.HTMLRowSet
+
+PDF file support
+----------------
+
+The library supports PDF documents, using
+`pdftables <https://pdftables.readthedocs.org>`_ to extract tables.
+
+Works only for PDFs which contain text information: somewhat erratic in quality.
+
+.. autoclass:: messytables.pdf.PDFTableSet
+  :members: tables
+
+.. autoclass:: messytables.pdf.PDFRowSet
+
 ZIP file support
 ----------------
 
@@ -161,6 +188,7 @@ The supported types include:
 .. autoclass:: messytables.types.IntegerType
 .. autoclass:: messytables.types.FloatType
 .. autoclass:: messytables.types.DecimalType
+.. autoclass:: messytables.types.BoolType
 .. autoclass:: messytables.types.DateType
 .. autoclass:: messytables.types.DateUtilType
 
@@ -189,6 +217,8 @@ Most processors are implemented as closures called with some arguments:
 .. automethod:: messytables.types.types_processor
 
 .. automethod:: messytables.util.offset_processor
+
+.. automethod:: messytables.util.null_processor
 
 .. automethod:: messytables.headers.headers_processor
 
