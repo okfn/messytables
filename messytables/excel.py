@@ -30,8 +30,13 @@ class XLSTableSet(TableSet):
 
     def __init__(self, fileobj=None, filename=None,
                  window=None, encoding=None, with_formatting_info=True):
+        '''Initialize the tableset.
+
+        :param encoding: passed on to xlrd.open_workbook function
+            as encoding_override
+        :param with_formatting_info: passed to xlrd to get font details of cells
+        '''
         def get_workbook():
-            print filename, len(read_obj)
             try:
                 return xlrd.open_workbook(
                     filename=filename,
@@ -41,11 +46,6 @@ class XLSTableSet(TableSet):
             except XLRDError as e:
                 _, value, traceback = sys.exc_info()
                 raise ReadError, "Can't read Excel file: %r" % value, traceback
-        '''Initilize the tableset.
-
-        :param encoding: passed on to xlrd.open_workbook function
-            as encoding_override
-        '''
         self.window = window
 
         if not filename and not fileobj:
