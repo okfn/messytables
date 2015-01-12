@@ -46,6 +46,19 @@ class XLSTableSet(TableSet):
             except XLRDError as e:
                 _, value, traceback = sys.exc_info()
                 raise ReadError, "Can't read Excel file: %r" % value, traceback
+        '''Initilize the tableset.
+
+        :param encoding: passed on to xlrd.open_workbook function
+            as encoding_override
+        :param with_formatting_info: whether xlrd should provide details
+            of the cells contents (e.g. colour, borders, etc.
+            Not sure what the behaviour of properties is with this turned off.
+            Turning this on apparently may have memory implications in xlrd.
+
+        The convoluted "try it with with_formatting_info, then try it without" is
+        necessary because xlrd doesn't currently support getting this information
+        from XLSX files. Workarounds include converting the XLSX document in LibreOffice.
+        '''
         self.window = window
 
         if not filename and not fileobj:
