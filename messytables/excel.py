@@ -148,7 +148,7 @@ class XLSProperties(CoreProperties):
 
     def get_size(self):
         """in pixels"""
-        return self.font.height / 20
+        return self.font.height / 20.0
 
     def get_italic(self):
         return bool(self.font.italic)
