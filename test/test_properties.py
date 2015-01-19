@@ -51,6 +51,24 @@ class TestCoreProperties(unittest.TestCase):
         assert_equal(None, self.real_cell.properties.get('not_in_properties'))
 
 
+class TestExcelSpanRich(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.xls = any_tableset(horror_fobj('span_rich.xls'), extension='xls')
+        cls.table = list(list(cls.xls.tables)[0])
+
+    def test_basic_rich(self):
+        assert self.table[4][1].properties['is_rich']
+        assert not list(self.table)[4][2].properties['is_rich']
+        assert self.table[4][1].value == 'bold and italic'
+
+    def test_topleft(self):
+        assert self.table[0][0].topleft, self.table[0][0].value
+        assert self.table[1][1].topleft, self.table[1][1].value
+        assert not self.table[1][2].topleft, self.table[1][2].value
+        assert not self.table[2][2].topleft, self.table[2][2].value
+
+
 class TestExcelProperties(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

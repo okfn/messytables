@@ -100,19 +100,19 @@ class XLSRowSet(RowSet):
         converted according to the excel data types specified, including
         conversion of excel dates, which are notoriously buggy. """
         num_rows = self.sheet.nrows
-        for i in xrange(min(self.window, num_rows) if sample else num_rows):
+        for rownum in xrange(min(self.window, num_rows) if sample else num_rows):
             row = []
-            for j, cell in enumerate(self.sheet.row(i)):
+            for colnum, cell in enumerate(self.sheet.row(rownum)):
                 try:
-                    row.append(XLSCell.from_xlrdcell(cell, self.sheet))
+                    row.append(XLSCell.from_xlrdcell(cell, self.sheet, colnum, rownum))
                 except InvalidDateError:
                     raise ValueError("Invalid date at '%s':%d,%d" % (
-                        self.sheet.name, j+1, i+1))
+                        self.sheet.name, colnum+1, rownum+1))
             yield row
 
 class XLSCell(Cell):
     @staticmethod
-    def from_xlrdcell(xlrd_cell, sheet):
+    def from_xlrdcell(xlrd_cell, sheet, col, row):
         value = xlrd_cell.value
         cell_type = XLS_TYPES.get(xlrd_cell.ctype, StringType())
         if cell_type == DateType(None):
@@ -125,12 +125,12 @@ class XLSCell(Cell):
         messy_cell = XLSCell(value, type=cell_type)
         messy_cell.sheet = sheet
         messy_cell.xlrd_cell = xlrd_cell
+        messy_cell.xlrd_pos = (row, col)  # necessary for properties, note not (x,y)
         return messy_cell
 
     @property
     def topleft(self):
-        # TODO
-        return True
+        return self.properties.topleft
 
     @property
     def properties(self):
@@ -138,10 +138,51 @@ class XLSCell(Cell):
 
 class XLSProperties(CoreProperties):
     KEYS = ['bold', 'size', 'italic', 'font_name', 'strikeout', 'underline',
-            'font_colour', 'background_colour', 'any_border', 'all_border']
+            'font_colour', 'background_colour', 'any_border', 'all_border',
+            'is_rich']
     def __init__(self, cell):
-        self.xf = cell.sheet.book.xf_list[cell.xlrd_cell.xf_index]
-        self.font = cell.sheet.book.font_list[self.xf.font_index]
+        #self.xf = cell.sheet.book.xf_list[cell.xlrd_cell.xf_index]
+        #self.font = cell.sheet.book.font_list[self.xf.font_index]
+        self.cell = cell
+        self.merged = {}
+
+    @property
+    def xf(self):
+        return self.cell.sheet.book.xf_list[self.cell.xlrd_cell.xf_index]
+
+    @property
+    def font(self):
+        return self.cell.sheet.book.font_list[self.xf.font_index]
+
+    @property
+    def rich(self):
+        return self.cell.sheet.rich_text_runlist_map.get(self.cell.xlrd_pos, None)
+
+    def raw_span(self, always=False):
+        "return the bounding box of the cells it's part of."
+        row, col = self.cell.xlrd_pos
+        for box in self.cell.sheet.merged_cells:
+            rlo, rhi, clo, chi = box
+            if row >= rlo and row <= rhi and col >= clo and col <= chi:
+                return box
+        if always:
+            print self.cell.xlrd_pos, box
+            return (row, row, col, col)
+        else:
+            print self.cell.xlrd_pos, None
+            return None
+
+    @property
+    def topleft(self):
+        span = self.raw_span()
+        if span is None:
+            return True  # is a single cell
+        else:
+            rlo, _, clo, _ = span
+            return (rlo, clo) == self.cell.xlrd_pos
+
+    def get_is_rich(self):  # TODO - get_rich_fragments
+        return bool(self.rich)
 
     def get_bold(self):
         return self.font.weight > 500
