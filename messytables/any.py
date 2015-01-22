@@ -4,6 +4,30 @@ import messytables
 import re
 
 
+MIMELOOKUP = {'application/x-zip-compressed': 'ZIP',
+              'application/zip': 'ZIP',
+              'text/comma-separated-values': 'CSV',
+              'application/csv': 'CSV',
+              'text/csv': 'CSV',
+              'text/tab-separated-values': 'TAB',
+              'application/tsv': 'TAB',
+              'text/tsv': 'TAB',
+              'application/ms-excel': 'XLS',
+              'application/xls': 'XLS',
+              'application/vnd.ms-excel': 'XLS',
+              'application/octet-stream': 'XLS', # libmagic detects sw_gen as this on mac
+                                                 # with text "Microsoft OOXML"
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLS',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/zip': 'XLS',
+              'text/html': 'HTML',
+              'application/xml': 'HTML', # XHTML is often served as application-xml
+              'application/pdf': 'PDF',
+              'text/plain': 'CSV',  # could be TAB.
+              'application/CDFV2-corrupt': 'XLS',
+              'application/vnd.oasis.opendocument.spreadsheet': 'ODS',
+              'application/x-vnd.oasis.opendocument.spreadsheet': 'ODS',
+              }
+
 def TABTableSet(fileobj):
     return CSVTableSet(fileobj, delimiter='\t')
 
@@ -41,6 +65,10 @@ def get_mime(fileobj):
     header = fileobj.read(4096)
     mimetype = magic.from_buffer(header, mime=True)
     fileobj.seek(0)
+    if MIMELOOKUP.get(mimetype) == 'ZIP':
+        # consider whether it's an Microsoft Office document
+        if "[Content_Types].xml" in header:
+            return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     # There's an issue with vnd.ms-excel being returned from XLSX files, too.
     if mimetype == 'application/vnd.ms-excel' and header[:2] == 'PK':
         return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -49,28 +77,7 @@ def get_mime(fileobj):
 
 def guess_mime(mimetype):
     # now returns a clean 'extension' as a string, not a function to call.
-    lookup = {'application/x-zip-compressed': 'ZIP',
-              'application/zip': 'ZIP',
-              'text/comma-separated-values': 'CSV',
-              'application/csv': 'CSV',
-              'text/csv': 'CSV',
-              'text/tab-separated-values': 'TAB',
-              'application/tsv': 'TAB',
-              'text/tsv': 'TAB',
-              'application/ms-excel': 'XLS',
-              'application/xls': 'XLS',
-              'application/vnd.ms-excel': 'XLS',
-              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLS',
-              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/zip': 'XLS',
-              'text/html': 'HTML',
-              'application/xml': 'HTML', # XHTML is often served as application-xml
-              'application/pdf': 'PDF',
-              'text/plain': 'CSV',  # could be TAB.
-              'application/CDFV2-corrupt': 'XLS',
-              'application/vnd.oasis.opendocument.spreadsheet': 'ODS',
-              'application/x-vnd.oasis.opendocument.spreadsheet': 'ODS',
-              }
-    found = lookup.get(mimetype)
+    found = MIMELOOKUP.get(mimetype)
     if found:
         return found
 
