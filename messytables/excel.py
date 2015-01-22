@@ -139,7 +139,7 @@ class XLSCell(Cell):
 class XLSProperties(CoreProperties):
     KEYS = ['bold', 'size', 'italic', 'font_name', 'strikeout', 'underline',
             'font_colour', 'background_colour', 'any_border', 'all_border',
-            'is_rich']
+            'richtext']
     def __init__(self, cell):
         #self.xf = cell.sheet.book.xf_list[cell.xlrd_cell.xf_index]
         #self.font = cell.sheet.book.font_list[self.xf.font_index]
@@ -181,7 +181,7 @@ class XLSProperties(CoreProperties):
             rlo, _, clo, _ = span
             return (rlo, clo) == self.cell.xlrd_pos
 
-    def get_is_rich(self):  # TODO - get_rich_fragments
+    def get_richtext(self):  # TODO - get_rich_fragments
         return bool(self.rich)
 
     def get_bold(self):
