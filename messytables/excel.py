@@ -141,8 +141,6 @@ class XLSProperties(CoreProperties):
             'font_colour', 'background_colour', 'any_border', 'all_border',
             'richtext']
     def __init__(self, cell):
-        #self.xf = cell.sheet.book.xf_list[cell.xlrd_cell.xf_index]
-        #self.font = cell.sheet.book.font_list[self.xf.font_index]
         self.cell = cell
         self.merged = {}
 
@@ -156,20 +154,21 @@ class XLSProperties(CoreProperties):
 
     @property
     def rich(self):
+        """returns a tuple of character position, font number which starts at that position
+        https://secure.simplistix.co.uk/svn/xlrd/trunk/xlrd/doc/xlrd.html?p=4966#sheet.Sheet.rich_text_runlist_map-attribute"""
         return self.cell.sheet.rich_text_runlist_map.get(self.cell.xlrd_pos, None)
 
     def raw_span(self, always=False):
-        "return the bounding box of the cells it's part of."
+        """return the bounding box of the cells it's part of.
+         https://secure.simplistix.co.uk/svn/xlrd/trunk/xlrd/doc/xlrd.html?p=4966#sheet.Sheet.merged_cells-attribute"""
         row, col = self.cell.xlrd_pos
         for box in self.cell.sheet.merged_cells:
             rlo, rhi, clo, chi = box
             if row >= rlo and row <= rhi and col >= clo and col <= chi:
                 return box
         if always:
-            print self.cell.xlrd_pos, box
             return (row, row, col, col)
         else:
-            print self.cell.xlrd_pos, None
             return None
 
     @property

@@ -58,8 +58,8 @@ class TestExcelSpanRich(unittest.TestCase):
         cls.table = list(list(cls.xls.tables)[0])
 
     def test_basic_rich(self):
-        assert self.table[4][1].properties['is_rich']
-        assert not list(self.table)[4][2].properties['is_rich']
+        assert self.table[4][1].properties['richtext']
+        assert not list(self.table)[4][2].properties['richtext']
         assert self.table[4][1].value == 'bold and italic'
 
     def test_topleft(self):
