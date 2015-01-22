@@ -14,13 +14,7 @@ See the documentation at: https://messytables.readthedocs.org
 
 Find the package at: https://pypi.python.org/pypi/messytables
 
+See CONTRIBUTING.md for how to send patches, run tests.
+
 * **Contact**: Friedrich Lindenberg <friedrich.lindenberg@okfn.org>, David Raznick
   <david.raznick@okfn.org>, Dominik Moritz <dominik.moritz@okfn.org>
-
-## Running tests
-
-Using Python 2 run:
-
-$ pip install --user .
-$ pip install --user -r requirements-test.txt
-$ nosetests
