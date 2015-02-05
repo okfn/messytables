@@ -32,8 +32,8 @@ class TestCoreProperties(unittest.TestCase):
     def setUpClass(cls):
         cls.html = any_tableset(horror_fobj('rowcolspan.html'),
                                 extension="html")
-        cls.first_row = list(list(cls.html.tables)[0])[0]
-        cls.real_cell = cls.first_row[1]
+        first_row = list(list(cls.html.tables)[0])[0]
+        cls.real_cell = first_row[1]
 
     def test_properties_implements_in(self):
         assert_true('html' in self.real_cell.properties)
@@ -74,8 +74,8 @@ class TestExcelProperties(unittest.TestCase):
     def setUpClass(cls):
         cls.xls = any_tableset(horror_fobj('excel_properties.xls'), extension='xls')
         rows = list(cls.xls.tables)[0]
-        first_cells = [list(row)[0] for row in rows]
-        cls.properties = [x.properties for x in first_cells]
+        cls.first_cells = [list(row)[0] for row in rows]
+        cls.properties = [x.properties for x in cls.first_cells]
 
     def test_cell_has_bold(self):
         assert_true('bold' in self.properties[0])
@@ -109,6 +109,11 @@ class TestExcelProperties(unittest.TestCase):
     def test_cell_has_strikeout(self):
         assert_true(self.properties[11]['strikeout'])
         assert_false(self.properties[0]['strikeout'])
+
+    def test_blank_cells(self):
+        assert_true(self.properties[12]['blank'])
+        assert_false(self.properties[13]['blank'])
+
 
 
 

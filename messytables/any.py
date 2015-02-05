@@ -145,7 +145,7 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
             return parsers[attempt](fileobj)
         else:
             error.append(
-                'Did not recognise extension "{ext}" (given "{full}".'.format(
+                'Did not recognise extension "{ext}" (given "{full})".'.format(
                     ext=short_ext, full=extension))
 
     if auto_detect:
