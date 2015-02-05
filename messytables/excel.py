@@ -139,7 +139,7 @@ class XLSCell(Cell):
 class XLSProperties(CoreProperties):
     KEYS = ['bold', 'size', 'italic', 'font_name', 'strikeout', 'underline',
             'font_colour', 'background_colour', 'any_border', 'all_border',
-            'richtext']
+            'richtext', 'blank']
     def __init__(self, cell):
         self.cell = cell
         self.merged = {}
@@ -205,6 +205,11 @@ class XLSProperties(CoreProperties):
     def get_font_colour(self):
         # TODO
         return self.font.color_index ## more lookup required
+
+    def get_blank(self):
+        """Note that cells might not exist at all.
+           Behaviour for spanned cells might be complicated: hence this function"""
+        return self.cell.value == ''
 
     def get_background_colour(self):
         return self.xf.background.background_color_index ## more lookup required
