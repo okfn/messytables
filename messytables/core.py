@@ -1,8 +1,7 @@
 from messytables.util import OrderedDict
 from collections import Mapping
-from messytables.error import TableError
+from messytables.error import TableError, NoSuchPropertyError
 import cStringIO
-
 
 def seekable_stream(fileobj):
     try:
@@ -98,7 +97,7 @@ class CoreProperties(Mapping):
         if key in self.KEYS:
             return getattr(self, 'get_' + key)()
         else:
-            raise KeyError("%r" % key)
+            raise NoSuchPropertyError("%r" % key)
 
     def __iter__(self):
         return self.KEYS.__iter__()
