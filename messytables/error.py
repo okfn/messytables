@@ -10,3 +10,7 @@ class ReadError(MessytablesError):
 class TableError(MessytablesError, LookupError):
     """Couldn't identify correct table."""
     pass
+
+class NoSuchPropertyError(MessytablesError, KeyError):
+    """The requested property doesn't exist"""
+    pass

@@ -3,6 +3,7 @@
 import unittest
 from . import horror_fobj
 from messytables.any import any_tableset
+from messytables.error import NoSuchPropertyError
 from nose.tools import (
     assert_equal,
     assert_false,
@@ -144,6 +145,7 @@ class TestHtmlProperties(unittest.TestCase):
 
     def test_fake_cells_have_no_lxml_property(self):
         assert_raises(KeyError, lambda: self.fake_cell.properties['_lxml'])
+        assert_raises(NoSuchPropertyError, lambda: self.fake_cell.properties['_lxml'])
 
     def test_real_cells_have_html_property(self):
         html = self.real_cell.properties['html']
