@@ -165,7 +165,9 @@ class XLSProperties(CoreProperties):
         for box in self.cell.sheet.merged_cells:
             rlo, rhi, clo, chi = box
             # note the high indexes are NOT inclusive!
-            if row >= rlo and row < rhi and col >= clo and col < chi:
+            rhi = rhi - 1
+            chi = chi - 1
+            if row >= rlo and row <= rhi and col >= clo and col <= chi:
                 return box
         if always:
             return (row, row, col, col)
