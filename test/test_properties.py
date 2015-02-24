@@ -115,6 +115,15 @@ class TestExcelProperties(unittest.TestCase):
         assert_true(self.properties[12]['blank'])
         assert_false(self.properties[13]['blank'])
 
+    def test_date(self):
+        assert_false(self.properties[13]['a_date'])
+        assert_true(self.properties[14]['a_date'])
+        assert_equal(self.properties[14]['formatting_string'], r'DD/MM/YY')
+        assert_equal(self.properties[15]['formatting_string'], r'QQ\ YY')
+        assert_equal(self.properties[16]['formatting_string'], r'YYYY')
+        assert_equal(self.properties[17]['formatting_string'], r'YYYY\ MMM')
+        assert_equal(self.properties[18]['formatting_string'], r'D\ MMM\ YYYY')
+
 
 
 
