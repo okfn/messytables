@@ -172,7 +172,7 @@ class XLSProperties(CoreProperties):
             rhi = rhi - 1
             chi = chi - 1
             if row >= rlo and row <= rhi and col >= clo and col <= chi:
-                return box
+                return rlo, rhi, clo, chi
         if always:
             return (row, row, col, col)
         else:
