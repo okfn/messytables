@@ -139,7 +139,7 @@ class XLSCell(Cell):
 class XLSProperties(CoreProperties):
     KEYS = ['bold', 'size', 'italic', 'font_name', 'strikeout', 'underline',
             'font_colour', 'background_colour', 'any_border', 'all_border',
-            'richtext', 'blank']
+            'richtext', 'blank', 'a_date', 'formatting_string']
     def __init__(self, cell):
         self.cell = cell
         self.merged = {}
@@ -151,6 +151,10 @@ class XLSProperties(CoreProperties):
     @property
     def font(self):
         return self.cell.sheet.book.font_list[self.xf.font_index]
+
+    @property
+    def formatting(self):
+        return self.cell.sheet.book.format_map[self.xf.format_key]
 
     @property
     def rich(self):
@@ -168,7 +172,7 @@ class XLSProperties(CoreProperties):
             rhi = rhi - 1
             chi = chi - 1
             if row >= rlo and row <= rhi and col >= clo and col <= chi:
-                return box
+                return rlo, rhi, clo, chi
         if always:
             return (row, row, col, col)
         else:
@@ -182,6 +186,12 @@ class XLSProperties(CoreProperties):
         else:
             rlo, _, clo, _ = span
             return (rlo, clo) == self.cell.xlrd_pos
+
+    def get_formatting_string(self):
+        return self.formatting.format_str
+
+    def get_a_date(self):
+        return self.formatting.type == 1
 
     def get_richtext(self):  # TODO - get_rich_fragments
         return bool(self.rich)
