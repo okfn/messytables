@@ -59,7 +59,7 @@ except ImportError:
         items = MutableMapping.items
 
         def __repr__(self):
-            pairs = ', '.join(map('%r: %r'.__mod__, self.items()))
+            pairs = ', '.join(map('%r: %r'.__mod__, list(self.items())))
             return '%s({%s})' % (self.__class__.__name__, pairs)
 
         def copy(self):
