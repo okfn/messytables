@@ -1,5 +1,8 @@
 from collections import defaultdict
-from itertools import izip_longest
+try:
+    from itertools import zip_longest
+except ImportError:
+    from itertools import izip_longest as zip_longest
 
 from messytables.core import Cell
 
@@ -15,7 +18,7 @@ def column_count_modal(rows):
             counts[length] += 1
     if not len(counts):
         return 0
-    return max(counts.items(), key=lambda (k, v): v)[0]
+    return max(list(counts.items()), key=lambda k_v: k_v[1])[0]
 
 
 def headers_guess(rows, tolerance=1):
@@ -44,7 +47,7 @@ def headers_processor(headers):
 
     def apply_headers(row_set, row):
         _row = []
-        pairs = izip_longest(row, headers)
+        pairs = zip_longest(row, headers)
         for i, (cell, header) in enumerate(pairs):
             if cell is None:
                 cell = Cell(None)
