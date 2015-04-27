@@ -7,7 +7,7 @@ from messytables.core import RowSet, TableSet, Cell, CoreProperties
 from messytables.types import (StringType, IntegerType,
                                DateType, FloatType)
 from messytables.error import ReadError
-
+from messytables.compat23 import PY2
 class InvalidDateError(Exception):
     pass
 
@@ -45,7 +45,10 @@ class XLSTableSet(TableSet):
                     formatting_info=with_formatting_info)
             except XLRDError as e:
                 _, value, traceback = sys.exc_info()
-                raise ReadError, "Can't read Excel file: %r" % value, traceback
+                if PY2:
+                   raise ReadError("Can't read Excel file: %r" % value, traceback)
+                else:
+                   raise ReadError("Can't read Excel file: %r" % value).with_traceback(traceback)
         '''Initilize the tableset.
 
         :param encoding: passed on to xlrd.open_workbook function
@@ -100,7 +103,7 @@ class XLSRowSet(RowSet):
         converted according to the excel data types specified, including
         conversion of excel dates, which are notoriously buggy. """
         num_rows = self.sheet.nrows
-        for rownum in xrange(min(self.window, num_rows) if sample else num_rows):
+        for rownum in range(min(self.window, num_rows) if sample else num_rows):
             row = []
             for colnum, cell in enumerate(self.sheet.row(rownum)):
                 try:
