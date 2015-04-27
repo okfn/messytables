@@ -10,7 +10,7 @@ try:
     # Python 2.6 doesn't provide these functions
     from nose.tools import assert_is_instance, assert_greater_equal
 except ImportError:
-    from shim26 import assert_is_instance, assert_greater_equal
+    from .shim26 import assert_is_instance, assert_greater_equal
 
 from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
@@ -20,7 +20,7 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          types_processor, type_guess, ReadError,
                          null_processor)
 import datetime
-
+stringy = type(u'')
 
 class ReadCsvTest(unittest.TestCase):
     def test_read_simple_csv(self):
@@ -66,7 +66,7 @@ class ReadCsvTest(unittest.TestCase):
         row_set = table_set.tables[0]
         offset, headers = headers_guess(row_set.sample)
         assert 11 == len(headers), headers
-        assert_equal(u'1985', headers[1].strip())
+        assert_equal('1985', headers[1].strip())
         row_set.register_processor(headers_processor(headers))
         row_set.register_processor(offset_processor(offset + 1))
         data = list(row_set.sample)
@@ -98,9 +98,9 @@ class ReadCsvTest(unittest.TestCase):
 
         row_set.register_processor(types_processor(types))
         data = list(row_set)
-        header_types = map(lambda c: c.type, data[0])
+        header_types = [c.type for c in data[0]]
         assert_equal(header_types, [StringType()] * 3)
-        row_types = map(lambda c: c.type, data[2])
+        row_types = [c.type for c in data[2]]
         assert_equal(expected_types, row_types)
 
     def test_apply_null_values(self):
@@ -183,8 +183,8 @@ class ReadCsvTest(unittest.TestCase):
 
         second = lambda r: r[1].value
 
-        assert "goodbye" in map(second, rows(True))
-        assert "    goodbye" in map(second, rows(False))
+        assert "goodbye" in list(map(second, rows(True)))
+        assert "    goodbye" in list(map(second, rows(False)))
 
     def test_guess_headers(self):
         fh = horror_fobj('weird_head_padding.csv')
@@ -300,7 +300,7 @@ class ReadODSTest(unittest.TestCase):
         table_set = ODSTableSet(fh)
         assert_equal(6, len(table_set.tables))
         row_set = table_set.tables[0]
-        row = row_set.raw().next()
+        row = next(row_set.raw())
         assert len(row) == 5, len(row)
         for row in row_set.sample:
             assert len(row) == 5, len(row)
@@ -357,13 +357,13 @@ class ReadXlsTest(unittest.TestCase):
         first_row = list(row_set.sample)[0]
         third_row = list(row_set.sample)[2]
 
-        assert_is_instance(first_row[0].value, unicode)
-        assert_is_instance(first_row[1].value, unicode)
-        assert_is_instance(first_row[2].value, unicode)
+        assert_is_instance(first_row[0].value, stringy)
+        assert_is_instance(first_row[1].value, stringy)
+        assert_is_instance(first_row[2].value, stringy)
 
         assert_is_instance(third_row[0].value, datetime.datetime)
         assert_is_instance(third_row[1].value, float)
-        assert_is_instance(third_row[2].value, unicode)
+        assert_is_instance(third_row[2].value, stringy)
 
         assert_equal(first_row[0].value, 'date')
         assert_equal(first_row[1].value, 'temperature')
@@ -371,7 +371,7 @@ class ReadXlsTest(unittest.TestCase):
 
         assert_equal(third_row[0].value, datetime.datetime(2011, 1, 2, 0, 0))
         assert_equal(third_row[1].value, -1)
-        assert_equal(third_row[2].value, u'Galway')
+        assert_equal(third_row[2].value, 'Galway')
 
         for row in list(row_set):
             assert 3 == len(row), row
@@ -384,7 +384,7 @@ class ReadXlsTest(unittest.TestCase):
         try:
             XLSTableSet(fh)
         except ReadError as e:
-            assert e.message == errmsg
+            assert e.args[0] == errmsg
         else:
             assert False, "Did not raise Read Error"
 
@@ -408,13 +408,13 @@ class ReadXlsTest(unittest.TestCase):
         first_row = list(row_set.sample)[0]
         third_row = list(row_set.sample)[2]
 
-        assert_is_instance(first_row[0].value, unicode)
-        assert_is_instance(first_row[1].value, unicode)
-        assert_is_instance(first_row[2].value, unicode)
+        assert_is_instance(first_row[0].value, stringy)
+        assert_is_instance(first_row[1].value, stringy)
+        assert_is_instance(first_row[2].value, stringy)
 
         assert_is_instance(third_row[0].value, datetime.datetime)
         assert_is_instance(third_row[1].value, float)
-        assert_is_instance(third_row[2].value, unicode)
+        assert_is_instance(third_row[2].value, stringy)
 
         assert_equal(first_row[0].value, 'date')
         assert_equal(first_row[1].value, 'temperature')
@@ -422,7 +422,7 @@ class ReadXlsTest(unittest.TestCase):
 
         assert_equal(third_row[0].value, datetime.datetime(2011, 1, 2, 0, 0))
         assert_equal(third_row[1].value, -1.0)
-        assert_equal(third_row[2].value, u'Galway')
+        assert_equal(third_row[2].value, 'Galway')
 
         for row in list(row_set):
             assert 3 == len(row), row
@@ -543,13 +543,13 @@ class ReadHtmlTest(unittest.TestCase):
         assert_equal(['head', 'body', 'foot'], cell_values)
 
     def test_rowset_as_schema(self):
-        from StringIO import StringIO as sio
-        ts = CSVTableSet(sio('''name,dob\nmk,2012-01-02\n'''))
+        from io import BytesIO as sio
+        ts = CSVTableSet(sio(b'''name,dob\nmk,2012-01-02\n'''))
         rs = ts.tables[0]
         jts = rowset_as_jts(rs).as_dict()
         assert_equal(jts['fields'], [
-            {'type': 'string', 'id': u'name', 'label': u'name'},
-            {'type': 'date', 'id': u'dob', 'label': u'dob'}])
+            {'type': 'string', 'id': 'name', 'label': 'name'},
+            {'type': 'date', 'id': 'dob', 'label': 'dob'}])
 
     def test_html_table_name(self):
         fh = horror_fobj('html.html')
