@@ -135,7 +135,7 @@ class Cell(object):
             return True
         value = self.value
         if not isinstance(value, string_types):
-            value = native_string(value)
+            value = unicode_string(value)
         if len(value.strip()):
             return False
         return True
