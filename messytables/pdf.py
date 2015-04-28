@@ -5,7 +5,7 @@ from messytables.types import StringType
 try:
     from pdftables import get_tables
 except ImportError as exc:
-    if exc.args[0] != "No module named pdftables":
+    if "No module named" not in exc.args[0]:
         raise
     get_tables = None
 
