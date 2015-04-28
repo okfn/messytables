@@ -4,7 +4,7 @@ Convert a rowset to the json table schema
 '''
 
 import messytables
-import jsontableschema
+import messytables.jsontableschema as jsontableschema
 
 MESSYTABLES_TO_JTS_MAPPING = {
     messytables.StringType: 'string',
