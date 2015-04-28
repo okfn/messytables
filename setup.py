@@ -43,7 +43,6 @@ setup(
         'python-magic>=0.4.6',  # used for type guessing
         'chardet>=2.1.1',
         'python-dateutil>=2.4.2',
-        'json-table-schema',
         'lxml>=3.2',
         'requests',
         'html5lib'
