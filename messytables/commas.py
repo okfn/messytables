@@ -5,6 +5,7 @@ import chardet
 
 from messytables.core import RowSet, TableSet, Cell
 import messytables
+from messytables.compat23 import unicode_string, byte_string
 
 
 class UTF8Recoder:
@@ -55,9 +56,8 @@ class UTF8Recoder:
 
 
 def to_unicode_or_bust(obj, encoding='utf-8'):
-    if isinstance(obj, basestring):
-        if not isinstance(obj, unicode):
-            obj = unicode(obj, encoding)
+    if isinstance(obj, byte_string):
+        obj = unicode_string(obj, encoding)
     return obj
 
 
@@ -111,8 +111,8 @@ class CSVRowSet(RowSet):
         self.lineterminator = lineterminator
         self.skipinitialspace = skipinitialspace
         try:
-            for i in xrange(self.window):
-                self._sample.append(self.lines.next())
+            for i in range(self.window):
+                self._sample.append(next(self.lines))
         except StopIteration:
             pass
         super(CSVRowSet, self).__init__()
@@ -161,10 +161,10 @@ class CSVRowSet(RowSet):
             for row in csv.reader(rows(),
                     dialect=self._dialect, **self._overrides):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
-        except csv.Error, err:
-            if 'newline inside string' in unicode(err) and sample:
+        except csv.Error as err:
+            if u'newline inside string' in unicode_string(err) and sample:
                 pass
-            elif 'line contains NULL byte' in unicode(err):
+            elif u'line contains NULL byte' in unicode_string(err):
                 pass
             else:
                 raise messytables.ReadError('Error reading CSV: %r', err)
