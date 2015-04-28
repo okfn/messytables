@@ -6,6 +6,7 @@ RUN apt-get update && \
         python-dev
 
 RUN apt-get install -y python-numpy python-lxml python-chardet
+RUN apt-get install -y python3 python3-pip
 RUN locale-gen en_GB.UTF-8
 
 RUN mkdir /home/messytables && \
