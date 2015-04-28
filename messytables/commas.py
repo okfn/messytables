@@ -102,7 +102,11 @@ class CSVRowSet(RowSet):
         self.name = name
         seekable_fileobj = messytables.seekable_stream(fileobj)
         self.fileobj = UTF8Recoder(seekable_fileobj, encoding)
-        self.lines = ilines(self.fileobj)
+        #self.lines = ilines(self.fileobj)
+        def fake_ilines(fobj):
+            for row in fobj:
+                yield row.decode('utf-8')
+        self.lines =fake_ilines(self.fileobj)
         self._sample = []
         self.delimiter = delimiter
         self.quotechar = quotechar
@@ -119,11 +123,13 @@ class CSVRowSet(RowSet):
 
     @property
     def _dialect(self):
-        delim = '\n'
+        delim = b'\n'
         sample = delim.join(self._sample)
         try:
             dialect = csv.Sniffer().sniff(sample,
-                delimiters=['\t', ',', ';', '|'])
+                delimiters=[b'\t', b',', b';', b'|'])
+            dialect.delimiter = byte_string(dialect.delimiter)
+            dialect.quotechar = byte_string(dialect.quotechar)
             dialect.lineterminator = delim
             dialect.doublequote = True
             return dialect
@@ -149,10 +155,10 @@ class CSVRowSet(RowSet):
     def raw(self, sample=False):
         def rows():
             for line in self._sample:
-                yield line
+                yield line.encode('utf-8')
             if not sample:
                 for line in self.lines:
-                    yield line
+                    yield line.encode('utf-8')
 
         # Fix the maximum field size to something a little larger
         csv.field_size_limit(256000)
