@@ -41,7 +41,7 @@ setup(
     install_requires=[
         'xlrd>=0.8.0',
         'python-magic>=0.4.6',  # used for type guessing
-        'chardet>=2.1.1',
+        'chardet>=2.3.0',
         'python-dateutil>=2.4.2',
         'lxml>=3.2',
         'requests',
