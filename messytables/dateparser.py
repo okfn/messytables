@@ -33,7 +33,7 @@ def create_date_formats(day_first=True):
     #time_formats = "hh:mmz hh:mm:ssz hh:mmtzd hh:mm:sstzd".split()
     time_formats = "hh:mm:ssz hh:mm:ss hh:mm:sstzd".split()
     python_time_formats = "%H:%M%Z %H:%M:%S %H:%M:%S%Z %H:%M%z %H:%M:%S%z".split()
-    both_time_fromats = list(zip(time_formats, python_time_formats))
+    both_time_formats = list(zip(time_formats, python_time_formats))
 
     #date_seperators = ["-","."," ","","/","\\"]
     date_seperators = ["-", ".", "/", " "]
@@ -51,7 +51,7 @@ def create_date_formats(day_first=True):
 
     for date_format, python_date_format in all_date_formats:
         all_formats[date_format] = python_date_format
-        for time_format, python_time_format in both_time_fromats:
+        for time_format, python_time_format in both_time_formats:
 
             all_formats[date_format + time_format] = \
                 python_date_format + python_time_format
