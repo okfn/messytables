@@ -8,6 +8,7 @@ from messytables.types import (StringType, IntegerType,
                                DateType, FloatType)
 from messytables.error import ReadError
 from messytables.compat23 import PY2
+
 class InvalidDateError(Exception):
     pass
 
