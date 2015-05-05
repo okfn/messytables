@@ -1,4 +1,5 @@
 0.15 (wip, master)
+* #125 Read past blank lines in an ODS file
 
 0.14.1 (1 September 2014)
 * Add support for Boolean Type guessing
