@@ -16,5 +16,4 @@ Find the package at: https://pypi.python.org/pypi/messytables
 
 See CONTRIBUTING.md for how to send patches, run tests.
 
-* **Contact**: Friedrich Lindenberg <friedrich.lindenberg@okfn.org>, David Raznick
-  <david.raznick@okfn.org>, Dominik Moritz <dominik.moritz@okfn.org>
+**Contact**: Open Knowledge Labs - http://okfnlabs.org/contact/. We especially recommend the forum: http://discuss.okfn.org/category/open-knowledge-labs/
