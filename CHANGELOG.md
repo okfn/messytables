@@ -1,4 +1,5 @@
 0.15 (wip, master)
+* #125 Fix ODS stopping at blank lines
 * #127 Fix reading of newer ODS files
 
 0.14.1 (1 September 2014)

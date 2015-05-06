@@ -140,7 +140,8 @@ class ODSRowSet(RowSet):
                         row_data.append(c)
 
             if not row_data:
-                raise StopIteration()
+                # ignore blank lines
+                continue
 
             del partial
             yield row_data
