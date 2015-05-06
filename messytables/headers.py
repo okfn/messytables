@@ -1,9 +1,5 @@
 from collections import defaultdict
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest
-
+from messytables.compat23 import izip_longest
 from messytables.core import Cell
 
 
@@ -47,7 +43,7 @@ def headers_processor(headers):
 
     def apply_headers(row_set, row):
         _row = []
-        pairs = zip_longest(row, headers)
+        pairs = izip_longest(row, headers)
         for i, (cell, header) in enumerate(pairs):
             if cell is None:
                 cell = Cell(None)

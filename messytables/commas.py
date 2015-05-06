@@ -56,9 +56,8 @@ class UTF8Recoder:
     next = __next__
 
 def to_unicode_or_bust(obj, encoding='utf-8'):
-    if PY2:
-        if isinstance(obj, byte_string):
-            obj = unicode_string(obj, encoding)
+    if isinstance(obj, byte_string):
+        obj = unicode_string(obj, encoding)
     return obj
 
 
