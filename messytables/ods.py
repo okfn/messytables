@@ -114,7 +114,7 @@ class ODSRowSet(RowSet):
             ods_header = u"<wrapper {0}>"\
                 .format(" ".join('xmlns:{0}="{1}"'.format(k, v)
                         for k, v in namespaces.iteritems()))
-            osd_footer = u"</wrapper>"
+            ods_footer = u"</wrapper>"
             self.namespace_tags = ods_header, ods_footer
 
         super(ODSRowSet, self).__init__(typed=True)
