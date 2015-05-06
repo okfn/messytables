@@ -9,6 +9,7 @@ from messytables.types import (StringType, DecimalType,
                                DateType)
 
 
+ODS_NAMESPACES_TAG_MATCH = re.compile("(<office:document-content[^>]*>)", re.MULTILINE)
 ODS_TABLE_MATCH = re.compile(".*?(<table:table.*?<\/.*?:table>).*?", re.MULTILINE)
 ODS_TABLE_NAME = re.compile('.*?table:name=\"(.*?)\".*?')
 ODS_ROW_MATCH = re.compile(".*?(<table:table-row.*?<\/.*?:table-row>).*?", re.MULTILINE)
@@ -17,24 +18,6 @@ ODS_TYPES = {
     'float': DecimalType(),
     'date': DateType(None),
 }
-
-NAMESPACES = {
-    "dc": u"http://purl.org/dc/elements/1.1/",
-    "draw": u"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0",
-    "number": u"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0",
-    "office": u"urn:oasis:names:tc:opendocument:xmlns:office:1.0",
-    "svg": u"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0",
-    "table": u"urn:oasis:names:tc:opendocument:xmlns:table:1.0",
-    "text": u"urn:oasis:names:tc:opendocument:xmlns:text:1.0",
-}
-
-# We must wrap the XML fragments in a valid header otherwise iterparse will
-# explode with certain (undefined) versions of libxml2.
-
-ODS_HEADER = u"<wrapper {0}>"\
-    .format(" ".join( 'xmlns:{0}="{1}"'.format(k,v)
-            for k,v in NAMESPACES.iteritems()))
-ODS_FOOTER = u"</wrapper>"
 
 
 class ODSTableSet(TableSet):
@@ -80,16 +63,25 @@ class ODSTableSet(TableSet):
             1. load large the entire file into memory, or
             2. SAX parse the file more than once
         """
+        namespace_tags = self._get_namespace_tags()
         sheets = [m.groups(0)[0]
                   for m in ODS_TABLE_MATCH.finditer(self.content)]
-        return [ODSRowSet(sheet, self.window) for sheet in sheets]
+        return [ODSRowSet(sheet, self.window, namespace_tags)
+                for sheet in sheets]
+
+    def _get_namespace_tags(self):
+        match = re.search(ODS_NAMESPACES_TAG_MATCH, self.content)
+        assert match
+        tag_open = match.groups()[0]
+        tag_close = '</office:document-content>'
+        return tag_open, tag_close
 
 
 class ODSRowSet(RowSet):
     """ ODS support for a single sheet in the ODS workbook. Unlike
     the CSV row set this is not a streaming operation. """
 
-    def __init__(self, sheet, window=None):
+    def __init__(self, sheet, window=None, namespace_tags=None):
         self.sheet = sheet
 
         self.name = "Unknown"
@@ -98,6 +90,33 @@ class ODSRowSet(RowSet):
             self.name = m.groups(0)[0]
 
         self.window = window or 1000
+
+        # We must wrap the XML fragments in a valid header otherwise iterparse
+        # will explode with certain (undefined) versions of libxml2. The
+        # namespaces are in the ODS file, and change with the libreoffice
+        # version saving it, so get them from the ODS file if possible. The
+        # default namespaces are an option to preserve backwards compatibility
+        # of ODSRowSet.
+        if namespace_tags:
+            self.namespace_tags = namespace_tags
+        else:
+            namespaces = {
+                "dc": u"http://purl.org/dc/elements/1.1/",
+                "draw": u"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0",
+                "number": u"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0",
+                "office": u"urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+                "svg": u"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0",
+                "table": u"urn:oasis:names:tc:opendocument:xmlns:table:1.0",
+                "text": u"urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+                "calcext": "urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0",
+            }
+
+            ods_header = u"<wrapper {0}>"\
+                .format(" ".join('xmlns:{0}="{1}"'.format(k, v)
+                        for k, v in namespaces.iteritems()))
+            osd_footer = u"</wrapper>"
+            self.namespace_tags = ods_header, ods_footer
+
         super(ODSRowSet, self).__init__(typed=True)
 
     def raw(self, sample=False):
@@ -107,7 +126,8 @@ class ODSRowSet(RowSet):
         for row in rows:
             row_data = []
 
-            block = "{0}{1}{2}".format(ODS_HEADER, row, ODS_FOOTER)
+            block = "{0}{1}{2}".format(self.namespace_tags[0], row,
+                                       self.namespace_tags[1])
             partial = cStringIO.StringIO(block)
 
             for action, elem in etree.iterparse(partial, ('end',)):
