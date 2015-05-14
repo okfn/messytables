@@ -305,17 +305,33 @@ class ReadODSTest(unittest.TestCase):
         for row in row_set.sample:
             assert len(row) == 5, len(row)
 
-    def test_annotated_ods(self):
-        fh = horror_fobj('annotated.ods')
+    def test_ods_version_4412(self):
+        fh = horror_fobj('loffice-4.4.1.2.ods')
         table_set = ODSTableSet(fh)
-        assert_equal(4, len(table_set.tables))
+        assert_equal(1, len(table_set.tables))
         row_set = table_set.tables[0]
-        for row in row_set.sample:
-            assert len(row) == 1, len(row)
+        rows = row_set_to_rows(row_set)
+        assert_equal(rows[0][0], 'Name')
+        assert_equal(rows[1][0], 'Bob')
+        assert_equal(rows[2][0], 'Jane')
+        assert_equal(rows[3][0], 'Ian')
 
-        row_set = table_set.tables[1]
-        l = len(list(row_set.sample))
-        assert 87 == l, l
+    def test_ods_read_past_blank_lines(self):
+        fh = horror_fobj('blank_line.ods')
+        table_set = ODSTableSet(fh)
+        assert_equal(1, len(table_set.tables))
+        row_set = table_set.tables[0]
+        rows = row_set_to_rows(row_set)
+        assert_equal(rows[0][0], 'Name')
+        assert_equal(rows[1][0], 'Bob')
+        assert_equal(rows[2][0], 'Jane')
+        assert_equal(rows[3][0], 'Ian')
+
+def row_set_to_rows(row_set):
+    rows = []
+    for row in row_set:
+        rows.append([cell.value for cell in row])
+    return rows
 
 
 class XlsxBackwardsCompatibilityTest(unittest.TestCase):
