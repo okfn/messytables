@@ -132,3 +132,14 @@ class TypeGuessTest(unittest.TestCase):
             StringType(), StringType(), StringType(), StringType(),
             StringType(), StringType(), IntegerType(), StringType(),
             StringType()])
+
+    def test_integer_and_float_detection(self):
+        def helper(value):
+            return any(i.test(value) for i in IntegerType.instances())
+
+        assert_equal(helper(123), True)
+        assert_equal(helper('123'), True)
+        assert_equal(helper(123.0), True)
+        assert_equal(helper('123.0'), True)
+        assert_equal(helper(123.1), False)
+        assert_equal(helper('123.1'), False)
