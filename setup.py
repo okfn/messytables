@@ -45,7 +45,8 @@ setup(
         'python-dateutil>=2.4.2',
         'lxml>=3.2',
         'requests',
-        'html5lib'
+        'html5lib',
+        'json-table-schema>=0.2'
     ],
     extras_require={'pdf': ['pdftables>=0.0.4']},
     tests_require=[],

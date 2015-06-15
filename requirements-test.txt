@@ -8,3 +8,4 @@ chardet==2.3.0
 python-dateutil==2.4.2
 lxml==3.3.3
 html5lib==0.999
+json-table-schema==0.2
