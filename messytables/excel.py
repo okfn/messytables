@@ -1,5 +1,5 @@
 import sys
-from datetime import datetime
+from datetime import datetime, time
 import xlrd
 from xlrd.biffh import XLRDError
 
@@ -120,8 +120,10 @@ class XLSCell(Cell):
                 raise InvalidDateError
             year, month, day, hour, minute, second = \
                 xlrd.xldate_as_tuple(value, sheet.book.datemode)
-            value = datetime(year, month, day, hour,
-                             minute, second)
+            if (year, month, day) == (0, 0, 0):
+                value = time(hour, minute, second)
+            else:
+                value = datetime(year, month, day, hour, minute, second)
         messy_cell = XLSCell(value, type=cell_type)
         messy_cell.sheet = sheet
         messy_cell.xlrd_cell = xlrd_cell
