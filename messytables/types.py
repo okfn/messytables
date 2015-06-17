@@ -74,10 +74,16 @@ class IntegerType(CellType):
     def cast(self, value):
         if value in ('', None):
             return None
+
         try:
-            return int(value)
+            value = float(value)
         except:
             return locale.atoi(value)
+
+        if value.is_integer():
+            return int(value)
+        else:
+            raise ValueError()
 
 
 class DecimalType(CellType):
