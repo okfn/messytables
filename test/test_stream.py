@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 import unittest
-import urllib2
+from messytables.compat23 import urlopen
 import requests
-import StringIO
+import io
 
 from . import horror_fobj
 from nose.tools import assert_equal
 import httpretty
 
 from messytables import CSVTableSet, XLSTableSet
-
 
 class StreamInputTest(unittest.TestCase):
     @httpretty.activate
@@ -19,7 +18,7 @@ class StreamInputTest(unittest.TestCase):
             httpretty.GET, url,
             body=horror_fobj('long.csv').read(),
             content_type="application/csv")
-        fh = urllib2.urlopen(url)
+        fh = urlopen(url)
         table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
@@ -34,7 +33,7 @@ class StreamInputTest(unittest.TestCase):
             content_type="application/csv")
         r = requests.get(url, stream=True)
         # no full support for non blocking version yet, use urllib2
-        fh = StringIO.StringIO(r.raw.read())
+        fh = io.BytesIO(r.raw.read())
         table_set = CSVTableSet(fh, encoding='utf-8')
         row_set = table_set.tables[0]
         data = list(row_set)
@@ -47,7 +46,7 @@ class StreamInputTest(unittest.TestCase):
             httpretty.GET, url,
             body=horror_fobj('utf-16le_encoded.csv').read(),
             content_type="application/csv")
-        fh = urllib2.urlopen(url)
+        fh = urlopen(url)
         table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
@@ -60,7 +59,7 @@ class StreamInputTest(unittest.TestCase):
             httpretty.GET, url,
             body=horror_fobj('simple.xls').read(),
             content_type="application/ms-excel")
-        fh = urllib2.urlopen(url)
+        fh = urlopen(url)
         table_set = XLSTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
@@ -73,7 +72,7 @@ class StreamInputTest(unittest.TestCase):
             httpretty.GET, url,
             body=horror_fobj('simple.xlsx').read(),
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        fh = urllib2.urlopen(url)
+        fh = urlopen(url)
         table_set = XLSTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)

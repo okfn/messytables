@@ -15,7 +15,7 @@ try:
     # Python 2.6 doesn't provide assert_is_instance
     from nose.tools import assert_is_instance, assert_greater_equal
 except ImportError:
-    from shim26 import assert_is_instance, assert_greater_equal
+    from .shim26 import assert_is_instance, assert_greater_equal
 
 
 class TestCellProperties(unittest.TestCase):
@@ -41,10 +41,10 @@ class TestCoreProperties(unittest.TestCase):
         assert_false('invalid' in self.real_cell.properties)
 
     def test_properties_implements_keys(self):
-        assert_equal(list, type(self.real_cell.properties.keys()))
+        assert(list(self.real_cell.properties.keys()))
 
     def test_properties_implements_items(self):
-        self.real_cell.properties.items()
+        assert(list(self.real_cell.properties.items()))
 
     def test_properties_implements_get(self):
         assert_equal('default', self.real_cell.properties.get(
@@ -146,7 +146,7 @@ class TestHtmlProperties(unittest.TestCase):
     def test_real_cells_have_lxml_property(self):
         lxml_element = self.real_cell.properties['_lxml']
         assert_is_instance(lxml_element, lxml.etree._Element)
-        assert_equal('<td colspan="2">06</td>',
+        assert_equal(b'<td colspan="2">06</td>',
                      lxml.html.tostring(lxml_element))
 
     def test_real_cell_has_a_colspan(self):
@@ -158,8 +158,8 @@ class TestHtmlProperties(unittest.TestCase):
 
     def test_real_cells_have_html_property(self):
         html = self.real_cell.properties['html']
-        assert_is_instance(html, basestring)
-        assert_equal('<td colspan="2">06</td>', html)
+        assert_is_instance(html, bytes)
+        assert_equal(b'<td colspan="2">06</td>', html)
 
     def test_fake_cells_have_no_html_property(self):
         assert_raises(KeyError, lambda: self.fake_cell.properties['html'])

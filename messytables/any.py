@@ -63,14 +63,14 @@ def get_mime(fileobj):
     # seek back later. If not, slurp in the contents into a StringIO.
     fileobj = messytables.seekable_stream(fileobj)
     header = fileobj.read(4096)
-    mimetype = magic.from_buffer(header, mime=True)
+    mimetype = magic.from_buffer(header, mime=True).decode('utf-8')
     fileobj.seek(0)
     if MIMELOOKUP.get(mimetype) == 'ZIP':
         # consider whether it's an Microsoft Office document
-        if "[Content_Types].xml" in header:
+        if b"[Content_Types].xml" in header:
             return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     # There's an issue with vnd.ms-excel being returned from XLSX files, too.
-    if mimetype == 'application/vnd.ms-excel' and header[:2] == 'PK':
+    if mimetype == 'application/vnd.ms-excel' and header[:2] == b'PK':
         return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     return mimetype
 

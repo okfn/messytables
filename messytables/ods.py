@@ -1,4 +1,4 @@
-import cStringIO
+import io
 import re
 import zipfile
 
@@ -9,16 +9,15 @@ from messytables.types import (StringType, DecimalType,
                                DateType)
 
 
-ODS_NAMESPACES_TAG_MATCH = re.compile("(<office:document-content[^>]*>)", re.MULTILINE)
-ODS_TABLE_MATCH = re.compile(".*?(<table:table.*?<\/.*?:table>).*?", re.MULTILINE)
-ODS_TABLE_NAME = re.compile('.*?table:name=\"(.*?)\".*?')
-ODS_ROW_MATCH = re.compile(".*?(<table:table-row.*?<\/.*?:table-row>).*?", re.MULTILINE)
+ODS_NAMESPACES_TAG_MATCH = re.compile(b"(<office:document-content[^>]*>)", re.MULTILINE)
+ODS_TABLE_MATCH = re.compile(b".*?(<table:table.*?<\/.*?:table>).*?", re.MULTILINE)
+ODS_TABLE_NAME = re.compile(b'.*?table:name=\"(.*?)\".*?')
+ODS_ROW_MATCH = re.compile(b".*?(<table:table-row.*?<\/.*?:table-row>).*?", re.MULTILINE)
 
 ODS_TYPES = {
     'float': DecimalType(),
     'date': DateType(None),
 }
-
 
 class ODSTableSet(TableSet):
     """
@@ -46,7 +45,7 @@ class ODSTableSet(TableSet):
             # wrap in a StringIO so we do not have hassle with seeks and
             # binary etc (see notes to __init__ above)
             # TODO: rather wasteful if in fact fileobj comes from disk
-            fileobj = cStringIO.StringIO(fileobj.read())
+            fileobj = io.BytesIO(fileobj.read())
 
         self.window = window
 
@@ -73,7 +72,7 @@ class ODSTableSet(TableSet):
         match = re.search(ODS_NAMESPACES_TAG_MATCH, self.content)
         assert match
         tag_open = match.groups()[0]
-        tag_close = '</office:document-content>'
+        tag_close = b'</office:document-content>'
         return tag_open, tag_close
 
 
@@ -108,14 +107,14 @@ class ODSRowSet(RowSet):
                 "svg": u"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0",
                 "table": u"urn:oasis:names:tc:opendocument:xmlns:table:1.0",
                 "text": u"urn:oasis:names:tc:opendocument:xmlns:text:1.0",
-                "calcext": "urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0",
+                "calcext": u"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0",
             }
 
             ods_header = u"<wrapper {0}>"\
                 .format(" ".join('xmlns:{0}="{1}"'.format(k, v)
-                        for k, v in namespaces.iteritems()))
-            ods_footer = u"</wrapper>"
-            self.namespace_tags = ods_header, ods_footer
+                        for k, v in namespaces.iteritems())).encode('utf-8')
+            ods_footer = u"</wrapper>".encode('utf-8')
+            self.namespace_tags = (ods_header, ods_footer)
 
         super(ODSRowSet, self).__init__(typed=True)
 
@@ -126,9 +125,8 @@ class ODSRowSet(RowSet):
         for row in rows:
             row_data = []
 
-            block = "{0}{1}{2}".format(self.namespace_tags[0], row,
-                                       self.namespace_tags[1])
-            partial = cStringIO.StringIO(block)
+            block = self.namespace_tags[0] + row + self.namespace_tags[1]
+            partial = io.BytesIO(block)
 
             for action, elem in etree.iterparse(partial, ('end',)):
                 if elem.tag == '{urn:oasis:names:tc:opendocument:xmlns:table:1.0}table-cell':

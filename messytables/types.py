@@ -1,7 +1,7 @@
 import decimal
 import datetime
 from collections import defaultdict
-from itertools import izip_longest
+from messytables.compat23 import izip_longest, unicode_string, string_types
 import locale
 import sys
 
@@ -53,7 +53,7 @@ class CellType(object):
 
 class StringType(CellType):
     """ A string or other unconverted type. """
-    result_type = basestring
+    result_type = unicode_string
 
     def cast(self, value):
         if value is None:
@@ -61,7 +61,7 @@ class StringType(CellType):
         if isinstance(value, self.result_type):
             return value
         try:
-            return unicode(value)
+            return unicode_string(value)
         except UnicodeEncodeError:
             return str(value)
 
@@ -144,7 +144,7 @@ class DateType(CellType):
         return [cls(v) for v in cls.formats]
 
     def test(self, value):
-        if isinstance(value, basestring) and not is_date(value):
+        if isinstance(value, string_types) and not is_date(value):
             return False
         return CellType.test(self, value)
 
@@ -202,7 +202,7 @@ def type_guess(rows, types=TYPES, strict=False):
         at_least_one_value = []
         for ri, row in enumerate(rows):
             diff = len(row) - len(guesses)
-            for _ in xrange(diff):
+            for _ in range(diff):
                 typesdict = {}
                 for type in type_instances:
                     typesdict[type] = 0
@@ -212,7 +212,7 @@ def type_guess(rows, types=TYPES, strict=False):
                 if not cell.value:
                     continue
                 at_least_one_value[ci] = True
-                for type in guesses[ci].keys():
+                for type in list(guesses[ci].keys()):
                     if not type.test(cell.value):
                         guesses[ci].pop(type)
         # no need to set guessing weights before this
@@ -228,7 +228,7 @@ def type_guess(rows, types=TYPES, strict=False):
     else:
         for i, row in enumerate(rows):
             diff = len(row) - len(guesses)
-            for _ in xrange(diff):
+            for _ in range(diff):
                 guesses.append(defaultdict(int))
             for i, cell in enumerate(row):
                 # add string guess so that we have at least one guess
@@ -246,7 +246,7 @@ def type_guess(rows, types=TYPES, strict=False):
         # element in case of a tie
         # See: http://stackoverflow.com/a/6783101/214950
         guesses_tuples = [(t, guess[t]) for t in type_instances if t in guess]
-        _columns.append(max(guesses_tuples, key=lambda (t, n): n)[0])
+        _columns.append(max(guesses_tuples, key=lambda t_n: t_n[1])[0])
     return _columns
 
 

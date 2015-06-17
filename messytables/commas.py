@@ -1,10 +1,10 @@
-from ilines import ilines
 import csv
 import codecs
 import chardet
 
 from messytables.core import RowSet, TableSet, Cell
 import messytables
+from messytables.compat23 import unicode_string, byte_string, native_string, PY2
 
 
 class UTF8Recoder:
@@ -46,18 +46,18 @@ class UTF8Recoder:
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         line = self.reader.readline()
         if not line or line == '\0':
             raise StopIteration
         result = line.encode("utf-8")
         return result
 
+    next = __next__
 
 def to_unicode_or_bust(obj, encoding='utf-8'):
-    if isinstance(obj, basestring):
-        if not isinstance(obj, unicode):
-            obj = unicode(obj, encoding)
+    if isinstance(obj, byte_string):
+        obj = unicode_string(obj, encoding)
     return obj
 
 
@@ -102,7 +102,10 @@ class CSVRowSet(RowSet):
         self.name = name
         seekable_fileobj = messytables.seekable_stream(fileobj)
         self.fileobj = UTF8Recoder(seekable_fileobj, encoding)
-        self.lines = ilines(self.fileobj)
+        def fake_ilines(fobj):
+            for row in fobj:
+                    yield row.decode('utf-8')
+        self.lines = fake_ilines(self.fileobj)
         self._sample = []
         self.delimiter = delimiter
         self.quotechar = quotechar
@@ -111,19 +114,21 @@ class CSVRowSet(RowSet):
         self.lineterminator = lineterminator
         self.skipinitialspace = skipinitialspace
         try:
-            for i in xrange(self.window):
-                self._sample.append(self.lines.next())
+            for i in range(self.window):
+                self._sample.append(next(self.lines))
         except StopIteration:
             pass
         super(CSVRowSet, self).__init__()
 
     @property
     def _dialect(self):
-        delim = '\n'
+        delim = '\n'  # NATIVE
         sample = delim.join(self._sample)
         try:
             dialect = csv.Sniffer().sniff(sample,
-                delimiters=['\t', ',', ';', '|'])
+                delimiters=['\t', ',', ';', '|'])  # NATIVE
+            dialect.delimiter = native_string(dialect.delimiter)
+            dialect.quotechar = native_string(dialect.quotechar)
             dialect.lineterminator = delim
             dialect.doublequote = True
             return dialect
@@ -149,10 +154,16 @@ class CSVRowSet(RowSet):
     def raw(self, sample=False):
         def rows():
             for line in self._sample:
-                yield line
+                if PY2:
+                    yield line.encode('utf-8')
+                else:
+                    yield line
             if not sample:
                 for line in self.lines:
-                    yield line
+                    if PY2:
+                        yield line.encode('utf-8')
+                    else:
+                        yield line
 
         # Fix the maximum field size to something a little larger
         csv.field_size_limit(256000)
@@ -161,10 +172,10 @@ class CSVRowSet(RowSet):
             for row in csv.reader(rows(),
                     dialect=self._dialect, **self._overrides):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
-        except csv.Error, err:
-            if 'newline inside string' in unicode(err) and sample:
+        except csv.Error as err:
+            if u'newline inside string' in unicode_string(err) and sample:
                 pass
-            elif 'line contains NULL byte' in unicode(err):
+            elif u'line contains NULL byte' in unicode_string(err):
                 pass
             else:
                 raise messytables.ReadError('Error reading CSV: %r', err)
