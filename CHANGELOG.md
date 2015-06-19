@@ -1,6 +1,20 @@
-0.15 (wip, master)
+0.15 (19 June 2015)
+* #124 Python 2/3 multilingual.
 * #125 Fix ODS stopping at blank lines
 * #127 Fix reading of newer ODS files
+* #130 UTF8Recoder removes UTF8 BOM
+
+0.14.5 (3 March 2015)
+* #123 dates
+* #120 Better error handling on properties
+
+0.14.2 (5 Feb 2015)
+* #119 Detect blank cells
+* #118 Fix typo which installed 'test' package.
+* #116 Basic richtext support
+* #34  Basic richtext support
+* #113 Detect pipe delimited files
+* #112 Improved tolerance of malformed HTML tables
 
 0.14.1 (1 September 2014)
 * Add support for Boolean Type guessing
