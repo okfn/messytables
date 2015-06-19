@@ -9,6 +9,8 @@ RUN apt-get update && \
 
 RUN apt-get install -y python-numpy python-lxml
 RUN apt-get install -y python3 python3-pip python3-lxml python3-nose
+# chardet version is out of date; old version doesn't detect UTF8 w/ BOM
+RUN pip3 install --upgrade chardet
 RUN apt-get install -y python-nose
 RUN locale-gen en_GB.UTF-8
 
@@ -22,7 +24,6 @@ ENV HOME=/home/messytables \
 WORKDIR /home/messytables
 
 COPY ./requirements-test.txt /home/messytables/
-
 RUN pip install --user -r /home/messytables/requirements-test.txt
 RUN pip3 install --user -r /home/messytables/requirements-test.txt
 RUN pip install --user pdftables

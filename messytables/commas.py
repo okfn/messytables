@@ -11,6 +11,18 @@ class UTF8Recoder:
     """
     Iterator that reads an encoded stream and re-encodes the input to UTF-8
     """
+
+    # maps between chardet encoding and codecs bom keys
+    BOM_MAPPING = {
+        'utf-16le': 'BOM_UTF16_LE',
+        'utf-16be': 'BOM_UTF16_BE',
+        'utf-32le': 'BOM_UTF32_LE',
+        'utf-32be': 'BOM_UTF32_BE',
+        'utf-8': 'BOM_UTF8',
+        'utf-8-sig': 'BOM_UTF8',
+
+    }
+
     def __init__(self, f, encoding):
         sample = f.read(2000)
         if not encoding:
@@ -30,9 +42,8 @@ class UTF8Recoder:
         # endianness explicit, which results in the codecs stream leaving the
         # BOM in the stream. This is ridiculously dumb. For UTF-{16,32}{LE,BE}
         # encodings, check for a BOM and remove it if it's there.
-        if encoding in ("UTF-16LE", "UTF-16BE", "UTF-32LE", "UTF-32BE"):
-            bom = getattr(codecs, "BOM_UTF" + encoding[4:6] +
-                          "_" + encoding[-2:], None)
+        if encoding.lower() in self.BOM_MAPPING:
+            bom = getattr(codecs, self.BOM_MAPPING[encoding.lower()], None)
             if bom:
                 # Try to read the BOM, which is a byte sequence, from
                 # the underlying stream. If all characters match, then
