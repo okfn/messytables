@@ -1,3 +1,4 @@
+from itertools import islice
 from ilines import ilines
 import csv
 import codecs
@@ -102,7 +103,7 @@ class CSVRowSet(RowSet):
         self.name = name
         seekable_fileobj = messytables.seekable_stream(fileobj)
         self.fileobj = UTF8Recoder(seekable_fileobj, encoding)
-        self.lines = ilines(self.fileobj)
+        self.lines = list(ilines(self.fileobj))
         self._sample = []
         self.delimiter = delimiter
         self.quotechar = quotechar
@@ -110,11 +111,7 @@ class CSVRowSet(RowSet):
         self.doublequote = doublequote
         self.lineterminator = lineterminator
         self.skipinitialspace = skipinitialspace
-        try:
-            for i in xrange(self.window):
-                self._sample.append(self.lines.next())
-        except StopIteration:
-            pass
+        self._sample = list(islice(self.lines, self.window))
         super(CSVRowSet, self).__init__()
 
     @property
@@ -148,11 +145,10 @@ class CSVRowSet(RowSet):
 
     def raw(self, sample=False):
         def rows():
-            for line in self._sample:
-                yield line
-            if not sample:
-                for line in self.lines:
-                    yield line
+            if sample:
+                return iter(self._sample)
+            else:
+                return iter(self.lines)
 
         # Fix the maximum field size to something a little larger
         csv.field_size_limit(256000)
