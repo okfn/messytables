@@ -23,6 +23,13 @@ import datetime
 stringy = type(u'')
 
 class ReadCsvTest(unittest.TestCase):
+    def test_utf8bom_lost(self):
+        fh = horror_fobj('utf8bom.csv')
+        table_set = CSVTableSet(fh)
+        row_set = table_set.tables[0]
+        row = list(row_set)[0]
+        assert_equal(row[0].value, "kitten")
+
     def test_read_simple_csv(self):
         fh = horror_fobj('simple.csv')
         table_set = CSVTableSet(fh)
