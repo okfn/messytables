@@ -12,7 +12,8 @@ MESSYTABLES_TO_JTS_MAPPING = {
     messytables.FloatType: 'number',
     messytables.DecimalType: 'number',
     messytables.DateType: 'date',
-    messytables.DateUtilType: 'date'
+    messytables.DateUtilType: 'date',
+    messytables.BoolType: 'boolean'
 }
 
 
