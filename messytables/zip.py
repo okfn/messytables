@@ -6,7 +6,7 @@ import messytables
 class ZIPTableSet(messytables.TableSet):
     """ Reads TableSets from inside a ZIP file """
 
-    def __init__(self, fileobj):
+    def __init__(self, fileobj, **kw):
         """
         On error it will raise messytables.ReadError.
         """
@@ -17,7 +17,7 @@ class ZIPTableSet(messytables.TableSet):
             for f in z.infolist():
                 ext = None
 
-                #ignore metadata folders added by Mac OS X
+                # ignore metadata folders added by Mac OS X
                 if '__MACOSX' in f.filename:
                     continue
 
@@ -26,7 +26,7 @@ class ZIPTableSet(messytables.TableSet):
 
                 try:
                     filetables = messytables.any.any_tableset(
-                        z.open(f), extension=ext)
+                        z.open(f), extension=ext, **kw)
                 except ValueError as e:
                     found.append(f.filename + ": " + e.message)
                     continue
@@ -38,5 +38,5 @@ class ZIPTableSet(messytables.TableSet):
                     tables (%s).''' % ', '.join(found))
         finally:
             z.close()
-        
+
         self._tables = tables

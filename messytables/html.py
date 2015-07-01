@@ -4,16 +4,18 @@ from collections import defaultdict
 import html5lib
 import xml.etree.ElementTree as etree
 
+
 def fromstring(s):
     tb = html5lib.getTreeBuilder("lxml", implementation=etree)
     p = html5lib.HTMLParser(tb, namespaceHTMLElements=False)
     return p.parse(s)
 
+
 class HTMLTableSet(TableSet):
     """
     A TableSet from a HTML document.
     """
-    def __init__(self, fileobj=None, filename=None, window=None):
+    def __init__(self, fileobj=None, filename=None, window=None, **kw):
 
         if filename is not None:
             fh = open(filename, 'r')

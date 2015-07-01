@@ -110,7 +110,7 @@ def guess_ext(ext):
         return lookup.get(ext, None)
 
 
-def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
+def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True, **kw):
     """Reads any supported table type according to a specified
     MIME type or file extension or automatically detecting the
     type.
@@ -133,7 +133,7 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
     if mimetype is not None:
         attempt = guess_mime(mimetype)
         if attempt:
-            return parsers[attempt](fileobj)
+            return parsers[attempt](fileobj, **kw)
         else:
             error.append(
                 'Did not recognise MIME type given: "{mimetype}".'.format(
@@ -142,7 +142,7 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
     if short_ext is not '':
         attempt = guess_ext(short_ext)
         if attempt:
-            return parsers[attempt](fileobj)
+            return parsers[attempt](fileobj, **kw)
         else:
             error.append(
                 'Did not recognise extension "{ext}" (given "{full})".'.format(
@@ -152,7 +152,7 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True):
         magic_mime = get_mime(fileobj)
         attempt = guess_mime(magic_mime)
         if attempt:
-            return parsers[attempt](fileobj)
+            return parsers[attempt](fileobj, **kw)
         else:
             error.append(
                 'Did not recognise detected MIME type: "{mimetype}".'.format(

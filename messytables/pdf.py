@@ -45,7 +45,7 @@ class PDFTableSet(TableSet):
     """
     A TableSet from a PDF document.
     """
-    def __init__(self, fileobj=None, filename=None):
+    def __init__(self, fileobj=None, filename=None, **kw):
         if get_tables is None:
             raise ImportError("pdftables is not installed")
         if filename is not None:

@@ -19,6 +19,7 @@ ODS_TYPES = {
     'date': DateType(None),
 }
 
+
 class ODSTableSet(TableSet):
     """
     A wrapper around ODS files. Because they are zipped and the info we want
@@ -27,7 +28,7 @@ class ODSTableSet(TableSet):
     the remote URL.
     """
 
-    def __init__(self, fileobj, window=None):
+    def __init__(self, fileobj, window=None, **kw):
         '''Initialize the object.
 
         :param fileobj: may be a file path or a file-like object. Note the
