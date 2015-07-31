@@ -66,6 +66,7 @@ class UTF8Recoder:
 
     next = __next__
 
+
 def to_unicode_or_bust(obj, encoding='utf-8'):
     if isinstance(obj, byte_string):
         obj = unicode_string(obj, encoding)
@@ -78,7 +79,7 @@ class CSVTableSet(TableSet):
 
     def __init__(self, fileobj, delimiter=None, quotechar=None, name=None,
                  encoding=None, window=None, doublequote=None,
-                 lineterminator=None, skipinitialspace=None):
+                 lineterminator=None, skipinitialspace=None, **kw):
         self.fileobj = messytables.seekable_stream(fileobj)
         self.name = name or 'table'
         self.delimiter = delimiter
@@ -113,6 +114,7 @@ class CSVRowSet(RowSet):
         self.name = name
         seekable_fileobj = messytables.seekable_stream(fileobj)
         self.fileobj = UTF8Recoder(seekable_fileobj, encoding)
+
         def fake_ilines(fobj):
             for row in fobj:
                     yield row.decode('utf-8')
@@ -181,7 +183,7 @@ class CSVRowSet(RowSet):
 
         try:
             for row in csv.reader(rows(),
-                    dialect=self._dialect, **self._overrides):
+                                  dialect=self._dialect, **self._overrides):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
         except csv.Error as err:
             if u'newline inside string' in unicode_string(err) and sample:

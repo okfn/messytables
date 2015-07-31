@@ -25,12 +25,13 @@ XLS_TYPES = {
     4: IntegerType()
 }
 
+
 class XLSTableSet(TableSet):
     """An excel workbook wrapper object.
     """
 
-    def __init__(self, fileobj=None, filename=None,
-                 window=None, encoding=None, with_formatting_info=True):
+    def __init__(self, fileobj=None, filename=None, window=None,
+                 encoding=None, with_formatting_info=True, **kw):
         '''Initialize the tableset.
 
         :param encoding: passed on to xlrd.open_workbook function

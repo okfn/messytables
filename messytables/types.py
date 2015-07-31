@@ -83,7 +83,7 @@ class IntegerType(CellType):
         if value.is_integer():
             return int(value)
         else:
-            raise ValueError()
+            raise ValueError('Invalid integer: %s' % value)
 
 
 class DecimalType(CellType):
