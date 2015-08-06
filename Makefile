@@ -7,4 +7,7 @@ run:    build
 build:
 	@docker build -t messytables .
 
-.PHONY: run build
+test:
+	nosetests --with-coverage --cover-package=messytables --cover-erase
+
+.PHONY: run build test

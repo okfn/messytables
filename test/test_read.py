@@ -23,6 +23,7 @@ import datetime
 stringy = type(u'')
 
 class ReadCsvTest(unittest.TestCase):
+
     def test_utf8bom_lost(self):
         fh = horror_fobj('utf8bom.csv')
         table_set = CSVTableSet(fh)
