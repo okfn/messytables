@@ -135,11 +135,11 @@ class TypeGuessTest(unittest.TestCase):
 
     def test_integer_and_float_detection(self):
         def helper(value):
-            return any(i.test(value) for i in IntegerType.instances())
+            return any(i.test(value) == 1 for i in IntegerType.instances())
 
         assert_equal(helper(123), True)
         assert_equal(helper('123'), True)
         assert_equal(helper(123.0), True)
-        assert_equal(helper('123.0'), True)
+        assert_equal(helper('123.0'), False)
         assert_equal(helper(123.1), False)
         assert_equal(helper('123.1'), False)

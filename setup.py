@@ -44,12 +44,17 @@ setup(
         'chardet>=2.3.0',
         'python-dateutil>=1.5.0',
         'lxml>=3.2',
-        'requests',
+        'requests>=2.0',
         'html5lib',
         'json-table-schema>=0.2, <=0.2.1'
+        'typecast',
     ],
     extras_require={'pdf': ['pdftables>=0.0.4']},
-    tests_require=[],
+    tests_require=[
+        'nose',
+        'httpretty',
+        'coverage'
+    ],
     entry_points=\
     """
     """,
