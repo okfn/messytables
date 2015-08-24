@@ -1,28 +1,29 @@
 import sys
 from datetime import datetime, time
+
 import xlrd
 from xlrd.biffh import XLRDError
+from typecast import String, Integer, Date, Float
 
 from messytables.core import RowSet, TableSet, Cell, CoreProperties
-from messytables.types import (StringType, IntegerType,
-                               DateType, FloatType)
 from messytables.error import ReadError
 from messytables.compat23 import PY2
+
 
 class InvalidDateError(Exception):
     pass
 
 XLS_TYPES = {
-    1: StringType(),
+    1: String(),
     # NB: Excel does not distinguish floats from integers so we use floats
     # We could try actual type detection between floats and ints later
     # or use the excel format string info - see
     # https://groups.google.com/forum/?fromgroups=#!topic/
     #  python-excel/cAQ1ndsCVxk
-    2: FloatType(),
-    3: DateType(None),
+    2: Float(),
+    3: Date(),
     # this is actually boolean but we do not have a boolean type yet
-    4: IntegerType()
+    4: Integer()
 }
 
 
@@ -45,7 +46,7 @@ class XLSTableSet(TableSet):
                     file_contents=read_obj,
                     encoding_override=encoding,
                     formatting_info=with_formatting_info)
-            except XLRDError as e:
+            except XLRDError:
                 _, value, traceback = sys.exc_info()
                 if PY2:
                    raise ReadError("Can't read Excel file: %r" % value, traceback)
@@ -76,7 +77,7 @@ class XLSTableSet(TableSet):
 
         try:
             self.workbook = get_workbook()
-        except NotImplementedError as e:
+        except NotImplementedError:
             if not with_formatting_info:
                 raise
             else:
@@ -115,12 +116,13 @@ class XLSRowSet(RowSet):
                         self.sheet.name, colnum+1, rownum+1))
             yield row
 
+
 class XLSCell(Cell):
     @staticmethod
     def from_xlrdcell(xlrd_cell, sheet, col, row):
         value = xlrd_cell.value
-        cell_type = XLS_TYPES.get(xlrd_cell.ctype, StringType())
-        if cell_type == DateType(None):
+        cell_type = XLS_TYPES.get(xlrd_cell.ctype, String())
+        if cell_type == Date():
             if value == 0:
                 raise InvalidDateError
             year, month, day, hour, minute, second = \
@@ -143,10 +145,12 @@ class XLSCell(Cell):
     def properties(self):
         return XLSProperties(self)
 
+
 class XLSProperties(CoreProperties):
     KEYS = ['bold', 'size', 'italic', 'font_name', 'strikeout', 'underline',
             'font_colour', 'background_colour', 'any_border', 'all_border',
             'richtext', 'blank', 'a_date', 'formatting_string']
+
     def __init__(self, cell):
         self.cell = cell
         self.merged = {}
@@ -243,4 +247,3 @@ class XLSProperties(CoreProperties):
         b = self.xf.border
         return b.top_line_style > 0 and b.bottom_line_style > 0 and \
                b.left_line_style > 0 and b.right_line_style > 0
-
