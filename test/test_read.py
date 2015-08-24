@@ -14,7 +14,7 @@ except ImportError:
 
 from typecast import Date, Float, Integer, String
 from messytables import (CSVTableSet, HTMLTableSet,
-                         ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
+                         ZIPTableSet, XLSTableSet, PDFTableSet,
                          ODSTableSet, headers_guess, headers_processor,
                          offset_processor, rowset_as_jts,
                          types_processor, type_guess, ReadError,
@@ -349,7 +349,7 @@ class XlsxBackwardsCompatibilityTest(unittest.TestCase):
         Should emit a DeprecationWarning.
         """
         fh = horror_fobj('simple.xlsx')
-        assert_is_instance(XLSXTableSet(fh), XLSTableSet)
+        assert_is_instance(XLSTableSet(fh), XLSTableSet)
 
 
 class ReadXlsTest(unittest.TestCase):
