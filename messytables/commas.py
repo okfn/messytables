@@ -8,9 +8,7 @@ from messytables.compat23 import unicode_string, byte_string, native_string, PY2
 
 
 class UTF8Recoder:
-    """
-    Iterator that reads an encoded stream and re-encodes the input to UTF-8
-    """
+    """ Iterator that reads an encoded stream and re-encodes it to UTF-8. """
 
     # maps between chardet encoding and codecs bom keys
     BOM_MAPPING = {

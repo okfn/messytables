@@ -163,10 +163,3 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True, **kw):
         raise messytables.ReadError('any: \n'.join(error))
     else:
         raise messytables.ReadError("any: Did not attempt any detection.")
-
-
-class AnyTableSet:
-    '''Deprecated - use any_tableset instead.'''
-    @staticmethod
-    def from_fileobj(fileobj, mimetype=None, extension=None):
-        return any_tableset(fileobj, mimetype=mimetype, extension=extension)

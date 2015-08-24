@@ -19,7 +19,7 @@ See the full documentation at: https://messytables.readthedocs.io
 
 setup(
     name='messytables',
-    version='0.15.1',
+    version='1.99.0',
     description="Parse messy tabular data in various formats",
     long_description=long_desc,
     classifiers=[
@@ -42,12 +42,12 @@ setup(
         'xlrd>=0.8.0',
         'python-magic>=0.4.12',  # used for type guessing
         'chardet>=2.3.0',
-        'python-dateutil>=1.5.0',
         'lxml>=3.2',
         'requests>=2.0',
         'html5lib',
         'json-table-schema>=0.2, <=0.2.1'
         'typecast',
+        'json-table-schema>=0.2'
     ],
     extras_require={'pdf': ['pdftables>=0.0.4']},
     tests_require=[
@@ -55,7 +55,5 @@ setup(
         'httpretty',
         'coverage'
     ],
-    entry_points=\
-    """
-    """,
+    entry_points={}
 )
