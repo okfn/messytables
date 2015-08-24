@@ -23,3 +23,6 @@ from messytables.pdf import PDFTableSet, PDFRowSet
 from messytables.any import any_tableset, AnyTableSet
 
 from messytables.jts import rowset_as_jts, headers_and_typed_as_jts
+
+import warnings
+warnings.filterwarnings('ignore', "Coercing non-XML name")

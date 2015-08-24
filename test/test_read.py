@@ -23,6 +23,7 @@ import datetime
 stringy = type(u'')
 
 class ReadCsvTest(unittest.TestCase):
+
     def test_utf8bom_lost(self):
         fh = horror_fobj('utf8bom.csv')
         table_set = CSVTableSet(fh)
@@ -115,7 +116,7 @@ class ReadCsvTest(unittest.TestCase):
         table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         types = type_guess(row_set.sample, strict=True)
-        expected_types = [IntegerType(), StringType(), BoolType(),
+        expected_types = [IntegerType(), StringType(), IntegerType(),
                           StringType()]
         assert_equal(types, expected_types)
 
@@ -145,8 +146,8 @@ class ReadCsvTest(unittest.TestCase):
         assert_equal(nones[2], [False, True, False, False])
 
         types = type_guess(row_set.sample, strict=True)
-        expected_types = [IntegerType(), BoolType(), BoolType(),
-                          BoolType()]
+        expected_types = [IntegerType(), IntegerType(), IntegerType(),
+                          IntegerType()]
         assert_equal(types, expected_types)
 
         row_set.register_processor(types_processor(types))
