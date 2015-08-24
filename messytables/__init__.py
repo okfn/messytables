@@ -8,13 +8,6 @@ from messytables.core import Cell, TableSet, RowSet, seekable_stream
 from messytables.commas import CSVTableSet, CSVRowSet
 from messytables.ods import ODSTableSet, ODSRowSet
 from messytables.excel import XLSTableSet, XLSRowSet
-
-# XLSXTableSet has been deprecated and its functionality is now provided by
-# XLSTableSet. This is to retain backwards compatibility with anyone
-# constructing XLSXTableSet directly (rather than using any_tableset)
-XLSXTableSet = XLSTableSet
-XLSXRowSet = XLSRowSet
-
 from messytables.zip import ZIPTableSet
 from messytables.html import HTMLTableSet, HTMLRowSet
 from messytables.pdf import PDFTableSet, PDFRowSet
