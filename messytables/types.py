@@ -1,29 +1,28 @@
 from collections import defaultdict
 from messytables.compat23 import izip_longest
 
-import typecast
+from typecast import String, Integer, Decimal, Boolean, Date, DateTime
 
 # For legacy support:
-StringType = typecast.String
-IntegerType = typecast.Integer
-DecimalType = typecast.Decimal
-FloatType = typecast.Decimal
-BoolType = typecast.Boolean
-DateType = typecast.Date
-DateTimeType = typecast.DateTime
-DateUtilType = typecast.Date
+StringType = String
+IntegerType = Integer
+DecimalType = Decimal
+FloatType = Decimal
+BoolType = Boolean
+DateType = Date
+DateTimeType = DateTime
+DateUtilType = Date
 
 
 WEIGHTS = {
-    typecast.String: 1,
-    typecast.Integer: 6,
-    typecast.Decimal: 3,
-    typecast.Boolean: 7,
-    typecast.Date: 4,
-    typecast.DateTime: 5
+    String: 1,
+    Integer: 6,
+    Decimal: 3,
+    Boolean: 7,
+    Date: 4,
+    DateTime: 5
 }
-TYPES = [StringType, DecimalType, IntegerType, BoolType, DateType,
-         DateTimeType]
+TYPES = [String, Decimal, Integer, Boolean, Date, DateTime]
 FAILED = 'failed'
 
 
