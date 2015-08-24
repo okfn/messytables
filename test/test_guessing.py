@@ -6,8 +6,8 @@ from . import horror_fobj
 from nose.plugins.attrib import attr
 from nose.tools import assert_equal
 from typecast import Date, String, Decimal, Integer, Boolean
-from messytables import (CSVTableSet, type_guess, headers_guess,
-                         offset_processor)
+from messytables import CSVTableSet, type_guess, headers_guess
+from messytables import offset_processor
 
 
 class TypeGuessTest(unittest.TestCase):

@@ -12,15 +12,16 @@ try:
 except ImportError:
     from .shim26 import assert_is_instance, assert_greater_equal
 
-from messytables import (CSVTableSet, StringType, HTMLTableSet,
+from typecast import Date, Float, Integer, String
+from messytables import (CSVTableSet, HTMLTableSet,
                          ZIPTableSet, XLSTableSet, XLSXTableSet, PDFTableSet,
                          ODSTableSet, headers_guess, headers_processor,
-                         offset_processor, DateType, FloatType,
-                         IntegerType, BoolType, rowset_as_jts,
+                         offset_processor, rowset_as_jts,
                          types_processor, type_guess, ReadError,
                          null_processor)
 import datetime
 stringy = type(u'')
+
 
 class ReadCsvTest(unittest.TestCase):
 
@@ -42,7 +43,7 @@ class ReadCsvTest(unittest.TestCase):
 
         for row in list(row_set):
             assert_equal(3, len(row))
-            assert_equal(row[0].type, StringType())
+            assert_equal(row[0].type, String())
 
     def test_read_complex_csv(self):
         fh = horror_fobj('complex.csv')
@@ -57,7 +58,7 @@ class ReadCsvTest(unittest.TestCase):
 
         for row in list(row_set):
             assert_equal(4, len(row))
-            assert_equal(row[0].type, StringType())
+            assert_equal(row[0].type, String())
 
     def test_overriding_sniffed(self):
         # semicolon separated values
@@ -101,13 +102,13 @@ class ReadCsvTest(unittest.TestCase):
         table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         types = type_guess(row_set.sample)
-        expected_types = [DateType("%Y-%m-%d"), IntegerType(), StringType()]
+        expected_types = [Date("%Y-%m-%d"), Integer(), String()]
         assert_equal(types, expected_types)
 
         row_set.register_processor(types_processor(types))
         data = list(row_set)
         header_types = [c.type for c in data[0]]
-        assert_equal(header_types, [StringType()] * 3)
+        assert_equal(header_types, [String()] * 3)
         row_types = [c.type for c in data[2]]
         assert_equal(expected_types, row_types)
 
@@ -116,8 +117,8 @@ class ReadCsvTest(unittest.TestCase):
         table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         types = type_guess(row_set.sample, strict=True)
-        expected_types = [IntegerType(), StringType(), IntegerType(),
-                          StringType()]
+        expected_types = [Integer(), String(), Integer(),
+                          String()]
         assert_equal(types, expected_types)
 
         row_set.register_processor(types_processor(types))
@@ -146,8 +147,8 @@ class ReadCsvTest(unittest.TestCase):
         assert_equal(nones[2], [False, True, False, False])
 
         types = type_guess(row_set.sample, strict=True)
-        expected_types = [IntegerType(), IntegerType(), IntegerType(),
-                          IntegerType()]
+        expected_types = [Integer(), Integer(), Integer(),
+                          Integer()]
         assert_equal(types, expected_types)
 
         row_set.register_processor(types_processor(types))
@@ -237,7 +238,7 @@ class ReadZipTest(unittest.TestCase):
 
         for row in list(row_set):
             assert_equal(3, len(row))
-            assert_equal(row[0].type, StringType())
+            assert_equal(row[0].type, String())
 
 
 class ReadTsvTest(unittest.TestCase):
@@ -251,7 +252,7 @@ class ReadTsvTest(unittest.TestCase):
         assert_equal(row[1].value, 'expr1_0_imp')
         for row in list(row_set):
             assert_equal(17, len(row))
-            assert_equal(row[0].type, StringType())
+            assert_equal(row[0].type, String())
 
 
 class ReadSsvTest(unittest.TestCase):
@@ -267,7 +268,7 @@ class ReadSsvTest(unittest.TestCase):
 
         for row in list(row_set):
             assert_equal(3, len(row))
-            assert_equal(row[0].type, StringType())
+            assert_equal(row[0].type, String())
 
 
 class ReadPsvTest(unittest.TestCase):
@@ -283,7 +284,7 @@ class ReadPsvTest(unittest.TestCase):
 
         for row in list(row_set):
             assert_equal(6, len(row))
-            assert_equal(row[0].type, StringType())
+            assert_equal(row[0].type, String())
 
 
 class ReadODSTest(unittest.TestCase):
@@ -471,7 +472,7 @@ class ReadXlsTest(unittest.TestCase):
         row_set = table_set.tables[0]
         row = list(row_set.sample)[1]
         types = [c.type for c in row]
-        assert_equal(types, [DateType(None), FloatType(), StringType()])
+        assert_equal(types, [Date(None), Float(), String()])
 
     def test_bad_first_sheet(self):
         # First sheet appears to have no cells

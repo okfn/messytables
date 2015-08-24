@@ -3,10 +3,9 @@ import re
 import zipfile
 
 from lxml import etree
+from typecast import String, Decimal, Date
 
 from messytables.core import RowSet, TableSet, Cell
-from messytables.types import (StringType, DecimalType,
-                               DateType)
 
 
 ODS_NAMESPACES_TAG_MATCH = re.compile(b"(<office:document-content[^>]*>)", re.MULTILINE)
@@ -15,8 +14,8 @@ ODS_TABLE_NAME = re.compile(b'.*?table:name=\"(.*?)\".*?')
 ODS_ROW_MATCH = re.compile(b".*?(<table:table-row.*?<\/.*?:table-row>).*?", re.MULTILINE)
 
 ODS_TYPES = {
-    'float': DecimalType(),
-    'date': DateType(None),
+    'float': Decimal(),
+    'date': Date(),
 }
 
 
@@ -135,7 +134,7 @@ class ODSRowSet(RowSet):
                     children = elem.getchildren()
                     if children:
                         c = Cell(children[0].text,
-                                 type=ODS_TYPES.get(cell_type, StringType()))
+                                 type=ODS_TYPES.get(cell_type, String()))
                         row_data.append(c)
 
             if not row_data:
