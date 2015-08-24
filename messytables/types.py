@@ -17,10 +17,10 @@ DateUtilType = typecast.Date
 WEIGHTS = {
     typecast.String: 1,
     typecast.Integer: 6,
-    typecast.Decimal: 4,
+    typecast.Decimal: 3,
     typecast.Boolean: 7,
-    typecast.Date: 3,
-    typecast.DateTime: 3
+    typecast.Date: 4,
+    typecast.DateTime: 5
 }
 TYPES = [StringType, DecimalType, IntegerType, BoolType, DateType,
          DateTimeType]
@@ -48,11 +48,12 @@ def type_guess(rows, types=TYPES, strict=False):
             for type in type_instances:
                 if guesses[i][type] == FAILED:
                     continue
-                result = type.test(cell.value) == 1
+                result = type.test(cell.value)
                 weight = WEIGHTS[type.__class__]
-                if strict and not result and not isinstance(type, StringType):
+                if strict and (result == -1) and \
+                        (not isinstance(type, StringType)):
                     guesses[i][type] = FAILED
-                elif result:
+                elif result == 1:
                     guesses[i][type] += weight
 
     _columns = []
@@ -63,6 +64,7 @@ def type_guess(rows, types=TYPES, strict=False):
         # See: http://stackoverflow.com/a/6783101/214950
         guesses_tuples = [(t, guess[t]) for t in type_instances
                           if t in guess and guess[t] != FAILED]
+        # print 'GUESSES', zip(row, guesses_tuples)
         _columns.append(max(guesses_tuples, key=lambda t_n: t_n[1])[0])
     return _columns
 
