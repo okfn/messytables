@@ -44,5 +44,4 @@ def headers_and_typed_as_jts(headers, types):
         j.add_field(field_id=field_id,
                     label=field_id,
                     field_type=field_type)
-
     return j
