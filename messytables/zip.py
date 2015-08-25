@@ -1,7 +1,6 @@
 import zipfile
 
 from messytables.core import TableSet
-from messytables.any import any_tableset
 from messytables.error import ReadError
 
 
@@ -10,6 +9,7 @@ class ZIPTableSet(TableSet):
 
     def __init__(self, fileobj, **kw):
         """ On error it will raise ReadError. """
+        from messytables.any import any_tableset
         tables = []
         found = []
         z = zipfile.ZipFile(fileobj, 'r')
