@@ -215,7 +215,7 @@ def type_guess(rows, types=TYPES, strict=False):
                 guesses.append(typesdict)
                 at_least_one_value.append(False)
             for ci, cell in enumerate(row):
-                if not cell.value:
+                if cell.value is None or cell.value == '':
                     continue
                 at_least_one_value[ci] = True
                 for type in guesses[ci].keys():
@@ -239,7 +239,7 @@ def type_guess(rows, types=TYPES, strict=False):
             for i, cell in enumerate(row):
                 # add string guess so that we have at least one guess
                 guesses[i][StringType()] = guesses[i].get(StringType(), 0)
-                if not cell.value:
+                if cell.value is None or cell.value == '':
                     continue
                 for type in type_instances:
                     if type.test(cell.value):
