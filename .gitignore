@@ -6,3 +6,5 @@
 *.py~
 *.~lock.*#
 .coverage
+
+pyenv3

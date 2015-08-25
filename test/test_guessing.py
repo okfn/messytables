@@ -89,7 +89,6 @@ class TypeGuessTest(unittest.TestCase):
         types = [String, Integer, Decimal, Date]
         guessed_types = type_guess(rows.sample, types, False)
         assert_equal(len(guessed_types), 96)
-        print guessed_types
         assert_equal(guessed_types, [
             Integer(), String(), String(), String(),
             String(), String(), Integer(), String(), String(), String(),
