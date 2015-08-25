@@ -66,7 +66,7 @@ def types_processor(types, strict=False):
     def apply_types(row_set, row):
         if types is None:
             return row
-        for cell, type in six.itertools.izip_longest(row, types):
+        for cell, type in six.moves.zip_longest(row, types):
             try:
                 cell.value = type.cast(cell.value)
                 cell.type = type
