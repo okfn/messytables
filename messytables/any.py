@@ -1,7 +1,8 @@
+import re
+
 from messytables import (ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet,
                          HTMLTableSet, ODSTableSet)
 import messytables
-import re
 
 
 MIMELOOKUP = {'application/x-zip-compressed': 'ZIP',
@@ -28,6 +29,7 @@ MIMELOOKUP = {'application/x-zip-compressed': 'ZIP',
               'application/vnd.oasis.opendocument.spreadsheet': 'ODS',
               'application/x-vnd.oasis.opendocument.spreadsheet': 'ODS',
               }
+
 
 def TABTableSet(fileobj):
     return CSVTableSet(fileobj, delimiter='\t')
