@@ -1,5 +1,5 @@
 from collections import defaultdict
-from itertools import izip_longest
+from itertools import izip_longest, islice
 
 from messytables.core import Cell
 
@@ -26,7 +26,7 @@ def headers_guess(rows, tolerance=1):
     The return value is a tuple of the offset of the header row
     and the names of the columns.
     """
-    rows = list(rows)
+    rows = list(islice(rows, 1000))
     modal = column_count_modal(rows)
     for i, row in enumerate(rows):
         length = len([c for c in row if not c.empty])
