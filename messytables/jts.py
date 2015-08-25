@@ -5,7 +5,8 @@ Convert a rowset to the json table schema
 import jsontableschema
 from typecast import String, Integer, Float, Decimal, Date, DateTime, Boolean
 
-import messytables
+from messytables.headers import headers_guess
+from messytables.types import type_guess
 
 
 MESSYTABLES_TO_JTS_MAPPING = {
@@ -26,9 +27,9 @@ def celltype_as_string(celltype):
 def rowset_as_jts(rowset, headers=None, types=None):
     ''' Create a json table schema from a rowset
     '''
-    _, headers = messytables.headers_guess(rowset.sample)
+    _, headers = headers_guess(rowset.sample)
     types = list(map(celltype_as_string,
-                     messytables.type_guess(rowset.sample)))
+                     type_guess(rowset.sample)))
 
     return headers_and_typed_as_jts(headers, types)
 

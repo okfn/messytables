@@ -1,8 +1,9 @@
 import re
 
-from messytables import (ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet,
-                         HTMLTableSet, ODSTableSet)
-import messytables
+from messytables import ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet
+from messytables import HTMLTableSet, ODSTableSet
+from messytables.core import seekable_stream
+from messytables.error import ReadError
 
 
 MIMELOOKUP = {'application/x-zip-compressed': 'ZIP',
@@ -63,7 +64,7 @@ def get_mime(fileobj):
     import magic
     # Since we need to peek the start of the stream, make sure we can
     # seek back later. If not, slurp in the contents into a StringIO.
-    fileobj = messytables.seekable_stream(fileobj)
+    fileobj = seekable_stream(fileobj)
     header = fileobj.read(4096)
     mimetype = magic.from_buffer(header, mime=True).decode('utf-8')
     fileobj.seek(0)
@@ -161,6 +162,6 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True, **kw):
                     mimetype=magic_mime))
 
     if error:
-        raise messytables.ReadError('any: \n'.join(error))
+        raise ReadError('any: \n'.join(error))
     else:
-        raise messytables.ReadError("any: Did not attempt any detection.")
+        raise ReadError("any: Did not attempt any detection.")

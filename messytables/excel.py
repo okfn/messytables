@@ -3,11 +3,11 @@ from datetime import datetime, time
 
 import xlrd
 from xlrd.biffh import XLRDError
+from six import PY2
 from typecast import String, Integer, Date, Float
 
 from messytables.core import RowSet, TableSet, Cell, CoreProperties
 from messytables.error import ReadError
-from messytables.compat23 import PY2
 
 
 class InvalidDateError(Exception):

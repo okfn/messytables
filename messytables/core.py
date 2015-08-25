@@ -1,11 +1,16 @@
 import io
 from collections import Mapping
+try:
+    # python 2.7:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict  # noqa
 
+
+from six import text_type, string_types
 from typecast import String
 
-from messytables.util import OrderedDict
 from messytables.error import TableError, NoSuchPropertyError
-from messytables.compat23 import *
 
 
 def seekable_stream(fileobj):
@@ -138,7 +143,7 @@ class Cell(object):
             return True
         value = self.value
         if not isinstance(value, string_types):
-            value = unicode_string(value)
+            value = text_type(value)
         if len(value.strip()):
             return False
         return True

@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 import unittest
-from messytables.compat23 import urlopen
 import requests
 import io
+
+import six.moves.urllib as urllib
 
 from . import horror_fobj
 from nose.tools import assert_equal
 import httpretty
 
 from messytables import CSVTableSet, XLSTableSet
+
 
 class StreamInputTest(unittest.TestCase):
     @httpretty.activate
@@ -18,7 +20,7 @@ class StreamInputTest(unittest.TestCase):
             httpretty.GET, url,
             body=horror_fobj('long.csv').read(),
             content_type="application/csv")
-        fh = urlopen(url)
+        fh = urllib.request.urlopen(url)
         table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
@@ -46,7 +48,7 @@ class StreamInputTest(unittest.TestCase):
             httpretty.GET, url,
             body=horror_fobj('utf-16le_encoded.csv').read(),
             content_type="application/csv")
-        fh = urlopen(url)
+        fh = urllib.request.urlopen(url)
         table_set = CSVTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
@@ -59,7 +61,7 @@ class StreamInputTest(unittest.TestCase):
             httpretty.GET, url,
             body=horror_fobj('simple.xls').read(),
             content_type="application/ms-excel")
-        fh = urlopen(url)
+        fh = urllib.request.urlopen(url)
         table_set = XLSTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)
@@ -72,7 +74,7 @@ class StreamInputTest(unittest.TestCase):
             httpretty.GET, url,
             body=horror_fobj('simple.xlsx').read(),
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        fh = urlopen(url)
+        fh = urllib.request.urlopen(url)
         table_set = XLSTableSet(fh)
         row_set = table_set.tables[0]
         data = list(row_set)

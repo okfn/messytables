@@ -47,6 +47,7 @@ setup(
         'html5lib',
         'typecast',
         'six',
+        'ordereddict',
         'json-table-schema>=0.2'
     ],
     extras_require={'pdf': ['pdftables>=0.0.4']},
