@@ -2,9 +2,11 @@ import csv
 import codecs
 import chardet
 
+from six import text_type, binary_type, PY2
+
+from messytables.core import seekable_stream
 from messytables.core import RowSet, TableSet, Cell
-import messytables
-from messytables.compat23 import unicode_string, byte_string, native_string, PY2
+from messytables.error import ReadError
 
 
 class UTF8Recoder:
@@ -66,8 +68,8 @@ class UTF8Recoder:
 
 
 def to_unicode_or_bust(obj, encoding='utf-8'):
-    if isinstance(obj, byte_string):
-        obj = unicode_string(obj, encoding)
+    if isinstance(obj, binary_type):
+        obj = text_type(obj, encoding)
     return obj
 
 
@@ -78,7 +80,7 @@ class CSVTableSet(TableSet):
     def __init__(self, fileobj, delimiter=None, quotechar=None, name=None,
                  encoding=None, window=None, doublequote=None,
                  lineterminator=None, skipinitialspace=None, **kw):
-        self.fileobj = messytables.seekable_stream(fileobj)
+        self.fileobj = seekable_stream(fileobj)
         self.name = name or 'table'
         self.delimiter = delimiter
         self.quotechar = quotechar
@@ -110,7 +112,7 @@ class CSVRowSet(RowSet):
                  encoding='utf-8', window=None, doublequote=None,
                  lineterminator=None, skipinitialspace=None):
         self.name = name
-        seekable_fileobj = messytables.seekable_stream(fileobj)
+        seekable_fileobj = seekable_stream(fileobj)
         self.fileobj = UTF8Recoder(seekable_fileobj, encoding)
 
         def fake_ilines(fobj):
@@ -137,9 +139,9 @@ class CSVRowSet(RowSet):
         sample = delim.join(self._sample)
         try:
             dialect = csv.Sniffer().sniff(sample,
-                delimiters=['\t', ',', ';', '|'])  # NATIVE
-            dialect.delimiter = native_string(dialect.delimiter)
-            dialect.quotechar = native_string(dialect.quotechar)
+                                          delimiters=['\t', ',', ';', '|'])
+            dialect.delimiter = str(dialect.delimiter)
+            dialect.quotechar = str(dialect.quotechar)
             dialect.lineterminator = delim
             dialect.doublequote = True
             return dialect
@@ -184,9 +186,9 @@ class CSVRowSet(RowSet):
                                   dialect=self._dialect, **self._overrides):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
         except csv.Error as err:
-            if u'newline inside string' in unicode_string(err) and sample:
+            if u'newline inside string' in text_type(err) and sample:
                 pass
-            elif u'line contains NULL byte' in unicode_string(err):
+            elif u'line contains NULL byte' in text_type(err):
                 pass
             else:
-                raise messytables.ReadError('Error reading CSV: %r', err)
+                raise ReadError('Error reading CSV: %r', err)
