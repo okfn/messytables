@@ -1,5 +1,7 @@
 from collections import defaultdict
-from messytables.compat23 import izip_longest
+
+import six
+
 from messytables.core import Cell
 
 
@@ -43,7 +45,7 @@ def headers_processor(headers):
 
     def apply_headers(row_set, row):
         _row = []
-        pairs = izip_longest(row, headers)
+        pairs = six.itertools.izip_longest(row, headers)
         for i, (cell, header) in enumerate(pairs):
             if cell is None:
                 cell = Cell(None)
