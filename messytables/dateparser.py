@@ -4,7 +4,7 @@ date_regex = re.compile(r'''^\d{1,4}[-\/\.\s]\S+[-\/\.\s]\S+''')
 
 
 def is_date(value):
-    return date_regex.match(value)
+    return len(value) != 1 and date_regex.match(value)
 
 
 def create_date_formats(day_first=True):

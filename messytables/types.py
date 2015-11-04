@@ -184,6 +184,11 @@ class DateUtilType(CellType):
     guessing_weight = 3
     result_type = datetime.datetime
 
+    def test(self, value):
+        if len(value) == 1:
+             return False
+        return CellType.test(self, value)
+
     def cast(self, value):
         if value in ('', None):
             return None
