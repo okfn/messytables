@@ -30,7 +30,7 @@ def rowset_as_jts(rowset, headers=None, types=None):
     return headers_and_typed_as_jts(headers, types)
 
 
-def headers_and_typed_as_jts(headers, types):
+def headers_and_types_as_jts(headers, types):
     ''' Create a json table schema from headers and types as
     returned from :meth:`~messytables.headers.headers_guess`
     and :meth:`~messytables.types.type_guess`.
@@ -40,6 +40,6 @@ def headers_and_typed_as_jts(headers, types):
     for field_id, field_type in zip(headers, types):
         j.add_field(field_id=field_id,
                     label=field_id,
-                    field_type=field_type)
+                    field_type=celltype_as_string(field_type))
 
     return j
