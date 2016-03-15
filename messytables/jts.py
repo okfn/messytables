@@ -27,7 +27,7 @@ def rowset_as_jts(rowset, headers=None, types=None):
     _, headers = messytables.headers_guess(rowset.sample)
     types = list(map(celltype_as_string, messytables.type_guess(rowset.sample)))
 
-    return headers_and_typed_as_jts(headers, types)
+    return headers_and_types_as_jts(headers, types)
 
 
 def headers_and_types_as_jts(headers, types):
