@@ -1,8 +1,8 @@
 
 from messytables.util import offset_processor, null_processor
 from messytables.headers import headers_guess, headers_processor, headers_make_unique
-from messytables.types import type_guess, types_processor
-from messytables.types import StringType, IntegerType, FloatType, \
+from messytables.messytypes import type_guess, types_processor
+from messytables.messytypes import StringType, IntegerType, FloatType, \
         DecimalType, DateType, DateUtilType, BoolType
 from messytables.error import ReadError
 

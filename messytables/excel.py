@@ -4,8 +4,8 @@ import xlrd
 from xlrd.biffh import XLRDError
 
 from messytables.core import RowSet, TableSet, Cell, CoreProperties
-from messytables.types import (StringType, IntegerType,
-                               DateType, FloatType)
+from messytables.messytypes import (StringType, IntegerType,
+                                    DateType, FloatType)
 from messytables.error import ReadError
 from messytables.compat23 import PY2
 

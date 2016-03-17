@@ -5,8 +5,8 @@ import zipfile
 from lxml import etree
 
 from messytables.core import RowSet, TableSet, Cell
-from messytables.types import (StringType, DecimalType,
-                               DateType)
+from messytables.messytypes import (StringType, DecimalType,
+                                    DateType)
 
 
 ODS_NAMESPACES_TAG_MATCH = re.compile(b"(<office:document-content[^>]*>)", re.MULTILINE)
