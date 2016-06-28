@@ -13,7 +13,7 @@ This library provides data structures and some heuristics to
 fix these problems and read a wide number of different tabular
 abominations.
 
-See the full documentation at: http://messytables.readthedocs.org
+See the full documentation at: https://messytables.readthedocs.io
 """
 
 

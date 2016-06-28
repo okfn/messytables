@@ -10,7 +10,7 @@
 
 A library for dealing with messy tabular data in several formats, guessing types and detecting headers.
 
-See the documentation at: https://messytables.readthedocs.org
+See the documentation at: https://messytables.readthedocs.io
 
 Find the package at: https://pypi.python.org/pypi/messytables
 
