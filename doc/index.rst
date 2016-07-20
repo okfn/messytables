@@ -148,7 +148,7 @@ PDF file support
 ----------------
 
 The library supports PDF documents, using
-`pdftables <https://pdftables.readthedocs.org>`_ to extract tables.
+`pdftables <https://pdftables.readthedocs.io>`_ to extract tables.
 
 Works only for PDFs which contain text information: somewhat erratic in quality.
 
