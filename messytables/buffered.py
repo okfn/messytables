@@ -1,21 +1,23 @@
 import io
 
+BUFFER_SIZE = 4096
+
 
 def seekable_stream(fileobj):
     try:
         fileobj.seek(0)
         # if we got here, the stream is seekable
+        return fileobj
     except:
         # otherwise seek failed, so slurp in stream and wrap
         # it in a BytesIO
-        fileobj = BufferedFile(fileobj)
-    return fileobj
+        return BufferedFile(fileobj)
 
 
 class BufferedFile(object):
     """A buffered file that preserves the beginning of a stream."""
 
-    def __init__(self, fp, buffer_size=2048):
+    def __init__(self, fp, buffer_size=BUFFER_SIZE):
         self.data = io.BytesIO()
         self.fp = fp
         self.offset = 0
