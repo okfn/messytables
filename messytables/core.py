@@ -1,4 +1,3 @@
-import io
 from collections import Mapping
 try:
     # python 2.7:
@@ -11,93 +10,6 @@ from six import text_type, string_types
 from typecast import String
 
 from messytables.error import TableError, NoSuchPropertyError
-
-
-def seekable_stream(fileobj):
-    try:
-        fileobj.seek(0)
-        # if we got here, the stream is seekable
-    except:
-        # otherwise seek failed, so slurp in stream and wrap
-        # it in a BytesIO
-        fileobj = BufferedFile(fileobj)
-    return fileobj
-
-
-class BufferedFile(object):
-    ''' A buffered file that preserves the beginning of
-    a stream up to buffer_size
-    '''
-    def __init__(self, fp, buffer_size=2048):
-        self.data = io.BytesIO()
-        self.fp = fp
-        self.offset = 0
-        self.len = 0
-        self.fp_offset = 0
-        self.buffer_size = buffer_size
-
-    def _next_line(self):
-        try:
-            return self.fp.readline()
-        except AttributeError:
-            return next(self.fp)
-
-    def _read(self, n):
-        return self.fp.read(n)
-
-    @property
-    def _buffer_full(self):
-        return self.len >= self.buffer_size
-
-    def readline(self):
-        if self.len < self.offset < self.fp_offset:
-            raise BufferError('Line is not available anymore')
-        if self.offset >= self.len:
-            line = self._next_line()
-            self.fp_offset += len(line)
-
-            self.offset += len(line)
-
-            if not self._buffer_full:
-                self.data.write(line)
-                self.len += len(line)
-        else:
-            line = self.data.readline()
-            self.offset += len(line)
-        return line
-
-    def read(self, n=-1):
-        if n == -1:
-            # if the request is to do a complete read, then do a complete
-            # read.
-            self.data.seek(self.offset)
-            return self.data.read(-1) + self.fp.read(-1)
-
-        if self.len < self.offset < self.fp_offset:
-            raise BufferError('Data is not available anymore')
-        if self.offset >= self.len:
-            byte = self._read(n)
-            self.fp_offset += len(byte)
-
-            self.offset += len(byte)
-
-            if not self._buffer_full:
-                self.data.write(byte)
-                self.len += len(byte)
-        else:
-            byte = self.data.read(n)
-            self.offset += len(byte)
-        return byte
-
-    def tell(self):
-        return self.offset
-
-    def seek(self, offset):
-        if self.len < offset < self.fp_offset:
-            raise BufferError('Cannot seek because data is not buffered here')
-        self.offset = offset
-        if offset < self.len:
-            self.data.seek(offset)
 
 
 class CoreProperties(Mapping):
@@ -117,10 +29,12 @@ class CoreProperties(Mapping):
 
 
 class Cell(object):
-    """ A cell is the basic value type. It always has a ``value`` (that
-    may be ``None`` and may optionally also have a type and column name
-    associated with it. If no ``type`` is set, the String type is set
-    but no type conversion is set. """
+    """A cell is the basic value type.
+
+    It always has a ``value`` (that may be ``None`` and may optionally
+    also have a type and column name associated with it. If no ``type``
+    is set, the String type is set but no type conversion is set.
+    """
 
     def __init__(self, value, column=None, type=None):
         if type is None:
@@ -138,7 +52,7 @@ class Cell(object):
 
     @property
     def empty(self):
-        """ Stringify the value and check that it has a length. """
+        """Stringify the value and check that it has a length."""
         if self.value is None:
             return True
         value = self.value
@@ -150,7 +64,7 @@ class Cell(object):
 
     @property
     def properties(self):
-        """ Source-specific information. Only a placeholder here. """
+        """Source-specific information. Only a placeholder here."""
         return CoreProperties()
 
     @property
@@ -240,7 +154,7 @@ class RowSet(object):
         self._processors.append(processor)
 
     def __iter__(self, sample=False):
-        """ Apply processors to the row data. """
+        """Apply processors to the row data."""
         for row in self.raw(sample=sample):
             for processor in self._processors:
                 row = processor(self, row)

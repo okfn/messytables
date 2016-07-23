@@ -2,7 +2,7 @@ import re
 
 from messytables import ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet
 from messytables import HTMLTableSet, ODSTableSet
-from messytables.core import seekable_stream
+from messytables.buffered import seekable_stream
 from messytables.error import ReadError
 
 
