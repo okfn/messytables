@@ -5,10 +5,10 @@ from messytables.error import ReadError
 
 
 class ZIPTableSet(TableSet):
-    """ Reads TableSets from inside a ZIP file """
+    """Reads TableSets from inside a ZIP file."""
 
     def __init__(self, fileobj, **kw):
-        """ On error it will raise ReadError. """
+        """On error it will raise ReadError."""
         from messytables.any import any_tableset
         tables = []
         found = []

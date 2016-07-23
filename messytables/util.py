@@ -1,7 +1,8 @@
 
 def offset_processor(offset):
-    """ Skip ``offset`` from the given iterator. This can
-    be used in combination with the ``headers_processor`` to
+    """Skip ``offset`` from the given iterator.
+
+    This can be used in combination with the ``headers_processor`` to
     apply the result of a header scan to the table.
 
     :param offset: Offset to be skipped
@@ -17,7 +18,7 @@ def offset_processor(offset):
 
 
 def null_processor(nulls):
-    """ Replaces every occurrence of items from `nulls` with None.
+    """Replace every occurrence of items from `nulls` with None.
 
     :param nulls: List of items to be replaced
     :type nulls: list
