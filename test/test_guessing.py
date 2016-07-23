@@ -4,6 +4,7 @@ import io
 
 from . import horror_fobj
 from nose.plugins.attrib import attr
+from nose.plugins.skip import SkipTest
 from nose.tools import assert_equal
 from typecast import Date, String, Decimal, Integer, Boolean
 from messytables import CSVTableSet, type_guess, headers_guess
@@ -28,8 +29,11 @@ class TypeGuessTest(unittest.TestCase):
             Date('%d %b %Y'), Boolean(), Integer()])
 
     def test_type_guess_strict(self):
-        import locale
-        locale.setlocale(locale.LC_ALL, 'en_GB.UTF-8')
+        try:
+            import locale
+            locale.setlocale(locale.LC_ALL, 'en_GB.UTF-8')
+        except:
+            raise SkipTest("Locale en_GB.UTF-8 not available.")
         csv_file = io.BytesIO(b'''
             1,   2012/2/12, 2,      2,02 October 2011,"100.234354"
             2,   2012/2/12, 1.1,    0,1 May 2011,"100,000,000.12"
