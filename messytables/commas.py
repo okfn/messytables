@@ -4,13 +4,13 @@ import chardet
 
 from six import text_type, binary_type, PY2
 
-from messytables.core import seekable_stream
+from messytables.buffered import seekable_stream
 from messytables.core import RowSet, TableSet, Cell
 from messytables.error import ReadError
 
 
 class UTF8Recoder:
-    """ Iterator that reads an encoded stream and re-encodes it to UTF-8. """
+    """Iterator that reads an encoded stream and re-encodes it to UTF-8."""
 
     # maps between chardet encoding and codecs bom keys
     BOM_MAPPING = {

@@ -5,7 +5,8 @@ from messytables.headers import headers_make_unique
 from messytables.types import type_guess, types_processor
 from messytables.error import ReadError
 
-from messytables.core import Cell, TableSet, RowSet, seekable_stream
+from messytables.buffered import seekable_stream
+from messytables.core import Cell, TableSet, RowSet
 from messytables.commas import CSVTableSet, CSVRowSet
 from messytables.ods import ODSTableSet, ODSRowSet
 from messytables.excel import XLSTableSet, XLSRowSet
