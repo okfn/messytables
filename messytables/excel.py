@@ -113,7 +113,7 @@ class XLSRowSet(RowSet):
                     row.append(XLSCell.from_xlrdcell(cell, self.sheet, colnum, rownum))
                 except InvalidDateError:
                     raise ValueError("Invalid date at '%s':%d,%d" % (
-                        self.sheet.name, colnum+1, rownum+1))
+                       self.sheet.name, colnum+1, rownum+1))
             yield row
 
 
@@ -123,14 +123,13 @@ class XLSCell(Cell):
         value = xlrd_cell.value
         cell_type = XLS_TYPES.get(xlrd_cell.ctype, String())
         if cell_type == Date():
-            if value == 0:
-                raise InvalidDateError
-            year, month, day, hour, minute, second = \
-                xlrd.xldate_as_tuple(value, sheet.book.datemode)
-            if (year, month, day) == (0, 0, 0):
-                value = time(hour, minute, second)
-            else:
-                value = datetime(year, month, day, hour, minute, second)
+            if value != 0:
+                year, month, day, hour, minute, second = \
+                    xlrd.xldate_as_tuple(value, sheet.book.datemode)
+                if (year, month, day) == (0, 0, 0):
+                    value = time(hour, minute, second)
+                else:
+                    value = datetime(year, month, day, hour, minute, second)
         messy_cell = XLSCell(value, type=cell_type)
         messy_cell.sheet = sheet
         messy_cell.xlrd_cell = xlrd_cell
