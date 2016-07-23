@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import unittest
 import io
+# import cProfile
+# from pstats import Stats
 
-from . import horror_fobj
+from util import horror_fobj
 from nose.plugins.attrib import attr
 from nose.plugins.skip import SkipTest
 from nose.tools import assert_equal
@@ -12,6 +14,17 @@ from messytables import offset_processor
 
 
 class TypeGuessTest(unittest.TestCase):
+
+    # def setUp(self):
+    #     self.pr = cProfile.Profile()
+    #     self.pr.enable()
+
+    # def tearDown(self):
+    #     p = Stats(self.pr)
+    #     p.strip_dirs()
+    #     p.sort_stats('cumtime')
+    #     p.print_stats()
+
     @attr("slow")
     def test_type_guess(self):
         csv_file = io.BytesIO(b'''
@@ -122,7 +135,7 @@ class TypeGuessTest(unittest.TestCase):
         types = [String, Integer, Decimal, Date]
         guessed_types = type_guess(rows.sample, types, True)
         assert_equal(len(guessed_types), 19)
-        print(guessed_types)
+        # print(guessed_types)
         assert_equal(guessed_types, [
             Integer(), Integer(),
             Integer(), Integer(), Integer(), Integer(),
@@ -141,3 +154,7 @@ class TypeGuessTest(unittest.TestCase):
         assert_equal(helper('123.0'), False)
         assert_equal(helper(123.1), False)
         assert_equal(helper('123.1'), False)
+
+
+if __name__ == '__main__':
+    unittest.main()

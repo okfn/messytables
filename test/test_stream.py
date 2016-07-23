@@ -4,7 +4,7 @@ import unittest
 import requests
 import six.moves.urllib as urllib
 
-from . import horror_fobj
+from util import horror_fobj
 import httpretty
 from nose.tools import assert_equal
 

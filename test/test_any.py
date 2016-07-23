@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from . import horror_fobj
+from util import horror_fobj
 from nose.tools import assert_equal
 from nose.plugins.skip import SkipTest
 from messytables import (any_tableset, XLSTableSet, ZIPTableSet, PDFTableSet,
