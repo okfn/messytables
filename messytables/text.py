@@ -1,5 +1,8 @@
 import codecs
-import chardet
+try:
+    import cchardet as chardet
+except ImportError:
+    import chardet
 from six import text_type, binary_type
 
 from messytables.buffered import BUFFER_SIZE

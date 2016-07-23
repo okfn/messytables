@@ -42,6 +42,7 @@ setup(
         'xlrd>=0.8.0',
         'python-magic>=0.4.6',  # used for file type guessing
         'chardet>=2.3.0',
+        'cchardet',
         'lxml>=3.2',
         'requests>=2.0',
         'html5lib',
