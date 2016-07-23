@@ -31,18 +31,18 @@ def type_guess(rows, types=TYPES, strict=False):
         diff = len(row) - len(guesses)
         for _ in range(diff):
             guesses.append(defaultdict(int))
-        for i, cell in enumerate(row):
+        for j, cell in enumerate(row):
             # add string guess so that we have at least one guess
-            guesses[i][String()] = guesses[i].get(String(), 0)
+            guesses[j][String()] = guesses[j].get(String(), 0)
             for type in type_instances:
-                if guesses[i][type] == FAILED:
+                if guesses[j][type] == FAILED:
                     continue
                 result = type.test(cell.value)
                 weight = WEIGHTS[type.__class__]
                 if strict and (result == -1) and not isinstance(type, String):
-                    guesses[i][type] = FAILED
+                    guesses[j][type] = FAILED
                 elif result == 1:
-                    guesses[i][type] += weight
+                    guesses[j][type] += weight
 
     _columns = []
     for guess in guesses:
