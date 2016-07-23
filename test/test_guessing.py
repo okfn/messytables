@@ -93,24 +93,26 @@ class TypeGuessTest(unittest.TestCase):
         types = [String, Integer, Decimal, Date]
         guessed_types = type_guess(rows.sample, types, False)
         assert_equal(len(guessed_types), 96)
-        assert_equal(guessed_types, [
-            Integer(), String(), String(), String(),
+        assumed_types = [Integer(), String(), String(), String(),
             String(), String(), Integer(), String(), String(), String(),
             String(), String(), String(), Integer(), String(), String(),
             String(), String(), String(), String(), Integer(), String(),
-            String(), String(), String(), String(), String(), String(),
+            String(), String(), String(), String(), String(), Integer(),
             String(), Decimal(), Decimal(), String(), String(), String(),
             String(), String(), String(), String(), String(), String(),
-            String(), String(), String(), String(), String(), String(),
+            String(), String(), String(), Integer(), String(), Integer(),
             String(), String(), String(), String(), String(), String(),
             String(), String(), Integer(), String(), String(), String(),
             String(), String(), String(), String(), String(), String(),
             String(), String(), String(), String(), String(), String(),
+            Integer(), String(), String(), String(), String(), String(),
             String(), String(), String(), String(), String(), String(),
-            String(), String(), String(), String(), String(), String(),
-            String(), String(), String(), String(), String(), String(),
-            String(), String(), String(), Date('%d/%m/%y'), Date('%d/%m/%y'),
-            String(), String(), String()])
+            String(), String(), String(), String(), String(), Integer(),
+            String(), Date('%d/%m/%y'), Date('%d/%m/%y'), Date('%d/%m/%y'),
+            Date('%d/%m/%y'), String(), String(), String()]
+        # for (ta, tb) in zip(guessed_types, assumed_types):
+        #     print (ta, tb)
+        assert_equal(guessed_types, assumed_types)
 
     def test_file_with_few_strings_among_integers(self):
         fh = horror_fobj('mixedGLB.csv')

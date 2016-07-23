@@ -34,15 +34,15 @@ def type_guess(rows, types=TYPES, strict=False):
         for j, cell in enumerate(row):
             # add string guess so that we have at least one guess
             guesses[j][String()] = guesses[j].get(String(), 0)
-            for type in type_instances:
-                if guesses[j][type] == FAILED:
+            for inst in type_instances:
+                if guesses[j][inst] == FAILED or cell.empty:
                     continue
-                result = type.test(cell.value)
-                weight = WEIGHTS[type.__class__]
-                if strict and (result == -1) and not isinstance(type, String):
-                    guesses[j][type] = FAILED
+                result = inst.test(cell.value)
+                weight = WEIGHTS[inst.__class__]
+                if strict and (result == -1) and not isinstance(inst, String):
+                    guesses[j][inst] = FAILED
                 elif result == 1:
-                    guesses[j][type] += weight
+                    guesses[j][inst] += weight
 
     _columns = []
     for guess in guesses:
