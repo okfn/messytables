@@ -13,7 +13,7 @@ This library provides data structures and some heuristics to
 fix these problems and read a wide number of different tabular
 abominations.
 
-See the full documentation at: http://messytables.readthedocs.org
+See the full documentation at: https://messytables.readthedocs.io
 """
 
 
@@ -42,13 +42,14 @@ setup(
         'xlrd>=0.8.0',
         'python-magic>=0.4.6',  # used for file type guessing
         'chardet>=2.3.0',
+        'python-dateutil>=1.5.0',
         'lxml>=3.2',
         'requests>=2.0',
         'html5lib',
         'typecast',
         'six',
         'ordereddict',
-        'json-table-schema>=0.2'
+        'json-table-schema>=0.2, <=0.2.1'
     ],
     extras_require={'pdf': ['pdftables>=0.0.4']},
     tests_require=[
