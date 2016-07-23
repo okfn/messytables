@@ -25,12 +25,7 @@ class UTF8Recoder:
     def __init__(self, f, encoding):
         sample = f.read(BUFFER_SIZE)
         if not encoding:
-            results = chardet.detect(sample)
-            encoding = results['encoding']
-            if not encoding:
-                # Don't break, just try and load the data with
-                # a semi-sane encoding
-                encoding = 'utf-8'
+            encoding = chardet.detect(sample).get('encoding') or 'utf-8'
         f.seek(0)
         self.reader = codecs.getreader(encoding)(f, 'ignore')
 

@@ -47,7 +47,7 @@ setup(
         'requests>=2.0',
         'html5lib',
         'json-table-schema>=0.2, <=0.2.1'
-        'typecast>=0.3.0',
+        'typecast>=0.3.1',
         'six',
         'ordereddict',
     ],
