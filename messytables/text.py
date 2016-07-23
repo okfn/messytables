@@ -19,7 +19,6 @@ class UTF8Recoder:
         'utf-32be': 'BOM_UTF32_BE',
         'utf-8': 'BOM_UTF8',
         'utf-8-sig': 'BOM_UTF8',
-
     }
 
     def __init__(self, f, encoding):
