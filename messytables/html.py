@@ -15,9 +15,8 @@ def fromstring(s):
 
 
 class HTMLTableSet(TableSet):
-    """
-    A TableSet from a HTML document.
-    """
+    """A TableSet from a HTML document."""
+
     def __init__(self, fileobj=None, filename=None, window=None, **kw):
 
         if filename is not None:
@@ -45,9 +44,7 @@ class HTMLTableSet(TableSet):
                 "other tables. This is a bug."  # avoid infinite loops
 
     def make_tables(self):
-        """
-        Return a listing of tables (as HTMLRowSets) in the table set.
-        """
+        """Return a listing of tables (as HTMLRowSets) in the table set."""
         def rowset_name(rowset, table_index):
             return "Table {0} of {1}".format(table_index + 1,
                                              len(self.htmltables))
@@ -71,9 +68,8 @@ def insert_blank_cells(row, blanks):
 
 
 class HTMLRowSet(RowSet):
-    """
-    A RowSet representing a HTML table.
-    """
+    """A RowSet representing a HTML table."""
+
     def __init__(self, name, sheet, window=None):
         self.name = name
         self.sheet = sheet
@@ -81,11 +77,8 @@ class HTMLRowSet(RowSet):
         super(HTMLRowSet, self).__init__()
 
     def in_table(self, els):
-        """
-        takes a list of xpath elements and returns only those
-        whose parent table is this one
-        """
-
+        # Accept a list of xpath elements and returns only those
+        # whose parent table is this one
         return [e for e in els
                 if self.sheet in e.xpath("./ancestor::table[1]")]
 
@@ -137,17 +130,14 @@ class HTMLRowSet(RowSet):
 
 
 class FakeHTMLCell(Cell):
+    """FakeHTMLCells are not present because of column or row spannning."""
+
     def __init__(self):
         super(FakeHTMLCell, self).__init__("")
 
     @property
     def topleft(self):
-        """
-        FakeHTMLCells are those which are not physically present in the HTML
-        because of column or row spannning.
-
-        See also: HTMLCell.topleft
-        """
+        """See also: HTMLCell.topleft."""
         return False
 
 
@@ -169,12 +159,7 @@ class HTMLCell(Cell):
 
     @property
     def topleft(self):
-        """
-        HTMLCells are those which are physically present in the HTML. They are
-        always the top-left in their span.
-
-        See also: FakeHTMLCell.topleft
-        """
+        """See also: FakeHTMLCell.topleft."""
         return True
 
     @property
@@ -198,7 +183,7 @@ def text_from_element(elem):
     """
     builder = []
     for x in elem.iter():
-        #print x.tag, x.attrib, x.text, x.tail
+        # print x.tag, x.attrib, x.text, x.tail
         if is_invisible_text(x):
             cell_str = x.tail or ''  # handle None values.
         else:
@@ -216,7 +201,6 @@ def is_invisible_text(elem):
         if 'style' in elem.attrib:
             if 'display:none' in elem.attrib['style']:
                 flag = True
-
     return flag
 
 

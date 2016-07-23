@@ -69,21 +69,21 @@ class Cell(object):
 
     @property
     def topleft(self):
-        """
-        Is the cell the top-left of a span? Non-spanning cells are the top left.
+        """Non-spanning cells are the top left.
 
-        This is used for example in HTML generation where the top left cell
-        is the only one which is written into the output representation.
-
+        This is used for example in HTML generation where the top left
+        cell is the only one which is written into the output representation.
         In absense of other knowledge, we assume that all cells are top left.
         """
+        # This seems oddly over-specific, can we solve it otherwise?
         return True
 
 
 class TableSet(object):
-    """ A table set is used for data formats in which multiple tabular
-    objects are bundled. This might include relational databases and
-    workbooks used in spreadsheet software (Excel, LibreOffice).
+    """A table set bundles multiple tabular objects.
+
+    This might include relational databases and workbooks used in spreadsheet
+    software (Excel, LibreOffice).
 
     For each format, we derive from this abstract base class, providing a
     constructor that takes a file object and tables() that returns each table.
@@ -92,14 +92,14 @@ class TableSet(object):
 
     On any fatal errors, it should raise messytables.ReadError
     """
+
     def __init__(self, fileobj):
-        """ Store the fileobj, and perhaps all or part of the file. """
+        """Store the fileobj, and perhaps all or part of the file."""
         pass
 
     @property
     def tables(self):
-        """ Return a listing of tables (i.e. RowSets) in the ``TableSet``.
-        Each table has a name. """
+        """Get a listing of ``RowSets``."""
         if getattr(self, "_tables", None) is None:
             self._tables = self.make_tables()
         return self._tables
@@ -107,8 +107,9 @@ class TableSet(object):
     def make_tables(self):
         raise NotImplementedError("make_tables() not implemented on {0}"
                                   .format(type(self)))
+
     def __getitem__(self, name):
-        """ Return a RowSet based on the name given """
+        """Return a RowSet based on the name given."""
         matching = [table for table in self.tables if table.name == name]
         if not matching:
             raise TableError("No table called %r" % name)
@@ -118,16 +119,18 @@ class TableSet(object):
 
     @classmethod
     def from_fileobj(cls, fileobj, *args, **kwargs):
-        """ Deprecated, only for compatibility reasons """
+        """Deprecated, only for compatibility reasons."""
         return cls(fileobj, *args, **kwargs)
 
 
 class RowSet(object):
-    """ A row set (aka: table) is a simple wrapper for an iterator of
-    rows (which in turn is a list of ``Cell`` objects). The main table
-    iterable can only be traversed once, so on order to allow analytics
-    like type and header guessing on the data, a sample of ``window``
-    rows is read, cached, and made available.
+    """A single table, which allows iterating over individual rows.
+
+    A row set (aka: table) is a simple wrapper for an iterator of rows
+    (which in turn is a list of ``Cell`` objects). The main table iterable
+    can only be traversed once, so on order to allow analytics like type and
+    header guessing on the data, a sample of ``window`` rows is read, cached,
+    and made available.
 
     On any fatal errors, it should raise messytables.ReadError
     """
@@ -147,10 +150,11 @@ class RowSet(object):
     types = property(get_types, set_types)
 
     def register_processor(self, processor):
-        """ Register a stream processor to be used on each row. A
-        processor is a function called with the ``RowSet`` as its
-        first argument and the row to be processed as the second
-        argument. """
+        """Register a stream processor to be used on each row.
+
+        A processor is a function called with the ``RowSet`` as its first
+        argument and the row to be processed as the second argument.
+        """
         self._processors.append(processor)
 
     def __iter__(self, sample=False):
@@ -171,10 +175,11 @@ class RowSet(object):
         return self.__iter__(sample=True)
 
     def dicts(self, sample=False):
-        """ Return a representation of the data as an iterator of
-        ordered dictionaries. This is less specific than the cell
-        format returned by the generic iterator but only gives a
-        subset of the information. """
+        """Return the table data as an iterator of ordered dictionaries.
+
+        This is less specific than the cell format returned by the generic
+        iterator but only gives a subset of the information.
+        """
         generator = self.sample if sample else self
         for row in generator:
             yield OrderedDict([(c.column, c.value) for c in row])
