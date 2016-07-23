@@ -46,7 +46,7 @@ setup(
         'lxml>=3.2',
         'requests>=2.0',
         'html5lib',
-        'typecast>=0.3.1',
+        'typecast>=0.3.3',
         'six',
         'ordereddict',
         'json-table-schema>=0.2, <=0.2.1'
