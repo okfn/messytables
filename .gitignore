@@ -1,10 +1,11 @@
 *.swp
 *.egg-info
 *.pyc
+*.eggs
 *.DS_Store
 */_build/*
 *.py~
 *.~lock.*#
 .coverage
-
+dist/*
 pyenv3
