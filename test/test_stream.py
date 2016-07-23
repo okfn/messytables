@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
+import io
 import unittest
 import requests
-import io
-
 import six.moves.urllib as urllib
 
 from . import horror_fobj
-from nose.tools import assert_equal
 import httpretty
+from nose.tools import assert_equal
 
 from messytables import CSVTableSet, XLSTableSet
 
