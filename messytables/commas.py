@@ -9,13 +9,16 @@ from messytables.error import ReadError
 
 DELIMITERS = ['\t', ',', ';', '|']
 
+# Fix the maximum field size to something a little larger
+csv.field_size_limit(256000)
+
 
 class CSVTableSet(TableSet):
     """ A CSV table set. Since CSV is always just a single table,
     this is just a pass-through for the row set. """
 
     def __init__(self, fileobj, delimiter=None, quotechar=None, name=None,
-                 encoding=None, window=None, doublequote=None,
+                 encoding=None, window=None, doublequote=True,
                  lineterminator=None, skipinitialspace=None, **kw):
         self.fileobj = seekable_stream(fileobj)
         self.name = name or 'table'
@@ -46,7 +49,7 @@ class CSVRowSet(RowSet):
     fragment. """
 
     def __init__(self, name, fileobj, delimiter=None, quotechar=None,
-                 encoding='utf-8', window=None, doublequote=None,
+                 encoding='utf-8', window=None, doublequote=True,
                  lineterminator=None, skipinitialspace=None):
         self.name = name
         self.fh = seekable_stream(fileobj)
@@ -75,31 +78,18 @@ class CSVRowSet(RowSet):
         delim = '\n'  # NATIVE
         sample = delim.join(self._sample)
         try:
-            dialect = csv.Sniffer().sniff(sample,
-                                          delimiters=['\t', ',', ';', '|'])
-            dialect.delimiter = str(dialect.delimiter)
-            dialect.quotechar = str(dialect.quotechar)
-            dialect.lineterminator = delim
+            dialect = csv.Sniffer().sniff(sample, delimiters=DELIMITERS)
+            dialect.delimiter = self.delimiter or str(dialect.delimiter)
+            dialect.quotechar = self.quotechar or str(dialect.quotechar)
+            dialect.lineterminator = self.lineterminator or delim
+            if self.skipinitialspace is not None:
+                dialect.skipinitialspace = self.skipinitialspace
+            if self.lineterminator is not None:
+                dialect.lineterminator = self.lineterminator
             dialect.doublequote = True
             return dialect
         except csv.Error:
             return csv.excel
-
-    @property
-    def _overrides(self):
-        # some variables in the dialect can be overridden
-        d = {}
-        if self.delimiter:
-            d['delimiter'] = self.delimiter
-        if self.quotechar:
-            d['quotechar'] = self.quotechar
-        if self.doublequote:
-            d['doublequote'] = self.doublequote
-        if self.lineterminator:
-            d['lineterminator'] = self.lineterminator
-        if self.skipinitialspace is not None:
-            d['skipinitialspace'] = self.skipinitialspace
-        return d
 
     def raw(self, sample=False):
         def rows():
@@ -115,12 +105,8 @@ class CSVRowSet(RowSet):
                     else:
                         yield line
 
-        # Fix the maximum field size to something a little larger
-        csv.field_size_limit(256000)
-
         try:
-            for row in csv.reader(rows(),
-                                  dialect=self._dialect, **self._overrides):
+            for row in csv.reader(rows(), dialect=self._dialect):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
         except csv.Error as err:
             if u'newline inside string' in text_type(err) and sample:
