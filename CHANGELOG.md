@@ -1,3 +1,5 @@
+* #151 Rename types.py to prevent file name clash
+
 0.15 (19 June 2015)
 * #124 Python 2/3 multilingual.
 * #125 Fix ODS stopping at blank lines

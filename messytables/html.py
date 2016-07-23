@@ -159,7 +159,7 @@ class HTMLCell(Cell):
         assert isinstance(source, lxml.etree._Element)
         self._lxml = source
         if type is None:
-            from messytables.types import StringType
+            from messytables.messytypes import StringType
             type = StringType()
         self.type = type
         self.column = column

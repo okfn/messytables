@@ -1,6 +1,6 @@
 from messytables.core import RowSet, TableSet, Cell
 
-from messytables.types import StringType
+from messytables.messytypes import StringType
 
 try:
     from pdftables import get_tables
