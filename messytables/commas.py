@@ -2,7 +2,7 @@ import csv
 
 from six import text_type, PY2
 
-from messytables.buffered import seekable_stream, BUFFER_SIZE
+from messytables.buffered import seekable_stream
 from messytables.text import UTF8Recoder, to_unicode_or_bust
 from messytables.core import RowSet, TableSet, Cell
 from messytables.error import ReadError
@@ -14,8 +14,11 @@ csv.field_size_limit(256000)
 
 
 class CSVTableSet(TableSet):
-    """ A CSV table set. Since CSV is always just a single table,
-    this is just a pass-through for the row set. """
+    """A CSV table set.
+
+    Since CSV is always just a single table, this is just a pass-through for
+    the row set.
+    """
 
     def __init__(self, fileobj, delimiter=None, quotechar=None, name=None,
                  encoding=None, window=None, doublequote=True,
@@ -43,10 +46,12 @@ class CSVTableSet(TableSet):
 
 
 class CSVRowSet(RowSet):
-    """ A CSV row set is an iterator on a CSV file-like object
+    """A CSV row set is an iterator on a CSV file-like object.
+
     (which can potentially be infinetly large). When loading,
     a sample is read and cached so you can run analysis on the
-    fragment. """
+    fragment.
+    """
 
     def __init__(self, name, fileobj, delimiter=None, quotechar=None,
                  encoding='utf-8', window=None, doublequote=True,
@@ -58,6 +63,7 @@ class CSVRowSet(RowSet):
         def fake_ilines(fobj):
             for row in fobj:
                 yield row.decode('utf-8')
+
         self.lines = fake_ilines(self.fileobj)
         self._sample = []
         self.delimiter = delimiter
@@ -73,8 +79,7 @@ class CSVRowSet(RowSet):
             pass
         super(CSVRowSet, self).__init__()
 
-    @property
-    def _dialect(self):
+    def dialect(self):
         delim = '\n'  # NATIVE
         sample = delim.join(self._sample)
         try:
@@ -86,7 +91,7 @@ class CSVRowSet(RowSet):
                 dialect.skipinitialspace = self.skipinitialspace
             if self.lineterminator is not None:
                 dialect.lineterminator = self.lineterminator
-            dialect.doublequote = True
+            dialect.doublequote = self.doublequote
             return dialect
         except csv.Error:
             return csv.excel
@@ -106,7 +111,7 @@ class CSVRowSet(RowSet):
                         yield line
 
         try:
-            for row in csv.reader(rows(), dialect=self._dialect):
+            for row in csv.reader(rows(), dialect=self.dialect()):
                 yield [Cell(to_unicode_or_bust(c)) for c in row]
         except csv.Error as err:
             if u'newline inside string' in text_type(err) and sample:

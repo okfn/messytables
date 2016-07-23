@@ -13,3 +13,7 @@ class TableError(MessytablesError, LookupError):
 
 class NoSuchPropertyError(MessytablesError, KeyError):
     """The requested property doesn't exist."""
+
+
+class InvalidDateError(Exception):
+    """Invalid date in structured data sources."""
