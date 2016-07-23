@@ -4,7 +4,7 @@ import io
 # import cProfile
 # from pstats import Stats
 
-from util import horror_fobj
+from .util import horror_fobj
 from nose.plugins.attrib import attr
 from nose.plugins.skip import SkipTest
 from nose.tools import assert_equal
