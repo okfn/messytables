@@ -1,7 +1,7 @@
 import re
 
 from messytables import ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet
-from messytables import HTMLTableSet, ODSTableSet
+from messytables import HTMLTableSet, ODSTableSet, TSVTableSet
 from messytables.buffered import seekable_stream
 from messytables.error import ReadError
 
@@ -32,10 +32,7 @@ MIMELOOKUP = {'application/x-zip-compressed': 'ZIP',
               }
 
 
-def TABTableSet(fileobj):
-    return CSVTableSet(fileobj, delimiter='\t')
-
-parsers = {'TAB': TABTableSet,
+parsers = {'TAB': TSVTableSet,
            'ZIP': ZIPTableSet,
            'XLS': XLSTableSet,
            'HTML': HTMLTableSet,
@@ -67,7 +64,7 @@ def get_mime(fileobj):
     # seek back later. If not, slurp in the contents into a StringIO.
     fileobj = seekable_stream(fileobj)
     header = fileobj.read(4096)
-    mimetype = magic.from_buffer(header, mime=True).decode('utf-8')
+    mimetype = magic.from_buffer(header, mime=True)  # .decode('utf-8')
     fileobj.seek(0)
     if MIMELOOKUP.get(mimetype) == 'ZIP':
         # consider whether it's an Microsoft Office document

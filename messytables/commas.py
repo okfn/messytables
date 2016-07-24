@@ -1,5 +1,6 @@
 import re
 import csv
+import six
 import logging
 
 from messytables.buffered import BUFFER_SIZE
@@ -8,7 +9,7 @@ from messytables.core import RowSet, TableSet, Cell
 from messytables.error import ReadError
 
 DELIMITERS = ['\t', ',', ';', '|']
-TERMINATORS = ['\r\n', '\r', '\n', '\0']
+LINE_SEPARATOR = ['\r\n', '\r', '\n', '\0']
 
 # Fix the maximum field size to something a little larger
 csv.field_size_limit(256000)
@@ -38,6 +39,24 @@ class CSVTableSet(TableSet):
         return self._tables
 
 
+class TSVTableSet(CSVTableSet):
+    """A TSV table set.
+
+    This is a slightly specialised version of the CSVTableSet that will always
+    generate a tab-based table parser.
+    """
+
+    def __init__(self, fileobj, quotechar=None, name=None,
+                 encoding=None, window=1000, doublequote=True,
+                 skipinitialspace=None, **kw):
+        super(TSVTableSet, self).__init__(fileobj, delimiter='\t',
+                                          quotechar=quotechar, name=name,
+                                          encoding=encoding, window=window,
+                                          doublequote=doublequote,
+                                          skipinitialspace=skipinitialspace,
+                                          **kw)
+
+
 class CSVRowSet(RowSet):
     """A CSV row set is an iterator on a CSV file-like object.
 
@@ -54,14 +73,17 @@ class CSVRowSet(RowSet):
         self.fileobj = fileobj
 
         # For line breaking, use the (detected) encoding of the file:
-        terminators = [t.encode(self.encoding) for t in TERMINATORS]
-        self.terminators_re = re.compile('(%s)' % '|'.join(terminators))
+        linesep = [t.encode(self.encoding) for t in LINE_SEPARATOR]
+        linesep = b'(%s)' % b'|'.join(linesep)
+        self.linesep = re.compile(linesep)
 
         self._sample = []
         self.window = window
 
         try:
-            sample = self.buf.decode(self.encoding).encode('utf-8')
+            sample = self.buf.decode(self.encoding)
+            if six.PY2:
+                sample = sample.encode('utf-8')
             self.dialect = csv.Sniffer().sniff(sample, delimiters=DELIMITERS)
         except csv.Error:
             self.dialect = csv.excel
@@ -83,7 +105,7 @@ class CSVRowSet(RowSet):
                 break
             if sample and len(self._sample) >= self.window:
                 break
-            match = self.terminators_re.search(self.buf)
+            match = self.linesep.search(self.buf)
             if match is not None:
                 line = self.buf[:match.end(0)]
                 self.buf = self.buf[match.end(0):]
@@ -95,8 +117,11 @@ class CSVRowSet(RowSet):
                 else:
                     line, self.buf = self.buf, None
 
-            line = line.decode(self.encoding).encode('utf-8')
-            if line in TERMINATORS or not len(line):
+            line = line.decode(self.encoding)
+            if six.PY2:
+                line = line.encode('utf-8')
+
+            if line in LINE_SEPARATOR or not len(line):
                 continue
 
             if self.window >= len(self._sample):
@@ -107,6 +132,9 @@ class CSVRowSet(RowSet):
         try:
             for row in csv.reader(self.get_lines(sample=sample),
                                   dialect=self.dialect):
-                yield [Cell(c.decode('utf-8')) for c in row]
+                if six.PY2:
+                    row = [c.decode('utf-8') for c in row]
+                yield [Cell(c) for c in row]
         except csv.Error as err:
-            raise ReadError('Error reading CSV: %r', err)
+            if 'new-line character' not in repr(err):
+                raise ReadError('Error reading CSV: %r', err)

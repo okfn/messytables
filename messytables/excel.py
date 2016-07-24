@@ -95,7 +95,7 @@ class XLSRowSet(RowSet):
         """
         num_rows = self.sheet.nrows
         num_rows = min(self.window, num_rows) if sample else num_rows
-        for rownum in xrange(num_rows):
+        for rownum in range(num_rows):
             row = []
             for colnum, cell in enumerate(self.sheet.row(rownum)):
                 try:
