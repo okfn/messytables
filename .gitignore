@@ -8,4 +8,5 @@
 *.~lock.*#
 .coverage
 dist/*
+.tox/*
 pyenv3

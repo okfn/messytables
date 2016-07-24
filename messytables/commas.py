@@ -1,16 +1,18 @@
+import re
 import csv
+import logging
 
-from six import text_type, PY2
-
-from messytables.buffered import seekable_stream
-from messytables.text import UTF8Recoder, to_unicode_or_bust
+from messytables.buffered import BUFFER_SIZE
+from messytables.text import analyze_stream
 from messytables.core import RowSet, TableSet, Cell
 from messytables.error import ReadError
 
 DELIMITERS = ['\t', ',', ';', '|']
+TERMINATORS = ['\r\n', '\r', '\n', '\0']
 
 # Fix the maximum field size to something a little larger
 csv.field_size_limit(256000)
+log = logging.getLogger(__name__)
 
 
 class CSVTableSet(TableSet):
@@ -21,28 +23,19 @@ class CSVTableSet(TableSet):
     """
 
     def __init__(self, fileobj, delimiter=None, quotechar=None, name=None,
-                 encoding=None, window=None, doublequote=True,
-                 lineterminator=None, skipinitialspace=None, **kw):
-        self.fileobj = seekable_stream(fileobj)
-        self.name = name or 'table'
-        self.delimiter = delimiter
-        self.quotechar = quotechar
-        self.encoding = encoding
-        self.window = window
-        self.doublequote = doublequote
-        self.lineterminator = lineterminator
-        self.skipinitialspace = skipinitialspace
+                 encoding=None, window=1000, doublequote=True,
+                 skipinitialspace=None, **kw):
+        self._tables = [CSVRowSet(name or 'table', fileobj,
+                                  delimiter=delimiter,
+                                  quotechar=quotechar,
+                                  encoding=encoding,
+                                  window=window,
+                                  doublequote=doublequote,
+                                  skipinitialspace=skipinitialspace)]
 
     def make_tables(self):
         """Return the actual CSV table."""
-        return [CSVRowSet(self.name, self.fileobj,
-                          delimiter=self.delimiter,
-                          quotechar=self.quotechar,
-                          encoding=self.encoding,
-                          window=self.window,
-                          doublequote=self.doublequote,
-                          lineterminator=self.lineterminator,
-                          skipinitialspace=self.skipinitialspace)]
+        return self._tables
 
 
 class CSVRowSet(RowSet):
@@ -54,69 +47,66 @@ class CSVRowSet(RowSet):
     """
 
     def __init__(self, name, fileobj, delimiter=None, quotechar=None,
-                 encoding='utf-8', window=None, doublequote=True,
-                 lineterminator=None, skipinitialspace=None):
+                 encoding=None, window=1000, doublequote=None,
+                 skipinitialspace=None):
         self.name = name
-        self.fh = seekable_stream(fileobj)
-        self.fileobj = UTF8Recoder(self.fh, encoding)
+        self.encoding, self.buf = analyze_stream(fileobj, encoding=encoding)
+        self.fileobj = fileobj
 
-        def fake_ilines(fobj):
-            for row in fobj:
-                yield row.decode('utf-8')
+        # For line breaking, use the (detected) encoding of the file:
+        terminators = [t.encode(self.encoding) for t in TERMINATORS]
+        self.terminators_re = re.compile('(%s)' % '|'.join(terminators))
 
-        self.lines = fake_ilines(self.fileobj)
         self._sample = []
-        self.delimiter = delimiter
-        self.quotechar = quotechar
-        self.window = window or 1000
-        self.doublequote = doublequote
-        self.lineterminator = lineterminator
-        self.skipinitialspace = skipinitialspace
+        self.window = window
+
         try:
-            for i in range(self.window):
-                self._sample.append(next(self.lines))
-        except StopIteration:
-            pass
+            sample = self.buf.decode(self.encoding).encode('utf-8')
+            self.dialect = csv.Sniffer().sniff(sample, delimiters=DELIMITERS)
+        except csv.Error:
+            self.dialect = csv.excel
+        # override detected dialect with constructor values.
+        self.dialect.delimiter = delimiter or str(self.dialect.delimiter)
+        self.dialect.quotechar = quotechar or str(self.dialect.quotechar)
+        if skipinitialspace is not None:
+            self.dialect.skipinitialspace = skipinitialspace
+        if doublequote is not None:
+            self.dialect.doublequote = doublequote
         super(CSVRowSet, self).__init__()
 
-    def dialect(self):
-        delim = '\n'  # NATIVE
-        sample = delim.join(self._sample)
-        try:
-            dialect = csv.Sniffer().sniff(sample, delimiters=DELIMITERS)
-            dialect.delimiter = self.delimiter or str(dialect.delimiter)
-            dialect.quotechar = self.quotechar or str(dialect.quotechar)
-            dialect.lineterminator = self.lineterminator or delim
-            if self.skipinitialspace is not None:
-                dialect.skipinitialspace = self.skipinitialspace
-            if self.lineterminator is not None:
-                dialect.lineterminator = self.lineterminator
-            dialect.doublequote = self.doublequote
-            return dialect
-        except csv.Error:
-            return csv.excel
+    def get_lines(self, sample=False):
+        for line in self._sample:
+            yield line
+
+        while True:
+            if self.buf is None:
+                break
+            if sample and len(self._sample) >= self.window:
+                break
+            match = self.terminators_re.search(self.buf)
+            if match is not None:
+                line = self.buf[:match.end(0)]
+                self.buf = self.buf[match.end(0):]
+            else:
+                buf = self.fileobj.read(BUFFER_SIZE)
+                if len(buf):
+                    self.buf += buf
+                    continue
+                else:
+                    line, self.buf = self.buf, None
+
+            line = line.decode(self.encoding).encode('utf-8')
+            if line in TERMINATORS or not len(line):
+                continue
+
+            if self.window >= len(self._sample):
+                self._sample.append(line)
+            yield line
 
     def raw(self, sample=False):
-        def rows():
-            for line in self._sample:
-                if PY2:
-                    yield line.encode('utf-8')
-                else:
-                    yield line
-            if not sample:
-                for line in self.lines:
-                    if PY2:
-                        yield line.encode('utf-8')
-                    else:
-                        yield line
-
         try:
-            for row in csv.reader(rows(), dialect=self.dialect()):
-                yield [Cell(to_unicode_or_bust(c)) for c in row]
+            for row in csv.reader(self.get_lines(sample=sample),
+                                  dialect=self.dialect):
+                yield [Cell(c.decode('utf-8')) for c in row]
         except csv.Error as err:
-            if u'newline inside string' in text_type(err) and sample:
-                pass
-            elif u'line contains NULL byte' in text_type(err):
-                pass
-            else:
-                raise ReadError('Error reading CSV: %r', err)
+            raise ReadError('Error reading CSV: %r', err)

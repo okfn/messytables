@@ -17,7 +17,7 @@ def seekable_stream(fileobj):
 class BufferedFile(object):
     """A buffered file that preserves the beginning of a stream."""
 
-    def __init__(self, fp, buffer_size=BUFFER_SIZE):
+    def __init__(self, fp, buffer_size=BUFFER_SIZE + 2):
         self.data = io.BytesIO()
         self.fp = fp
         self.offset = 0
