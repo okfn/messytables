@@ -1,7 +1,7 @@
 import re
 
 from messytables import ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet
-from messytables import HTMLTableSet, ODSTableSet
+from messytables import HTMLTableSet, ODSTableSet, TSVTableSet
 from messytables.buffered import seekable_stream
 from messytables.error import ReadError
 
@@ -32,10 +32,7 @@ MIMELOOKUP = {'application/x-zip-compressed': 'ZIP',
               }
 
 
-def TABTableSet(fileobj):
-    return CSVTableSet(fileobj, delimiter='\t')
-
-parsers = {'TAB': TABTableSet,
+parsers = {'TAB': TSVTableSet,
            'ZIP': ZIPTableSet,
            'XLS': XLSTableSet,
            'HTML': HTMLTableSet,
