@@ -211,7 +211,7 @@ class ReadCsvTest(unittest.TestCase):
         row_set.register_processor(headers_processor(['foo', 'bar']))
         data = list(row_set)
         assert 'foo' in data[12][0].column, data[12][0]
-        assert 'Chirurgie' in data[12][0].value, data[12][0].value
+        assert 'Chirurgie' in data[10][0].value, data[10][0].value
 
     def test_read_encoded_characters_csv(self):
         fh = horror_fobj('characters.csv')

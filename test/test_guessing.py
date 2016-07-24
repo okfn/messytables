@@ -100,7 +100,7 @@ class TypeGuessTest(unittest.TestCase):
     @attr("slow")
     def test_strict_type_guessing_with_large_file(self):
         fh = horror_fobj('211.csv')
-        rows = CSVTableSet(fh).tables[0]
+        rows = CSVTableSet(fh, encoding='iso-8859-2').tables[0]
         offset, headers = headers_guess(rows.sample)
         rows.register_processor(offset_processor(offset + 1))
         types = [String, Integer, Decimal, Date]
