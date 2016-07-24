@@ -1,16 +1,19 @@
+
 class MessytablesError(Exception):
-    """A generic error to inherit from"""
+    """A generic error to inherit from."""
 
 
 class ReadError(MessytablesError):
-    '''Error reading the file/stream in terms of the expected format.'''
-    pass
+    """Error reading the file/stream in terms of the expected format."""
 
 
 class TableError(MessytablesError, LookupError):
     """Couldn't identify correct table."""
-    pass
+
 
 class NoSuchPropertyError(MessytablesError, KeyError):
-    """The requested property doesn't exist"""
-    pass
+    """The requested property doesn't exist."""
+
+
+class InvalidDateError(Exception):
+    """Invalid date in structured data sources."""

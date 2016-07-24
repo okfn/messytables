@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from . import horror_fobj
+from .util import horror_fobj
 from messytables.any import any_tableset
 from messytables.core import RowSet
 from messytables.error import TableError

@@ -3,10 +3,9 @@ import re
 import zipfile
 
 from lxml import etree
+from typecast import String, Decimal, Date
 
 from messytables.core import RowSet, TableSet, Cell
-from messytables.types import (StringType, DecimalType,
-                               DateType)
 
 
 ODS_NAMESPACES_TAG_MATCH = re.compile(b"(<office:document-content[^>]*>)", re.MULTILINE)
@@ -15,21 +14,21 @@ ODS_TABLE_NAME = re.compile(b'.*?table:name=\"(.*?)\".*?')
 ODS_ROW_MATCH = re.compile(b".*?(<table:table-row.*?<\/.*?:table-row>).*?", re.MULTILINE)
 
 ODS_TYPES = {
-    'float': DecimalType(),
-    'date': DateType(None),
+    'float': Decimal(),
+    'date': Date(),
 }
 
 
 class ODSTableSet(TableSet):
-    """
-    A wrapper around ODS files. Because they are zipped and the info we want
-    is in the zipped file as content.xml we must ensure that we either have
-    a seekable object (local file) or that we retrieve all of the content from
-    the remote URL.
+    """A wrapper around ODS files.
+
+    Because they are zipped and the info we want is in the zipped file as
+    content.xml we must ensure that we either have a seekable object (local
+    file) or that we retrieve all of the content from the remote URL.
     """
 
     def __init__(self, fileobj, window=None, **kw):
-        '''Initialize the object.
+        """Initialize the object.
 
         :param fileobj: may be a file path or a file-like object. Note the
         file-like object *must* be in binary mode and must be seekable (it will
@@ -41,7 +40,7 @@ class ODSTableSet(TableSet):
         To get a seekable file you *cannot* use
         messytables.core.seekable_stream as it does not support the full seek
         functionality.
-        '''
+        """
         if hasattr(fileobj, 'read'):
             # wrap in a StringIO so we do not have hassle with seeks and
             # binary etc (see notes to __init__ above)
@@ -55,13 +54,12 @@ class ODSTableSet(TableSet):
         zf.close()
 
     def make_tables(self):
-        """
-            Return the sheets in the workbook.
+        """Return the sheets in the workbook.
 
-            A regex is used for this to avoid having to:
+        A regex is used for this to avoid having to:
 
-            1. load large the entire file into memory, or
-            2. SAX parse the file more than once
+        1. load large the entire file into memory, or
+        2. SAX parse the file more than once
         """
         namespace_tags = self._get_namespace_tags()
         sheets = [m.groups(0)[0]
@@ -78,8 +76,10 @@ class ODSTableSet(TableSet):
 
 
 class ODSRowSet(RowSet):
-    """ ODS support for a single sheet in the ODS workbook. Unlike
-    the CSV row set this is not a streaming operation. """
+    """ODS support for a single sheet in the ODS workbook.
+
+    Unlike the CSV row set this is not a streaming operation.
+    """
 
     def __init__(self, sheet, window=None, namespace_tags=None):
         self.sheet = sheet
@@ -120,7 +120,7 @@ class ODSRowSet(RowSet):
         super(ODSRowSet, self).__init__(typed=True)
 
     def raw(self, sample=False):
-        """ Iterate over all rows in this sheet. """
+        """Iterate over all rows in this sheet."""
         rows = ODS_ROW_MATCH.findall(self.sheet)
 
         for row in rows:
@@ -135,7 +135,7 @@ class ODSRowSet(RowSet):
                     children = elem.getchildren()
                     if children:
                         c = Cell(children[0].text,
-                                 type=ODS_TYPES.get(cell_type, StringType()))
+                                 type=ODS_TYPES.get(cell_type, String()))
                         row_data.append(c)
 
             if not row_data:

@@ -1,7 +1,9 @@
-from messytables import (ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet,
-                         HTMLTableSet, ODSTableSet)
-import messytables
 import re
+
+from messytables import ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet
+from messytables import HTMLTableSet, ODSTableSet, TSVTableSet
+from messytables.buffered import seekable_stream
+from messytables.error import ReadError
 
 
 MIMELOOKUP = {'application/x-zip-compressed': 'ZIP',
@@ -24,14 +26,13 @@ MIMELOOKUP = {'application/x-zip-compressed': 'ZIP',
               'application/pdf': 'PDF',
               'text/plain': 'CSV',  # could be TAB.
               'application/CDFV2-corrupt': 'XLS',
+              'application/CDFV2-unknown': 'XLS',
               'application/vnd.oasis.opendocument.spreadsheet': 'ODS',
               'application/x-vnd.oasis.opendocument.spreadsheet': 'ODS',
               }
 
-def TABTableSet(fileobj):
-    return CSVTableSet(fileobj, delimiter='\t')
 
-parsers = {'TAB': TABTableSet,
+parsers = {'TAB': TSVTableSet,
            'ZIP': ZIPTableSet,
            'XLS': XLSTableSet,
            'HTML': HTMLTableSet,
@@ -61,9 +62,9 @@ def get_mime(fileobj):
     import magic
     # Since we need to peek the start of the stream, make sure we can
     # seek back later. If not, slurp in the contents into a StringIO.
-    fileobj = messytables.seekable_stream(fileobj)
+    fileobj = seekable_stream(fileobj)
     header = fileobj.read(4096)
-    mimetype = magic.from_buffer(header, mime=True).decode('utf-8')
+    mimetype = magic.from_buffer(header, mime=True)  # .decode('utf-8')
     fileobj.seek(0)
     if MIMELOOKUP.get(mimetype) == 'ZIP':
         # consider whether it's an Microsoft Office document
@@ -159,13 +160,6 @@ def any_tableset(fileobj, mimetype=None, extension='', auto_detect=True, **kw):
                     mimetype=magic_mime))
 
     if error:
-        raise messytables.ReadError('any: \n'.join(error))
+        raise ReadError('any: \n'.join(error))
     else:
-        raise messytables.ReadError("any: Did not attempt any detection.")
-
-
-class AnyTableSet:
-    '''Deprecated - use any_tableset instead.'''
-    @staticmethod
-    def from_fileobj(fileobj, mimetype=None, extension=None):
-        return any_tableset(fileobj, mimetype=mimetype, extension=extension)
+        raise ReadError("any: Did not attempt any detection.")

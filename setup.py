@@ -19,7 +19,7 @@ See the full documentation at: https://messytables.readthedocs.io
 
 setup(
     name='messytables',
-    version='0.15.0',
+    version='1.99.0',
     description="Parse messy tabular data in various formats",
     long_description=long_desc,
     classifiers=[
@@ -40,17 +40,22 @@ setup(
     zip_safe=False,
     install_requires=[
         'xlrd>=0.8.0',
-        'python-magic>=0.4.6',  # used for type guessing
+        'python-magic>=0.4.6',  # used for file type guessing
         'chardet>=2.3.0',
-        'python-dateutil>=1.5.0',
+        'cchardet',
         'lxml>=3.2',
-        'requests',
+        'requests>=2.0',
         'html5lib',
+        'typecast>=0.3.3',
+        'six',
+        'ordereddict',
         'json-table-schema>=0.2, <=0.2.1'
     ],
     extras_require={'pdf': ['pdftables>=0.0.4']},
-    tests_require=[],
-    entry_points=\
-    """
-    """,
+    tests_require=[
+        'nose',
+        'httpretty',
+        'coverage'
+    ],
+    entry_points={}
 )
