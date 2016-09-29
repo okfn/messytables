@@ -64,7 +64,7 @@ def get_mime(fileobj):
     # seek back later. If not, slurp in the contents into a StringIO.
     fileobj = messytables.seekable_stream(fileobj)
     header = fileobj.read(4096)
-    mimetype = magic.from_buffer(header, mime=True).decode('utf-8')
+    mimetype = magic.from_buffer(header, mime=True)
     fileobj.seek(0)
     if MIMELOOKUP.get(mimetype) == 'ZIP':
         # consider whether it's an Microsoft Office document
