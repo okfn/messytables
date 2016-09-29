@@ -19,7 +19,7 @@ See the full documentation at: https://messytables.readthedocs.io
 
 setup(
     name='messytables',
-    version='0.15.0',
+    version='0.15.1',
     description="Parse messy tabular data in various formats",
     long_description=long_desc,
     classifiers=[
