@@ -24,6 +24,7 @@ MIMELOOKUP = {'application/x-zip-compressed': 'ZIP',
               'application/pdf': 'PDF',
               'text/plain': 'CSV',  # could be TAB.
               'application/CDFV2-corrupt': 'XLS',
+              'application/CDFV2-unknown': 'XLS',
               'application/vnd.oasis.opendocument.spreadsheet': 'ODS',
               'application/x-vnd.oasis.opendocument.spreadsheet': 'ODS',
               }
