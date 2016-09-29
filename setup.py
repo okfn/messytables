@@ -19,7 +19,7 @@ See the full documentation at: https://messytables.readthedocs.io
 
 setup(
     name='messytables',
-    version='0.15.0',
+    version='0.15.1',
     description="Parse messy tabular data in various formats",
     long_description=long_desc,
     classifiers=[
@@ -32,7 +32,7 @@ setup(
     keywords='',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
-    url='http://okfn.org',
+    url='https://okfn.org',
     license='MIT',
     packages=find_packages(exclude=['ez_setup', 'examples', 'test']),
     namespace_packages=[],

@@ -1,3 +1,15 @@
+0.15.1 (29 September 2016)
+* #158: Add CDFV2-unknown to MIMELOOKUP
+* #157: Fix for Python Magic API change
+* #156: HTTPSify URLs in layout.html
+* #153: Convert readthedocs links for their .org -> .io migration for
+  hosted projects
+* #147: Min python-dateutil version changed back to 1.5
+* #145: Fix upper limit for json-table-schema version
+* #143: Updated requirements.
+* #141: Don't parse inputs with length 1 as dates #140
+* #136: Pass any\_tableset arguments through to specific parsers.
+
 0.15 (19 June 2015)
 * #124 Python 2/3 multilingual.
 * #125 Fix ODS stopping at blank lines
