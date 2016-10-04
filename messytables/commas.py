@@ -74,7 +74,7 @@ class CSVRowSet(RowSet):
 
         # For line breaking, use the (detected) encoding of the file:
         linesep = [t.encode(self.encoding) for t in LINE_SEPARATOR]
-        linesep = b'(%s)' % b'|'.join(linesep)
+        linesep = b'(' + b'|'.join(linesep) + b')'
         self.linesep = re.compile(linesep)
 
         self._sample = []
