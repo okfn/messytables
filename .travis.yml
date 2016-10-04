@@ -1,6 +1,7 @@
 language: python
 python:
   - "2.7"
+  - "3.4"
   - "3.5"
 install:
   # Fix for html5lib, probably can be removed after the version after
