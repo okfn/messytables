@@ -185,8 +185,11 @@ class DateUtilType(CellType):
     result_type = datetime.datetime
 
     def test(self, value):
-        if len(value) == 1:
-             return False
+        try:
+            if len(value) == 1:
+                return False
+        except TypeError:
+            pass
         return CellType.test(self, value)
 
     def cast(self, value):
