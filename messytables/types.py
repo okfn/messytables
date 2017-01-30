@@ -188,9 +188,9 @@ class DateUtilType(CellType):
         try:
             if len(value) == 1:
                 return False
-            return CellType.test(self, value)
         except TypeError:
-            return False
+            pass
+        return CellType.test(self, value)
 
     def cast(self, value):
         if value in ('', None):
