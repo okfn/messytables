@@ -166,12 +166,12 @@ class TimeType(CellType):
         hour = int(value[2:4])
         minute = int(value[5:7])
         second = int(value[8:10])
-        if hour > 24:
+        if hour < 24:
+            return datetime.time(hour, minute, second)
+        else:
             return datetime.timedelta(hours=hour,
                                       minutes=minute,
                                       seconds=second)
-        else:
-            return datetime.time(hour, minute, second)
 
 
 class DateType(CellType):
