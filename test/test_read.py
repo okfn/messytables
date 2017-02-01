@@ -420,7 +420,7 @@ class ReadODSTest(unittest.TestCase):
         # Scientifed not supported
         assert_equal(rows[1][7], 100000)
         # Fraction
-        assert_equal(rows[1][8], 1.25)
+        assert_equal(rows[1][8], Decimal('1.25'))
         # Text
         assert_equal(rows[1][9], "abc")
 
