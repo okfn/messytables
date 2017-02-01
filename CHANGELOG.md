@@ -1,3 +1,6 @@
+0.15.2 (unreleased)
+* #: detect ods types: boolean, currency, time and percentage. support repeated columns
+
 0.15.1 (29 September 2016)
 * #158: Add CDFV2-unknown to MIMELOOKUP
 * #157: Fix for Python Magic API change
