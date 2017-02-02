@@ -424,6 +424,13 @@ class ReadODSTest(unittest.TestCase):
         # Text
         assert_equal(rows[1][9], "abc")
 
+    def test_ods_read_multi_line_cell(self):
+        fh = horror_fobj('multilineods.ods')
+        table_set = ODSTableSet(fh)
+        row_set = table_set.tables[0]
+        rows = row_set_to_rows(row_set)
+        assert_equal(rows[0][0], '1\n2\n3\n4')
+
 
 def row_set_to_rows(row_set):
     rows = []
