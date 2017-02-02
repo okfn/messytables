@@ -153,6 +153,7 @@ class ODSRowSet(RowSet):
 
             block = self.namespace_tags[0] + row + self.namespace_tags[1]
             partial = io.BytesIO(block)
+            empty_row = True
 
             for action, element in etree.iterparse(partial, ('end',)):
                 if element.tag != _tag(NS_OPENDOCUMENT_TABLE, TABLE_CELL):
@@ -165,6 +166,8 @@ class ODSRowSet(RowSet):
                     _tag(NS_OPENDOCUMENT_TABLE, COLUMN_REPEAT))
                 if cell_type == 'string':
                     cell = _read_text_cell(element)
+                    if cell.value != '':
+                        empty_row = False
                 elif cell_type == 'currency':
                     value = element.attrib.get(
                         _tag(NS_OPENDOCUMENT_OFFICE, value_token))
@@ -172,11 +175,13 @@ class ODSRowSet(RowSet):
                         _tag(NS_OPENDOCUMENT_OFFICE, 'currency'))
                     cell = Cell(value + ' ' + currency,
                                 type=CurrencyType())
+                    empty_row = False
                 elif cell_type is not None:
                     value = element.attrib.get(
                         _tag(NS_OPENDOCUMENT_OFFICE, value_token))
                     cell = Cell(value,
                                 type=ODS_TYPES.get(cell_type, StringType()))
+                    empty_row = False
                 else:
                     cell = Cell('', type=StringType())
                 if repeat:
@@ -185,8 +190,7 @@ class ODSRowSet(RowSet):
                 else:
                     row_data.append(cell)
 
-            empty_cells = [c for c in row_data if c.value == '']
-            if len(empty_cells) == len(row_data):
+            if empty_row:
                 # ignore blank lines
                 continue
 
