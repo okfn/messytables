@@ -181,23 +181,17 @@ class ODSRowSet(RowSet):
 
 
 def _read_cell(element):
-    cell_type = element.attrib.get(
-        _tag(NS_OPENDOCUMENT_OFFICE, VALUE_TYPE))
+    cell_type = element.attrib.get(_tag(NS_OPENDOCUMENT_OFFICE, VALUE_TYPE))
     value_token = ODS_VALUE_TOKEN.get(cell_type, 'value')
     if cell_type == 'string':
         cell = _read_text_cell(element)
     elif cell_type == 'currency':
-        value = element.attrib.get(
-            _tag(NS_OPENDOCUMENT_OFFICE, value_token))
-        currency = element.attrib.get(
-            _tag(NS_OPENDOCUMENT_OFFICE, 'currency'))
-        cell = Cell(value + ' ' + currency,
-                    type=CurrencyType())
+        value = element.attrib.get(_tag(NS_OPENDOCUMENT_OFFICE, value_token))
+        currency = element.attrib.get(_tag(NS_OPENDOCUMENT_OFFICE, 'currency'))
+        cell = Cell(value + ' ' + currency, type=CurrencyType())
     elif cell_type is not None:
-        value = element.attrib.get(
-            _tag(NS_OPENDOCUMENT_OFFICE, value_token))
-        cell = Cell(value,
-                    type=ODS_TYPES.get(cell_type, StringType()))
+        value = element.attrib.get(_tag(NS_OPENDOCUMENT_OFFICE, value_token))
+        cell = Cell(value, type=ODS_TYPES.get(cell_type, StringType()))
     else:
         cell = Cell('', type=StringType())
 
