@@ -159,31 +159,12 @@ class ODSRowSet(RowSet):
                 if element.tag != _tag(NS_OPENDOCUMENT_TABLE, TABLE_CELL):
                     continue
 
-                cell_type = element.attrib.get(
-                    _tag(NS_OPENDOCUMENT_OFFICE, VALUE_TYPE))
-                value_token = ODS_VALUE_TOKEN.get(cell_type, 'value')
+                cell = _read_cell(element)
+                if cell.value != '':
+                    empty_row = False
+
                 repeat = element.attrib.get(
                     _tag(NS_OPENDOCUMENT_TABLE, COLUMN_REPEAT))
-                if cell_type == 'string':
-                    cell = _read_text_cell(element)
-                    if cell.value != '':
-                        empty_row = False
-                elif cell_type == 'currency':
-                    value = element.attrib.get(
-                        _tag(NS_OPENDOCUMENT_OFFICE, value_token))
-                    currency = element.attrib.get(
-                        _tag(NS_OPENDOCUMENT_OFFICE, 'currency'))
-                    cell = Cell(value + ' ' + currency,
-                                type=CurrencyType())
-                    empty_row = False
-                elif cell_type is not None:
-                    value = element.attrib.get(
-                        _tag(NS_OPENDOCUMENT_OFFICE, value_token))
-                    cell = Cell(value,
-                                type=ODS_TYPES.get(cell_type, StringType()))
-                    empty_row = False
-                else:
-                    cell = Cell('', type=StringType())
                 if repeat:
                     number_of_repeat = int(repeat)
                     row_data += [cell] * number_of_repeat
@@ -197,6 +178,30 @@ class ODSRowSet(RowSet):
             del partial
             yield row_data
         del rows
+
+
+def _read_cell(element):
+    cell_type = element.attrib.get(
+        _tag(NS_OPENDOCUMENT_OFFICE, VALUE_TYPE))
+    value_token = ODS_VALUE_TOKEN.get(cell_type, 'value')
+    if cell_type == 'string':
+        cell = _read_text_cell(element)
+    elif cell_type == 'currency':
+        value = element.attrib.get(
+            _tag(NS_OPENDOCUMENT_OFFICE, value_token))
+        currency = element.attrib.get(
+            _tag(NS_OPENDOCUMENT_OFFICE, 'currency'))
+        cell = Cell(value + ' ' + currency,
+                    type=CurrencyType())
+    elif cell_type is not None:
+        value = element.attrib.get(
+            _tag(NS_OPENDOCUMENT_OFFICE, value_token))
+        cell = Cell(value,
+                    type=ODS_TYPES.get(cell_type, StringType()))
+    else:
+        cell = Cell('', type=StringType())
+
+    return cell
 
 
 def _read_text_cell(element):
