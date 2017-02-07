@@ -2,11 +2,11 @@
 
 [![Build Status](https://travis-ci.org/okfn/messytables.png?branch=master)](https://travis-ci.org/okfn/messytables)
 [![Coverage Status](https://coveralls.io/repos/okfn/messytables/badge.png?branch=master)](https://coveralls.io/r/okfn/messytables?branch=master)
-[![Latest Version](https://pypip.in/version/messytables/badge.svg)](https://pypi.python.org/pypi/messytables/)
-[![Downloads](https://pypip.in/download/messytables/badge.svg)](https://pypi.python.org/pypi/messytables/)
-[![Supported Python versions](https://pypip.in/py_versions/messytables/badge.svg)](https://pypi.python.org/pypi/ckanserviceprovider/)
-[![Development Status](https://pypip.in/status/messytables/badge.svg)](https://pypi.python.org/pypi/messytables/)
-[![License](https://pypip.in/license/messytables/badge.svg)](https://pypi.python.org/pypi/messytables/)
+[![Latest Version](https://img.shields.io/pypi/v/messytables.svg)](https://pypi.python.org/pypi/messytables/)
+
+<-- download counts not working on pypi atm https://github.com/badges/shields/issues/716
+[![Downloads](https://img.shields.io/pypi/dm/messytables.svg)](https://pypi.python.org/pypi/messytables/)
+-->
 
 A library for dealing with messy tabular data in several formats, guessing types and detecting headers.
 
