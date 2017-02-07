@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from decimal import Decimal
 from . import horror_fobj
 from nose.plugins.attrib import attr
 from nose.tools import assert_equal
@@ -21,6 +22,7 @@ from messytables import (CSVTableSet, StringType, HTMLTableSet,
                          null_processor)
 import datetime
 stringy = type(u'')
+
 
 class ReadCsvTest(unittest.TestCase):
     def test_utf8bom_lost(self):
@@ -188,7 +190,8 @@ class ReadCsvTest(unittest.TestCase):
             row_set = table_set.tables[0]
             return row_set
 
-        second = lambda r: r[1].value
+        def second(row):
+            return row[1].value
 
         assert "goodbye" in list(map(second, rows(True)))
         assert "    goodbye" in list(map(second, rows(False)))
@@ -308,9 +311,9 @@ class ReadODSTest(unittest.TestCase):
         assert_equal(6, len(table_set.tables))
         row_set = table_set.tables[0]
         row = next(row_set.raw())
-        assert len(row) == 5, len(row)
+        assert len(row) == 16384, len(row)
         for row in row_set.sample:
-            assert len(row) == 5, len(row)
+            assert len(row) == 16384, len(row)
 
     def test_ods_version_4412(self):
         fh = horror_fobj('loffice-4.4.1.2.ods')
@@ -334,10 +337,112 @@ class ReadODSTest(unittest.TestCase):
         assert_equal(rows[2][0], 'Jane')
         assert_equal(rows[3][0], 'Ian')
 
+    def test_ods_read_all_supported_formats(self):
+        fh = horror_fobj('ods_formats.ods')
+        table_set = ODSTableSet(fh)
+        assert_equal(3, len(table_set.tables))
+        row_set = table_set.tables[0]
+        rows = row_set_to_rows(row_set)
+        assert_equal(rows[0][0], "Date")
+        assert_equal(rows[1][0], "2014-11-11")
+        assert_equal(rows[2][0], "2001-01-01")
+        assert_equal(rows[3][0], '')
+        # time formats
+        assert_equal(rows[0][1], "Time")
+        assert_equal(rows[1][1], "PT11H12M12S")
+        assert_equal(rows[2][1], "PT00H00M12S")
+        assert_equal(rows[4][1], 'PT27H17M54S')
+        assert_equal(rows[5][1], "Other")
+        # boolean
+        assert_equal(rows[0][2], "Boolean")
+        assert_equal(rows[1][2], 'true')
+        assert_equal(rows[2][2], 'false')
+        # Float
+        assert_equal(rows[0][3], "Float")
+        assert_equal(rows[1][3], '11.11')
+        # Currency
+        assert_equal(rows[0][4], "Currency")
+        assert_equal(rows[1][4], '1 GBP')
+        assert_equal(rows[2][4], '-10000 GBP')
+        # Percentage
+        assert_equal(rows[0][5], "Percentage")
+        assert_equal(rows[1][5], '2')
+        # int
+        assert_equal(rows[0][6], "Int")
+        assert_equal(rows[1][6], '3')
+        assert_equal(rows[4][6], '11')
+        # Scientific value is used but its notation is not
+        assert_equal(rows[1][7], '100000')
+        # Fraction
+        assert_equal(rows[1][8], '1.25')
+        # Text
+        assert_equal(rows[1][9], "abc")
+
+    def test_ods_read_all_supported_formats_casted(self):
+        fh = horror_fobj('ods_formats.ods')
+        table_set = ODSTableSet(fh)
+        assert_equal(3, len(table_set.tables))
+        row_set = table_set.tables[0]
+        rows = cast_row_set_to_rows(row_set)
+        date_format = "%d/%m/%Y"
+        assert_equal(rows[0][0], "Date")
+        assert_equal(rows[1][0].strftime(date_format), "11/11/2014")
+        assert_equal(rows[2][0].strftime(date_format), "01/01/2001")
+        assert_equal(rows[3][0], '')
+        # time formats
+        time_format = "%S:%M:%H"
+        assert_equal(rows[0][1], "Time")
+        assert_equal(rows[1][1].strftime(time_format), "12:12:11")
+        assert_equal(rows[2][1].strftime(time_format), "12:00:00")
+        assert_equal(rows[3][1], 0)
+        assert_equal(rows[4][1], datetime.timedelta(hours=27,
+                                                    minutes=17,
+                                                    seconds=54))
+        assert_equal(rows[5][1], "Other")
+        # boolean
+        assert_equal(rows[0][2], "Boolean")
+        assert_equal(rows[1][2], True)
+        assert_equal(rows[2][2], False)
+        # Float
+        assert_equal(rows[0][3], "Float")
+        assert_equal(rows[1][3], Decimal('11.11'))
+        # Currency
+        assert_equal(rows[0][4], "Currency")
+        assert_equal(rows[1][4], Decimal('1'))
+        assert_equal(rows[2][4], Decimal('-10000'))
+        # Percentage
+        assert_equal(rows[0][5], "Percentage")
+        assert_equal(rows[1][5], Decimal('0.02'))
+        # int
+        assert_equal(rows[0][6], "Int")
+        assert_equal(rows[1][6], 3)
+        assert_equal(rows[4][6], 11)
+        # Scientific value is used but its notation is not
+        assert_equal(rows[1][7], 100000)
+        # Fraction
+        assert_equal(rows[1][8], Decimal('1.25'))
+        # Text
+        assert_equal(rows[1][9], "abc")
+
+    def test_ods_read_multi_line_cell(self):
+        fh = horror_fobj('multilineods.ods')
+        table_set = ODSTableSet(fh)
+        row_set = table_set.tables[0]
+        rows = row_set_to_rows(row_set)
+        assert_equal(rows[0][0], '1\n2\n3\n4')
+
+
 def row_set_to_rows(row_set):
     rows = []
     for row in row_set:
         rows.append([cell.value for cell in row])
+    return rows
+
+
+def cast_row_set_to_rows(row_set):
+    rows = []
+    for row in row_set:
+        rows.append([cell.type.cast(cell.value) for cell in row])
     return rows
 
 
@@ -573,8 +678,8 @@ class ReadPdfTest(unittest.TestCase):
                 PDFTableSet(fh)
             except ImportError:
                 # Optional library isn't installed. Skip the tests.
-                raise SkipTest("pdftables is not installed, skipping PDF tests")
-
+                raise SkipTest(
+                    "pdftables is not installed, skipping PDF tests")
 
     def test_read_simple_pdf(self):
         with horror_fobj('simple.pdf') as fh:

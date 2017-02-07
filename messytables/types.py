@@ -103,6 +103,27 @@ class DecimalType(CellType):
             return decimal.Decimal(value)
 
 
+class PercentageType(DecimalType):
+    """ Decimal number, ``decimal.Decimal`` or float numbers. """
+    guessing_weight = 0
+
+    def cast(self, value):
+        result = DecimalType.cast(self, value)
+        if result:
+            result = result/decimal.Decimal('100')
+        return result
+
+
+class CurrencyType(DecimalType):
+    guessing_weight = 0
+    result_type = decimal.Decimal
+
+    def cast(self, value):
+        value_without_currency = value.split(' ')[0]
+        return DecimalType.cast(self,
+                                value_without_currency)
+
+
 class FloatType(DecimalType):
     """ FloatType is deprecated """
     pass
@@ -132,6 +153,25 @@ class BoolType(CellType):
         if s in self.false_values:
             return False
         raise ValueError
+
+
+class TimeType(CellType):
+    result_type = datetime.time
+
+    def cast(self, value):
+        if isinstance(value, self.result_type):
+            return value
+        if value in ('', None):
+            return None
+        hour = int(value[2:4])
+        minute = int(value[5:7])
+        second = int(value[8:10])
+        if hour < 24:
+            return datetime.time(hour, minute, second)
+        else:
+            return datetime.timedelta(hours=hour,
+                                      minutes=minute,
+                                      seconds=second)
 
 
 class DateType(CellType):
@@ -198,7 +238,8 @@ class DateUtilType(CellType):
         return parser.parse(value)
 
 
-TYPES = [StringType, DecimalType, IntegerType, DateType, BoolType]
+TYPES = [StringType, DecimalType, IntegerType, DateType, BoolType,
+         TimeType, CurrencyType, PercentageType]
 
 
 def type_guess(rows, types=TYPES, strict=False):
