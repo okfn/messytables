@@ -371,7 +371,7 @@ class ReadODSTest(unittest.TestCase):
         assert_equal(rows[0][6], "Int")
         assert_equal(rows[1][6], '3')
         assert_equal(rows[4][6], '11')
-        # Scientifed not supported
+        # Scientific value is used but its notation is not
         assert_equal(rows[1][7], '100000')
         # Fraction
         assert_equal(rows[1][8], '1.25')
@@ -417,7 +417,7 @@ class ReadODSTest(unittest.TestCase):
         assert_equal(rows[0][6], "Int")
         assert_equal(rows[1][6], 3)
         assert_equal(rows[4][6], 11)
-        # Scientifed not supported
+        # Scientific value is used but its notation is not
         assert_equal(rows[1][7], 100000)
         # Fraction
         assert_equal(rows[1][8], Decimal('1.25'))
