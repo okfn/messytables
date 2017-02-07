@@ -26,6 +26,7 @@ NS_OPENDOCUMENT_OFFICE = NS_OPENDOCUMENT_PTTN % "office:1.0"
 TABLE_CELL = 'table-cell'
 VALUE_TYPE = 'value-type'
 COLUMN_REPEAT = 'number-columns-repeated'
+EMPTY_CELL_VALUE = ''
 
 ODS_VALUE_TOKEN = {
     "float": "value",
@@ -160,7 +161,7 @@ class ODSRowSet(RowSet):
                     continue
 
                 cell = _read_cell(element)
-                if cell.value != '':
+                if empty_row is True and cell.value != EMPTY_CELL_VALUE:
                     empty_row = False
 
                 repeat = element.attrib.get(
@@ -193,7 +194,7 @@ def _read_cell(element):
         value = element.attrib.get(_tag(NS_OPENDOCUMENT_OFFICE, value_token))
         cell = Cell(value, type=ODS_TYPES.get(cell_type, StringType()))
     else:
-        cell = Cell('', type=StringType())
+        cell = Cell(EMPTY_CELL_VALUE, type=StringType())
 
     return cell
 
@@ -205,11 +206,11 @@ def _read_text_cell(element):
         if child.text:
             text_content.append(child.text)
         else:
-            text_content.append('')
+            text_content.append(EMPTY_CELL_VALUE)
     if len(text_content) > 0:
         cell_value = '\n'.join(text_content)
     else:
-        cell_value = ''
+        cell_value = EMPTY_CELL_VALUE
     return Cell(cell_value, type=StringType())
 
 
