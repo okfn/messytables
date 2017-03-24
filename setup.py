@@ -45,7 +45,8 @@ setup(
         'python-dateutil>=1.5.0',
         'lxml>=3.2',
         'requests',
-        'html5lib',
+        'six>=1.9', # until messytables->html5lib releases https://github.com/html5lib/html5lib-python/pull/301  
+        'html5lib',        
         'json-table-schema>=0.2, <=0.2.1'
     ],
     extras_require={'pdf': ['pdftables>=0.0.4']},
