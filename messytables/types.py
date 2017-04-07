@@ -29,7 +29,7 @@ class CellType(object):
         try:
             self.cast(value)
             return True
-        except:
+        except Exception:
             return False
 
     @classmethod
@@ -77,7 +77,9 @@ class IntegerType(CellType):
 
         try:
             value = float(value)
-        except:
+        except Exception:
+            # get rid of thousands separators
+            # e.g. "1,000"
             return locale.atoi(value)
 
         if value.is_integer():
@@ -96,7 +98,9 @@ class DecimalType(CellType):
             return None
         try:
             return decimal.Decimal(value)
-        except:
+        except Exception:
+            # get rid of thousands separators
+            # e.g. "1,000.00"
             value = locale.atof(value)
             if sys.version_info < (2, 7):
                 value = str(value)
@@ -110,7 +114,7 @@ class PercentageType(DecimalType):
     def cast(self, value):
         result = DecimalType.cast(self, value)
         if result:
-            result = result/decimal.Decimal('100')
+            result = result / decimal.Decimal('100')
         return result
 
 
@@ -225,11 +229,9 @@ class DateUtilType(CellType):
     result_type = datetime.datetime
 
     def test(self, value):
-        if not(
-            isinstance(value, datetime.datetime) or
-            (isinstance(value, string_types) and is_date(value))
-            ):
-             return False
+        if not(isinstance(value, datetime.datetime) or
+               (isinstance(value, string_types) and is_date(value))):
+            return False
         return CellType.test(self, value)
 
     def cast(self, value):
@@ -318,7 +320,7 @@ def types_processor(types, strict=False):
             try:
                 cell.value = type.cast(cell.value)
                 cell.type = type
-            except:
+            except Exception:
                 if strict and type:
                     raise
         return row
