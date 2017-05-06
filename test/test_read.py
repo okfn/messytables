@@ -431,6 +431,20 @@ class ReadODSTest(unittest.TestCase):
         rows = row_set_to_rows(row_set)
         assert_equal(rows[0][0], '1\n2\n3\n4')
 
+    def test_ods_read_multi_node_text_in_a_paragraph(self):
+        fh = horror_fobj("multinodein-a-p.ods")
+        table_set = ODSTableSet(fh)
+        row_set = table_set.tables[0]
+        rows = row_set_to_rows(row_set)
+        assert_equal(rows[1][1], "PRODUCT NAME PMP")
+
+    def test_ods_read_12_days_from_288_hours(self):
+        fh = horror_fobj("12_day_as_time.ods")
+        table_set = ODSTableSet(fh)
+        row_set = table_set.tables[0]
+        rows = cast_row_set_to_rows(row_set)
+        assert_equal(rows[0][0].days, 12)
+
 
 def row_set_to_rows(row_set):
     rows = []

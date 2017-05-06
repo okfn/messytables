@@ -203,10 +203,8 @@ def _read_text_cell(element):
     children = element.getchildren()
     text_content = []
     for child in children:
-        if child.text:
-            text_content.append(child.text)
-        else:
-            text_content.append(EMPTY_CELL_VALUE)
+        text = "".join([x for x in child.itertext()])
+        text_content.append(text)
     if len(text_content) > 0:
         cell_value = '\n'.join(text_content)
     else:
