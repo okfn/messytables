@@ -238,7 +238,7 @@ Messytables can convert guessed headers and types to the `JSON table schema`_.
 License
 -------
 
-Copyright (c) 2017 The Open Knowledge International and contributors
+Copyright (c) 2017 The Open Knowledge Foundation Ltd and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
