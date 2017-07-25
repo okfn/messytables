@@ -1,6 +1,5 @@
 import io
 import re
-import zipfile
 
 from lxml import etree
 
@@ -10,13 +9,13 @@ from messytables.types import (StringType, DecimalType,
                                TimeType, PercentageType)
 
 
-ODS_NAMESPACES_TAG_MATCH = re.compile(
-    b"(<office:document-content[^>]*>)", re.MULTILINE)
+FODS_NAMESPACES_TAG_MATCH = re.compile(
+    b"(<office:document[^>]*>)", re.MULTILINE)
 ODS_TABLE_MATCH = re.compile(
-    b".*?(<table:table.*?<\/.*?:table>).*?", re.MULTILINE)
+    b".*?(<table:table.*?<\/.*?:table>).*?", re.DOTALL)
 ODS_TABLE_NAME = re.compile(b'.*?table:name=\"(.*?)\".*?')
 ODS_ROW_MATCH = re.compile(
-    b".*?(<table:table-row.*?<\/.*?:table-row>).*?", re.MULTILINE)
+    b".*?(<table:table-row.*?<\/.*?:table-row>).*?", re.DOTALL)
 
 NS_OPENDOCUMENT_PTTN = u"urn:oasis:names:tc:opendocument:xmlns:%s"
 NS_CAL_PTTN = u"urn:org:documentfoundation:names:experimental:calc:xmlns:%s"
@@ -46,7 +45,7 @@ ODS_TYPES = {
 }
 
 
-class ODSTableSet(TableSet):
+class FODSTableSet(TableSet):
     """
     A wrapper around ODS files. Because they are zipped and the info we want
     is in the zipped file as content.xml we must ensure that we either have
@@ -76,9 +75,7 @@ class ODSTableSet(TableSet):
 
         self.window = window
 
-        zf = zipfile.ZipFile(fileobj).open("content.xml")
-        self.content = zf.read()
-        zf.close()
+        self.content = fileobj.read()
 
     def make_tables(self):
         """
@@ -92,18 +89,18 @@ class ODSTableSet(TableSet):
         namespace_tags = self._get_namespace_tags()
         sheets = [m.groups(0)[0]
                   for m in ODS_TABLE_MATCH.finditer(self.content)]
-        return [ODSRowSet(sheet, self.window, namespace_tags)
+        return [FODSRowSet(sheet, self.window, namespace_tags)
                 for sheet in sheets]
 
     def _get_namespace_tags(self):
-        match = re.search(ODS_NAMESPACES_TAG_MATCH, self.content)
+        match = re.search(FODS_NAMESPACES_TAG_MATCH, self.content)
         assert match
         tag_open = match.groups()[0]
-        tag_close = b'</office:document-content>'
+        tag_close = b'</office:document>'
         return tag_open, tag_close
 
 
-class ODSRowSet(RowSet):
+class FODSRowSet(RowSet):
     """ ODS support for a single sheet in the ODS workbook. Unlike
     the CSV row set this is not a streaming operation. """
 
@@ -143,7 +140,7 @@ class ODSRowSet(RowSet):
             ods_footer = u"</wrapper>".encode('utf-8')
             self.namespace_tags = (ods_header, ods_footer)
 
-        super(ODSRowSet, self).__init__(typed=True)
+        super(FODSRowSet, self).__init__(typed=True)
 
     def raw(self, sample=False):
         """ Iterate over all rows in this sheet. """
