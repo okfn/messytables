@@ -130,7 +130,7 @@ class HTMLRowSet(RowSet):
 
 
 class FakeHTMLCell(Cell):
-    """FakeHTMLCells are not present because of column or row spannning."""
+    """FakeHTMLCells are not present because of column or row spanning."""
 
     def __init__(self):
         super(FakeHTMLCell, self).__init__("")
@@ -145,7 +145,7 @@ class HTMLCell(Cell):
     """ The Cell __init__ signature is:
     def __init__(self, value=None, column=None, type=None):
     where 'value' is the primary input, 'column' is a column name, and
-    type is messytables.types.StringType() or better."""
+    type is messytables.types.String() or better."""
 
     def __init__(self, value=None, column=None, type=None, source=None):
         assert value is None

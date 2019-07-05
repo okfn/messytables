@@ -21,22 +21,3 @@ def type_guess(rows, types=GUESS_TYPES, strict=False):
             # add string guess so that we have at least one guess
             guessers[j].add(cell.value)
     return [g.best for g in guessers]
-
-
-def types_processor(types, strict=False):
-    """Apply the column types to the each row.
-
-    Strict means that casting errors are not ignored.
-    """
-    def apply_types(row_set, row):
-        if types is None:
-            return row
-        for cell, type in six.moves.zip_longest(row, types):
-            try:
-                cell.value = type.cast(cell.value)
-                cell.type = type
-            except:
-                if strict and type:
-                    raise
-        return row
-    return apply_types
