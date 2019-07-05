@@ -182,15 +182,8 @@ of a given column into all types and searching for the best match.
 
 .. automethod:: messytables.types.type_guess
 
-The supported types include:
-
-.. autoclass:: messytables.types.StringType
-.. autoclass:: messytables.types.IntegerType
-.. autoclass:: messytables.types.FloatType
-.. autoclass:: messytables.types.DecimalType
-.. autoclass:: messytables.types.BoolType
-.. autoclass:: messytables.types.DateType
-.. autoclass:: messytables.types.DateUtilType
+The supported types are detailed in
+`typecast <https://github.com/pudo/typecast#typecast>`_
 
 Headers detection
 -----------------

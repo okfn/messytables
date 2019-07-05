@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from .util import horror_fobj
+from util import horror_fobj
 from messytables.any import any_tableset
 from messytables.error import NoSuchPropertyError
 from nose.tools import (
