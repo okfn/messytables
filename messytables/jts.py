@@ -1,45 +1,30 @@
-'''
-Convert a rowset to the json table schema
-(http://www.dataprotocols.org/en/latest/json-table-schema.html)
-'''
+"""Convert a rowset to the json table schema.
 
-import messytables
+(http://www.dataprotocols.org/en/latest/json-table-schema.html)
+"""
 import jsontableschema
 
-MESSYTABLES_TO_JTS_MAPPING = {
-    messytables.StringType: 'string',
-    messytables.IntegerType: 'integer',
-    messytables.FloatType: 'number',
-    messytables.DecimalType: 'number',
-    messytables.DateType: 'date',
-    messytables.DateUtilType: 'date',
-    messytables.BoolType: 'boolean'
-}
-
-
-def celltype_as_string(celltype):
-    return MESSYTABLES_TO_JTS_MAPPING[celltype.__class__]
+from messytables.headers import headers_guess
+from messytables.types import type_guess
 
 
 def rowset_as_jts(rowset, headers=None, types=None):
-    ''' Create a json table schema from a rowset
-    '''
-    _, headers = messytables.headers_guess(rowset.sample)
-    types = list(map(celltype_as_string, messytables.type_guess(rowset.sample)))
-
+    """Create a json table schema from a rowset."""
+    _, headers = headers_guess(rowset.sample)
+    types = type_guess(rowset.sample)
+    types = [t.jts_name for t in types]
     return headers_and_typed_as_jts(headers, types)
 
 
 def headers_and_typed_as_jts(headers, types):
-    ''' Create a json table schema from headers and types as
-    returned from :meth:`~messytables.headers.headers_guess`
+    """Create a json table schema from headers and types.
+
+    Those specs are returned from :meth:`~messytables.headers.headers_guess`
     and :meth:`~messytables.types.type_guess`.
-    '''
-    j = jsontableschema.JSONTableSchema()
-
+    """
+    jts = jsontableschema.JSONTableSchema()
     for field_id, field_type in zip(headers, types):
-        j.add_field(field_id=field_id,
-                    label=field_id,
-                    field_type=field_type)
-
-    return j
+        jts.add_field(field_id=field_id,
+                      label=field_id,
+                      field_type=field_type)
+    return jts

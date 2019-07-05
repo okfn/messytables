@@ -19,7 +19,7 @@ See the full documentation at: https://messytables.readthedocs.io
 
 setup(
     name='messytables',
-    version='0.15.2',
+    version='1.99.0',
     description="Parse messy tabular data in various formats",
     long_description=long_desc,
     classifiers=[
@@ -42,16 +42,20 @@ setup(
         'xlrd>=0.8.0',
         'python-magic>=0.4.12',  # used for type guessing
         'chardet>=2.3.0',
-        'python-dateutil>=1.5.0',
+        'cchardet',
         'lxml>=3.2',
-        'requests',
-        'six>=1.9', # until messytables->html5lib releases https://github.com/html5lib/html5lib-python/pull/301  
-        'html5lib',        
-        'json-table-schema>=0.2, <=0.2.1'
+        'requests>=2.0',
+        'html5lib',
+        'json-table-schema>=0.2, <=0.2.1',
+        'typecast>=0.3.3',
+        'six',
+        'ordereddict',
     ],
     extras_require={'pdf': ['pdftables>=0.0.4']},
-    tests_require=[],
-    entry_points=\
-    """
-    """,
+    tests_require=[
+        'nose',
+        'httpretty',
+        'coverage'
+    ],
+    entry_points={}
 )
