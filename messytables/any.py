@@ -1,5 +1,5 @@
 from messytables import (ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet,
-                         HTMLTableSet, ODSTableSet)
+                         HTMLTableSet, ODSTableSet, FODSTableSet)
 import messytables
 import re
 
@@ -39,6 +39,7 @@ parsers = {'TAB': TABTableSet,
            'HTML': HTMLTableSet,
            'CSV': CSVTableSet,
            'ODS': ODSTableSet,
+           'FODS': FODSTableSet,
            'PDF': PDFTableSet}
 
 
@@ -107,7 +108,8 @@ def guess_ext(ext):
               'xlsm': 'XLS',
               'xltx': 'XLS',
               'xltm': 'XLS',
-              'ods': 'ODS'}
+              'ods': 'ODS',
+              'fods': 'FODS'}
     if ext in lookup:
         return lookup.get(ext, None)
 

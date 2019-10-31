@@ -5,7 +5,7 @@ from . import horror_fobj
 from nose.tools import assert_equal
 from nose.plugins.skip import SkipTest
 from messytables import (any_tableset, XLSTableSet, ZIPTableSet, PDFTableSet,
-                         CSVTableSet, ODSTableSet,
+                         CSVTableSet, ODSTableSet, FODSTableSet,
                          ReadError)
 
 suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
@@ -13,6 +13,7 @@ suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
          {'filename': 'simple.xlsx', 'tableset': XLSTableSet},
          {'filename': 'simple.zip', 'tableset': ZIPTableSet},
          {'filename': 'simple.ods', 'tableset': ODSTableSet},
+         {'filename': 'simple.fods', 'tableset': FODSTableSet},
          {'filename': 'bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm',
           'tableset': XLSTableSet},
          ]
