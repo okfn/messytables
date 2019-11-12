@@ -1,4 +1,4 @@
-from messytables import (ZIPTableSet, PDFTableSet, CSVTableSet, XLSTableSet,
+from messytables import (ZIPTableSet, CSVTableSet, XLSTableSet,
                          HTMLTableSet, ODSTableSet)
 import messytables
 import re
@@ -21,7 +21,6 @@ MIMELOOKUP = {'application/x-zip-compressed': 'ZIP',
               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/zip': 'XLS',
               'text/html': 'HTML',
               'application/xml': 'HTML', # XHTML is often served as application-xml
-              'application/pdf': 'PDF',
               'text/plain': 'CSV',  # could be TAB.
               'application/CDFV2-corrupt': 'XLS',
               'application/CDFV2-unknown': 'XLS',
@@ -38,8 +37,7 @@ parsers = {'TAB': TABTableSet,
            'XLS': XLSTableSet,
            'HTML': HTMLTableSet,
            'CSV': CSVTableSet,
-           'ODS': ODSTableSet,
-           'PDF': PDFTableSet}
+           'ODS': ODSTableSet}
 
 
 def clean_ext(filename):
@@ -99,7 +97,6 @@ def guess_ext(ext):
               'xlsx': 'XLS',
               'htm': 'HTML',
               'html': 'HTML',
-              'pdf': 'PDF',
               'xlt': 'XLS',
                 # obscure Excel extensions taken from
                 # http://en.wikipedia.org/wiki/List_of_Microsoft_Office_filename_extensions

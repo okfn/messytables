@@ -144,19 +144,6 @@ tables is ill-defined.
 
 .. autoclass:: messytables.html.HTMLRowSet
 
-PDF file support
-----------------
-
-The library supports PDF documents, using
-`pdftables <https://pdftables.readthedocs.io>`_ to extract tables.
-
-Works only for PDFs which contain text information: somewhat erratic in quality.
-
-.. autoclass:: messytables.pdf.PDFTableSet
-  :members: tables
-
-.. autoclass:: messytables.pdf.PDFRowSet
-
 ZIP file support
 ----------------
 

@@ -4,7 +4,7 @@ import unittest
 from . import horror_fobj
 from nose.tools import assert_equal
 from nose.plugins.skip import SkipTest
-from messytables import (any_tableset, XLSTableSet, ZIPTableSet, PDFTableSet,
+from messytables import (any_tableset, XLSTableSet, ZIPTableSet,
                          CSVTableSet, ODSTableSet,
                          ReadError)
 
@@ -16,17 +16,6 @@ suite = [{'filename': 'simple.csv', 'tableset': CSVTableSet},
          {'filename': 'bian-anal-mca-2005-dols-eng-1011-0312-tab3.xlsm',
           'tableset': XLSTableSet},
          ]
-
-# Special handling for PDFTables - skip if not installed
-try:
-    import pdftables
-except ImportError:
-    got_pdftables = False
-    suite.append({"filename": "simple.pdf", "tableset": False})
-else:
-    from messytables import PDFTableSet
-    got_pdftables = True
-    suite.append({"filename": "simple.pdf", "tableset": PDFTableSet})
 
 
 def test_simple():
