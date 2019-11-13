@@ -26,5 +26,4 @@ WORKDIR /home/messytables
 COPY ./requirements-test.txt /home/messytables/
 RUN pip install --user -r /home/messytables/requirements-test.txt
 RUN pip3 install --user -r /home/messytables/requirements-test.txt
-RUN pip install --user pdftables
 COPY . /home/messytables/

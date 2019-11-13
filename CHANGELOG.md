@@ -1,3 +1,5 @@
+* Remove PDF functionality (PDFTableSet)- pdftables is not maintained
+
 0.15.2 (8 February 2017)
 * #165: detect ods types: boolean, currency, time and percentage. support repeated columns
 * #160: Correct spelling of separator in source
