@@ -1,5 +1,8 @@
 from messytables.util import OrderedDict
-from collections import Mapping
+try:
+    from collections.abc import Mapping
+except ImportError:
+    from collections import Mapping
 from messytables.error import TableError, NoSuchPropertyError
 import io
 from messytables.compat23 import *
